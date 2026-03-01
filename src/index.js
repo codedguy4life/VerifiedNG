@@ -8,9 +8,23 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// ADD THIS LINE ↓ — import your routes
+const authRoutes = require("./routes/authRoutes");
+
 app.get("/", (req, res) => {
   res.json({ message: "🇳🇬 VerifiedNG Backend is running!" });
 });
+
+app.get("/api/status", (req, res) => {
+  res.json({
+    server: "running",
+    mongodb:
+      mongoose.connection.readyState === 1 ? "connected" : "disconnected",
+  });
+});
+
+// ADD THIS LINE ↓ — tell app to USE the routes
+app.use("/api/auth", authRoutes);
 
 const PORT = process.env.PORT || 5000;
 
