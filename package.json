@@ -1,0 +1,21 @@
+{
+  "name": "VerifiedNG-Backend",
+  "version": "1.0.0",
+  "description": "Nigeria Identity Verification & Job/Service Finder Backend",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
+  },
+  "keywords": [
+    "nigeria",
+    "verification",
+    "jobs",
+    "services",
+    "local",
+    "remote"
+  ],
+  "author": "Obago (codedguy4life)",
+  "license": "ISC",
+  "type": "commonjs"
+}
