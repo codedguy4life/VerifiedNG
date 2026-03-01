@@ -1,52 +1,86 @@
-const User = require("../models/user.js");
+const jwt = require('jsonwebtoken');
 
-// REGISTER — creates a new user
+// TEMPORARY fake database
+const users = [];
+
+// REGISTER
 const register = async (req, res) => {
   try {
-    // 1. Get data from the request body
     const { fullName, email, password, phone, role } = req.body;
 
-    // 2. Check all fields are provided
     if (!fullName || !email || !password || !phone) {
-      return res.status(400).json({
-        message: "Please fill in all fields, all fields are required",
-      });
+      return res.status(400).json({ message: 'Please fill in all fields' });
     }
 
-    // 3. Check if email already exists
-    const existingUser = await User.findOne({ email });
+    const existingUser = users.find(u => u.email === email);
     if (existingUser) {
-      return res.status(400).json({
-        message: "Email already registered",
-      });
+      return res.status(400).json({ message: 'Email already registered' });
     }
 
-    // 4. Create the new user — password as plain text for now
-    const newUser = await User.create({
+    const newUser = {
+      id: users.length + 1,
       fullName,
       email,
-      password, // plain text for now — we add encryption later
+      password,
       phone,
-      role: role || "customer",
+      role: role || 'customer'
+    };
+
+    users.push(newUser);
+
+    res.status(201).json({
+      message: 'Account created successfully!',
+      user: newUser
     });
 
-    // 5. Send back success response
-    res.status(201).json({
-      message: "Account created successfully!",
-      user: {
-        id: newUser._id,
-        fullName: newUser.fullName,
-        email: newUser.email,
-        password: newUser.password, // showing it so you can see it works
-        role: newUser.role,
-      },
-    });
   } catch (error) {
-    res.status(500).json({
-      message: "Server error",
-      error: error.message,
-    });
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
-module.exports = { register };
+// LOGIN
+const login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // 1. Check fields provided
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Please provide email and password' });
+    }
+
+    // 2. Find user by email
+    const user = users.find(u => u.email === email);
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid email or password' });
+    }
+
+    // 3. Check password matches
+    if (user.password !== password) {
+      return res.status(400).json({ message: 'Invalid email or password' });
+    }
+
+    // 4. Create JWT token
+    const token = jwt.sign(
+      { id: user.id, email: user.email, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    // 5. Send back token
+    res.status(200).json({
+      message: 'Login successful!',
+      token,
+      user: {
+        id: user.id,
+        fullName: user.fullName,
+        email: user.email,
+        role: user.role
+      }
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+module.exports = { register, login };
