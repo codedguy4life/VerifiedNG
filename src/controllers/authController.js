@@ -1,7 +1,5 @@
+const User = require('../models/User');
 const jwt = require('jsonwebtoken');
-
-// TEMPORARY fake database
-const users = [];
 
 // REGISTER
 const register = async (req, res) => {
@@ -12,25 +10,28 @@ const register = async (req, res) => {
       return res.status(400).json({ message: 'Please fill in all fields' });
     }
 
-    const existingUser = users.find(u => u.email === email);
+    const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: 'Email already registered' });
     }
 
-    const newUser = {
-      id: users.length + 1,
+    const newUser = await User.create({
       fullName,
       email,
       password,
       phone,
       role: role || 'customer'
-    };
-
-    users.push(newUser);
+    });
 
     res.status(201).json({
       message: 'Account created successfully!',
-      user: newUser
+      user: {
+        id: newUser._id,
+        fullName: newUser.fullName,
+        email: newUser.email,
+        password: newUser.password,
+        role: newUser.role
+      }
     });
 
   } catch (error) {
@@ -43,35 +44,30 @@ const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // 1. Check fields provided
     if (!email || !password) {
       return res.status(400).json({ message: 'Please provide email and password' });
     }
 
-    // 2. Find user by email
-    const user = users.find(u => u.email === email);
+    const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ message: 'Invalid email or password' });
     }
 
-    // 3. Check password matches
     if (user.password !== password) {
       return res.status(400).json({ message: 'Invalid email or password' });
     }
 
-    // 4. Create JWT token
     const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role },
+      { id: user._id, email: user.email, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: '7d' }
     );
 
-    // 5. Send back token
     res.status(200).json({
       message: 'Login successful!',
       token,
       user: {
-        id: user.id,
+        id: user._id,
         fullName: user.fullName,
         email: user.email,
         role: user.role
