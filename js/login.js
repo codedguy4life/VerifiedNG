@@ -4,27 +4,27 @@ function showError(inputId, errorId, message) {
   const input = document.getElementById(inputId);
   const error = document.getElementById(errorId);
   if (!input || !error) return;
-  input.classList.add('error');
-  input.classList.remove('success');
+  input.classList.add("error");
+  input.classList.remove("success");
   error.textContent = message;
-  error.classList.add('show');
+  error.classList.add("show");
 }
 
 function showSuccess(inputId, errorId) {
   const input = document.getElementById(inputId);
   const error = document.getElementById(errorId);
   if (!input || !error) return;
-  input.classList.remove('error');
-  input.classList.add('success');
-  error.classList.remove('show');
+  input.classList.remove("error");
+  input.classList.add("success");
+  error.classList.remove("show");
 }
 
 function clearError(inputId, errorId) {
   const input = document.getElementById(inputId);
   const error = document.getElementById(errorId);
   if (!input || !error) return;
-  input.classList.remove('error', 'success');
-  error.classList.remove('show');
+  input.classList.remove("error", "success");
+  error.classList.remove("show");
 }
 
 function validateEmail(email) {
@@ -41,71 +41,107 @@ function handleLogin(e) {
   let isValid = true;
 
   // ─── Email or Phone ───
-  const identifier = document.getElementById('loginIdentifier').value.trim();
+  const identifier = document.getElementById("loginIdentifier").value.trim();
   if (!identifier) {
-    showError('loginIdentifier', 'identifierError', 'Please enter your email or phone number');
+    showError(
+      "loginIdentifier",
+      "identifierError",
+      "Please enter your email or phone number",
+    );
     isValid = false;
   } else if (!validateEmail(identifier) && !validatePhone(identifier)) {
-    showError('loginIdentifier', 'identifierError', 'Enter a valid email or Nigerian phone number e.g. 08012345678');
+    showError(
+      "loginIdentifier",
+      "identifierError",
+      "Enter a valid email or Nigerian phone number e.g. 08012345678",
+    );
     isValid = false;
   } else {
-    showSuccess('loginIdentifier', 'identifierError');
+    showSuccess("loginIdentifier", "identifierError");
   }
 
   // ─── Password ───
   // Login only checks the field isn't empty
   // (strict rules are for signup, not login)
-  const password = document.getElementById('passwordInput').value;
+  const password = document.getElementById("passwordInput").value;
   if (!password) {
-    showError('passwordInput', 'passwordError', 'Please enter your password');
+    showError("passwordInput", "passwordError", "Please enter your password");
     isValid = false;
   } else {
-    showSuccess('passwordInput', 'passwordError');
+    showSuccess("passwordInput", "passwordError");
   }
 
   // ─── If any errors — shake button and stop ───
   if (!isValid) {
-    const btn = document.getElementById('loginBtn');
-    btn.classList.add('shake');
-    setTimeout(() => btn.classList.remove('shake'), 400);
+    const btn = document.getElementById("loginBtn");
+    btn.classList.add("shake");
+    setTimeout(() => btn.classList.remove("shake"), 400);
     return;
   }
 
   // ─── All good — show loading state ───
-  const btn = document.getElementById('loginBtn');
-  btn.textContent = 'Logging In...';
-  btn.classList.add('loading');
+  const btn = document.getElementById("loginBtn");
+  btn.textContent = "Logging In...";
+  btn.classList.add("loading");
 
-  // Simulate delay — later this will hit the backend
-  setTimeout(() => {
-    alert('Welcome back! Logging you in...');
-    window.location.href = 'index.html';
-  }, 1500);
+  // Send to real backend
+  fetch("http://localhost:5000/api/auth/login", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      email: identifier,
+      password: password,
+    }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.message === "Login successful!") {
+        // Save token to localStorage
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        btn.textContent = "Logged In!";
+        alert("Welcome back " + data.user.fullName + "!");
+        window.location.href = "index.html";
+      } else {
+        btn.textContent = "Log In";
+        btn.classList.remove("loading");
+        alert(data.message);
+      }
+    })
+    .catch((error) => {
+      btn.textContent = "Log In";
+      btn.classList.remove("loading");
+      alert("Something went wrong. Please try again.");
+    });
 }
 
 // ─── REAL TIME VALIDATION ───
 // Clears error as soon as user starts typing
-document.addEventListener('DOMContentLoaded', function () {
-  const fields = ['loginIdentifier', 'passwordInput'];
-  fields.forEach(id => {
+document.addEventListener("DOMContentLoaded", function () {
+  const fields = ["loginIdentifier", "passwordInput"];
+  fields.forEach((id) => {
     const el = document.getElementById(id);
     if (el) {
-      el.addEventListener('input', () => clearError(id, id + 'Error'));
+      el.addEventListener("input", () => clearError(id, id + "Error"));
     }
   });
 });
 
 // ─── TOGGLE PASSWORD VISIBILITY ───
 function togglePassword() {
-  const input = document.getElementById('passwordInput');
-  input.type = input.type === 'password' ? 'text' : 'password';
+  const input = document.getElementById("passwordInput");
+  input.type = input.type === "password" ? "text" : "password";
 }
 
 // ─── ACCOUNT TYPE TOGGLE ───
-let accountType = 'customer';
+let accountType = "customer";
 
 function selectType(btn, type) {
   accountType = type;
-  document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
+  document
+    .querySelectorAll(".type-btn")
+    .forEach((b) => b.classList.remove("active"));
+  btn.classList.add("active");
 }
