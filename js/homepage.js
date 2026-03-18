@@ -14,3 +14,30 @@ function handleSearch() {
     window.location.href = `search.html?service=${encodeURIComponent(service)}&location=${encodeURIComponent(location)}`;
   }
 }
+
+// CHECK IF USER IS LOGGED IN
+document.addEventListener("DOMContentLoaded", function () {
+  const user = localStorage.getItem("user");
+
+  if (user) {
+    const userData = JSON.parse(user);
+
+    // Get the nav-actions buttons
+    const navActions = document.querySelector(".nav-actions");
+
+    if (navActions) {
+      // Replace both buttons with greeting and sign out
+      navActions.innerHTML = `
+        <span class="btn-ghost">Hi, ${userData.fullName.split(" ")[0]} 👋</span>
+        <button class="btn-primary" id="signOutBtn">Sign Out</button>
+      `;
+
+      // Sign out button
+      document.getElementById("signOutBtn").onclick = function () {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        window.location.reload();
+      };
+    }
+  }
+});

@@ -102,7 +102,6 @@ function handleLogin(e) {
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
         btn.textContent = "Logged In!";
-        alert("Welcome back " + data.user.fullName + "!");
         window.location.href = "index.html";
       } else {
         btn.textContent = "Log In";

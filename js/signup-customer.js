@@ -204,7 +204,6 @@ function handleSignup(e) {
     .then((data) => {
       if (data.message === "Account created successfully!") {
         btn.textContent = "Account Created!";
-        alert("Welcome to VerifiedNG " + firstName + "!");
         window.location.href = "index.html";
       } else {
         // Backend returned an error
