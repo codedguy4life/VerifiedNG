@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Log In — VerifiedNG</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap"
+      rel="stylesheet" />
+    <link rel="stylesheet" href="styles/login.css" />
+  </head>
+  <body>
+
+    <!-- NAV — spans full width -->
+    <nav>
+      <a href="index.html" class="logo">Verified<span>NG</span> <sup>BETA</sup></a>
+    </nav>
+
+    <!-- MAIN GRID — left dark panel | right form -->
+    <div class="main-grid">
+
+      <!-- LEFT DARK PANEL -->
+      <div class="left-panel">
+        <a href="index.html" class="panel-logo">Verified<span>NG</span> <sup>BETA</sup></a>
+
+        <div class="panel-content">
+          <div class="panel-tag">Welcome Back</div>
+          <h2 class="panel-title">
+            Access Your <em>Trusted</em><br />Network of<br />Local <em>Services</em>
+          </h2>
+          <p class="panel-desc">
+            Log in to continue finding trusted service providers or managing your
+            business on VerifiedNG.
+          </p>
+          <div class="panel-features">
+            <div class="feature-item">
+              <div class="feature-icon">🔒</div>
+              Your account is secure and encrypted
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon">⚡</div>
+              Quick access to all your bookings
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon">💼</div>
+              Manage your profile and reviews
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-bottom">
+          <div class="testimonial-card">
+            <div class="testimonial-stars">★★★★★</div>
+            <p class="testimonial-text">
+              "VerifiedNG made it so easy to find reliable services. I've used it
+              for plumbing, electrical work, and tutoring. Every provider has been
+              excellent!"
+            </p>
+            <div class="testimonial-author">
+              <div class="t-avatar">👩🏾</div>
+              <div class="t-info">
+                <div class="t-name">Mrs. Obasola M.</div>
+                <div class="t-loc">Happy Customer · Alagbado, Lagos</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT FORM PANEL -->
+      <div class="right-panel">
+        <div class="form-header">
+          <h2>Log In to Your Account</h2>
+          <p>New to VerifiedNG? <a href="signup-customer.html">Sign up free</a></p>
+        </div>
+
+        <!-- ACCOUNT TYPE TOGGLE -->
+        <div class="account-type">
+          <div class="type-btn active" onclick="selectType(this, 'customer')">
+            <div class="type-icon">🔍</div>
+            <span class="type-label">Customer</span>
+            <span class="type-sub">Looking for service</span>
+          </div>
+          <div class="type-btn" onclick="selectType(this, 'provider')">
+            <div class="type-icon">🛠️</div>
+            <span class="type-label">Provider</span>
+            <span class="type-sub">Managing service</span>
+          </div>
+        </div>
+
+        <form class="login-form" onsubmit="handleLogin(event)">
+
+          <!-- EMAIL / PHONE -->
+          <div class="form-group">
+            <label>Email or Phone Number</label>
+            <input
+              type="text"
+              id="loginIdentifier"
+              placeholder="e.g. obago@email.com or 08012345678" />
+            <span class="error-msg" id="identifierError"></span>
+          </div>
+
+          <!-- PASSWORD -->
+          <div class="form-group">
+            <label>Password</label>
+            <div class="password-wrap">
+              <input
+                type="password"
+                id="passwordInput"
+                placeholder="Enter your password" />
+              <button type="button" class="toggle-pass" onclick="togglePassword()">👁️</button>
+            </div>
+            <span class="error-msg" id="passwordError"></span>
+          </div>
+
+          <!-- REMEMBER & FORGOT -->
+          <div class="form-options">
+            <label class="remember-label">
+              <input type="checkbox" id="rememberMe" />
+              <span>Remember me</span>
+            </label>
+            <a href="#" class="forgot-link">Forgot password?</a>
+          </div>
+
+          <!-- SUBMIT -->
+          <button type="submit" id="loginBtn" class="login-btn">Log In</button>
+
+          <div class="or-divider">or log in with</div>
+
+          <div class="social-login">
+            <button type="button" class="social-btn"
+              onclick="window.location.href='https://support.google.com/mail/answer/56256?hl=en'">
+              &#128231; Google
+            </button>
+            <button type="button" class="social-btn"
+              onclick="window.location.href='https://limited.facebook.com/login/'">
+              Facebook
+            </button>
+          </div>
+
+          <div class="signup-link">
+            Don't have an account? <a href="signup-customer.html">Sign Up Free</a>
+          </div>
+
+        </form>
+      </div>
+
+    </div><!-- end main-grid -->
+
+    <script src="js/login.js"></script>
+  </body>
+</html>

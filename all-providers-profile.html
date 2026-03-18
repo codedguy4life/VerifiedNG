@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Provider Profile — VerifiedNG</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap"
+      rel="stylesheet" />
+    <link rel="stylesheet" href="styles/all-providers-profile.css" />
+  </head>
+  <body>
+    <!-- NAV -->
+    <nav>
+      <a href="index.html" class="logo"
+        >Verified<span>NG</span> <sup>BETA</sup></a
+      >
+      <div class="nav-actions">
+        <button class="btn-ghost" onclick="window.location.href = 'login.html'">
+          Log In
+        </button>
+        <button
+          class="btn-primary"
+          onclick="window.location.href = 'signup.html'">
+          Sign Up Free
+        </button>
+      </div>
+    </nav>
+
+    <!-- BREADCRUMB -->
+    <div class="breadcrumb">
+      <a href="index.html">Home</a>
+      <span>›</span>
+      <a href="search.html">Search Results</a>
+      <span>›</span>
+      <span id="breadcrumbName">Provider Profile</span>
+    </div>
+
+    <!-- PROFILE HERO -->
+    <div class="profile-hero">
+      <div class="hero-inner">
+        <div class="profile-avatar" id="providerAvatar">
+          ❓
+          <div class="online-dot online" id="onlineDot"></div>
+        </div>
+
+        <div class="profile-info">
+          <div class="profile-name-row">
+            <h1 class="profile-name" id="providerName">Loading...</h1>
+            <div class="verified-badge">✓ Verified Provider</div>
+          </div>
+          <div class="profile-role" id="providerRole">—</div>
+          <div class="profile-meta">
+            <div style="display: flex; align-items: center; gap: 6px">
+              <span class="stars-lg">★★★★★</span>
+              <span class="rating-num" id="providerRating">—</span>
+              <span class="rating-count" id="providerReviews">—</span>
+            </div>
+            <div class="meta-divider"></div>
+            <div class="meta-item">
+              📍 <strong id="providerLocation">—</strong>
+            </div>
+            <div class="meta-divider"></div>
+            <div class="meta-item">
+              ⚡
+              <strong id="providerAvailText" style="color: #00b85e">—</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- HIRE PANEL -->
+        <div class="hire-panel">
+          <div class="avail">
+            <div class="avail-dot"></div>
+            <span id="panelAvailText">Available Now</span>
+          </div>
+          <div class="hire-price">
+            <div class="from">Starting price</div>
+            <div class="amount" id="panelPrice">₦Talk-Price</div>
+            <div class="per" id="panelPer">per job</div>
+          </div>
+          <button class="hire-btn" onclick="openModal()">Hire Now</button>
+          <button class="msg-btn">💬 Send Message</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATS BAR -->
+    <div class="stats-bar">
+      <div class="stat-item">
+        <div class="stat-val" id="statJobs">—</div>
+        <div class="stat-label">Jobs Done</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val" id="statExperience">—</div>
+        <div class="stat-label">Experience</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val" id="statRating">—</div>
+        <div class="stat-label">Avg Rating</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val">98<span>%</span></div>
+        <div class="stat-label">Success Rate</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val">24<span>/7</span></div>
+        <div class="stat-label">Availability</div>
+      </div>
+    </div>
+
+    <!-- PROFILE BODY -->
+    <div class="profile-body">
+      <div class="profile-left">
+        <!-- BIO -->
+        <div class="section-card">
+          <h3><span>👤</span> About Me</h3>
+          <p class="bio-text" id="providerBio">Loading...</p>
+        </div>
+        <!-- EXPERIENCE -->
+        <div class="section-card">
+          <h3><span>💼</span> Work Experience</h3>
+          <div class="experience-list" id="providerExperience"></div>
+        </div>
+
+        <!-- SKILLS -->
+        <div class="section-card">
+          <h3><span>🛠️</span> Skills & Specialisations</h3>
+          <div class="skills-grid" id="providerSkills"></div>
+        </div>
+
+        <!-- GALLERY -->
+        <div class="section-card">
+          <h3><span>📸</span> Past Work Gallery</h3>
+          <div class="gallery-grid" id="providerGallery"></div>
+        </div>
+
+        <!-- REVIEWS -->
+        <div class="section-card">
+          <div class="reviews-header">
+            <h3><span>⭐</span> Customer Reviews</h3>
+            <div class="overall-rating">
+              <div class="big-rating" id="reviewRating">—</div>
+              <div class="rating-breakdown">
+                <div class="rb-stars">★★★★★</div>
+                <div class="rb-count" id="reviewCount">— reviews</div>
+              </div>
+            </div>
+          </div>
+          <div class="rating-bars">
+            <div class="rating-bar-row">
+              <span class="bar-label">5</span><span class="bar-stars">★</span>
+              <div class="bar-track">
+                <div class="bar-fill" style="width: 88%"></div>
+              </div>
+              <span class="bar-count">—</span>
+            </div>
+            <div class="rating-bar-row">
+              <span class="bar-label">4</span><span class="bar-stars">★</span>
+              <div class="bar-track">
+                <div class="bar-fill" style="width: 8%"></div>
+              </div>
+              <span class="bar-count">—</span>
+            </div>
+            <div class="rating-bar-row">
+              <span class="bar-label">3</span><span class="bar-stars">★</span>
+              <div class="bar-track">
+                <div class="bar-fill" style="width: 3%"></div>
+              </div>
+              <span class="bar-count">—</span>
+            </div>
+            <div class="rating-bar-row">
+              <span class="bar-label">2</span><span class="bar-stars">★</span>
+              <div class="bar-track">
+                <div class="bar-fill" style="width: 1%"></div>
+              </div>
+              <span class="bar-count">—</span>
+            </div>
+            <div class="rating-bar-row">
+              <span class="bar-label">1</span><span class="bar-stars">★</span>
+              <div class="bar-track">
+                <div class="bar-fill" style="width: 0%"></div>
+              </div>
+              <span class="bar-count">0</span>
+            </div>
+          </div>
+          <div class="review-list" id="reviewList">
+            <div class="review-card">
+              <div class="review-top">
+                <div class="reviewer">
+                  <div class="reviewer-avatar">👩🏾</div>
+                  <div class="reviewer-info">
+                    <div class="r-name">Happy Customer</div>
+                    <div class="r-date">Recently</div>
+                  </div>
+                </div>
+                <div class="review-stars">★★★★★</div>
+              </div>
+              <p class="review-text" id="defaultReview">
+                Reviews will appear here once customers start leaving feedback.
+              </p>
+            </div>
+          </div>
+          <button class="load-more">Load more reviews</button>
+        </div>
+      </div>
+
+      <!-- SIDEBAR -->
+      <div class="profile-right">
+        <div class="sidebar-card">
+          <h4>Book or Contact</h4>
+          <button class="contact-hire-btn" onclick="openModal()">
+            🤝 Hire Now
+          </button>
+          <button class="contact-msg-btn">💬 Send Message</button>
+          <p class="contact-note">
+            🔒 Your details are safe. VerifiedNG never shares your personal
+            information.
+          </p>
+        </div>
+
+        <div class="sidebar-card">
+          <h4>Quick Info</h4>
+          <div class="quick-info">
+            <div class="qi-row">
+              <span class="qi-label">📍 Location</span
+              ><span class="qi-value" id="sidebarLocation">—</span>
+            </div>
+            <div class="qi-row">
+              <span class="qi-label">⚡ Availability</span
+              ><span class="qi-value green" id="sidebarAvailability">—</span>
+            </div>
+            <div class="qi-row">
+              <span class="qi-label">💼 Jobs Done</span
+              ><span class="qi-value" id="sidebarJobs">—</span>
+            </div>
+            <div class="qi-row">
+              <span class="qi-label">🏆 Experience</span
+              ><span class="qi-value" id="sidebarExperience">—</span>
+            </div>
+            <div class="qi-row">
+              <span class="qi-label">⭐ Rating</span
+              ><span class="qi-value" id="sidebarRating">—</span>
+            </div>
+            <div class="qi-row">
+              <span class="qi-label">📅 Member Since</span
+              ><span class="qi-value">2024</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar-card">
+          <h4>Share This Profile</h4>
+          <div class="share-btns">
+            <button class="share-btn" onclick="shareWhatsApp()">
+              WhatsApp
+            </button>
+            <button class="share-btn" onclick="copyLink()">Copy Link</button>
+            <button class="share-btn" onclick="shareTwitter()">Twitter</button>
+          </div>
+        </div>
+
+        <div class="sidebar-card">
+          <h4>Similar Providers</h4>
+          <div class="similar-list" id="similarList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HIRE MODAL -->
+    <div class="modal-overlay" id="hireModal">
+      <div class="modal">
+        <button class="modal-close" onclick="closeModal()">✕</button>
+        <h3 id="modalTitle">Hire Provider</h3>
+        <p>
+          Fill in the details and the provider will get back to you as soon as
+          possible.
+        </p>
+        <div class="form-group">
+          <label>Your Full Name</label
+          ><input
+            type="text"
+            id="hireName"
+            placeholder="First Name | Last Name" />
+          <span class="error-msg" id="hireNameError"></span>
+        </div>
+        <div class="form-group">
+          <label>Your Phone Number</label
+          ><input type="tel" id="hirePhone" placeholder="e.g. 08012345678" />
+          <span class="error-msg" id="hirePhoneError"></span>
+        </div>
+        <div class="form-group">
+          <label>Service Needed</label
+          ><select id="modalServices">
+            <option>General Service</option>
+          </select>
+          <span class="error-msg" id="hireServiceError"></span>
+        </div>
+        <div class="form-group">
+          <label>Describe the Job</label
+          ><textarea
+            id="hireDescription"
+            placeholder="Tell the provider what you need done, your location, and when you need it..."></textarea>
+          <span class="error-msg" id="hireDescError"></span>
+        </div>
+        <button class="modal-submit" id="modalSubmitBtn" onclick="submitHireRequest()">Send Hire Request</button>
+      </div>
+    </div>
+
+    <script src="js/providers-data.js"></script>
+    <script src="js/all-providers-profile.js"></script>
+  </body>
+</html>

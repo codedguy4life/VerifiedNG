@@ -1,0 +1,745 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VerifiedNG — Trusted Local Services Across Nigeria</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap"
+      rel="stylesheet" />
+    <link rel="stylesheet" href="styles/homepage.css" />
+  </head>
+
+  <body>
+    <!-- ANNOUNCEMENT BAR -->
+    <div class="announcement">
+      🎉 We just launched Nationwide but active in Lagos most!
+      <span>Sign up free today</span> — first 100 providers get verified for
+      free.
+    </div>
+
+    <!-- NAVIGATION -->
+    <nav>
+      <a href="index.html" class="logo"
+        >Verified<span>NG</span> <sup>BETA</sup></a
+      >
+      <ul class="nav-links">
+        <li>
+          <div class="service-search">
+            <input
+              type="text"
+              id="navServiceInput"
+              placeholder="Find Services" />
+            <button class="btn-primary" onclick="handleNavSearch()">
+              Find 🔎
+            </button>
+          </div>
+        </li>
+        <li>
+          <button
+            class="btn-ghost"
+            onclick="window.location.href = 'signup-provider.html'">
+            Become a Provider
+          </button>
+        </li>
+        <li>
+          <button
+            class="btn-ghost"
+            onclick="window.location.href = '#how-it-works'">
+            How It Works
+          </button>
+        </li>
+        <li>
+          <button class="btn-ghost">About</button>
+        </li>
+      </ul>
+      <div class="nav-actions">
+        <button class="btn-ghost" onclick="window.location.href = 'login.html'">
+          Log In
+        </button>
+        <button
+          class="btn-primary"
+          onclick="window.location.href = 'signup-customer.html'">
+          Sign Up Free
+        </button>
+      </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero" style="padding-top: 80px; padding-bottom: 80px">
+      <div class="hero-bg"></div>
+
+      <div class="hero-text">
+        <div class="hero-badge">
+          <div class="dot"></div>
+          Now live Nationwide (Nigeria)
+        </div>
+
+        <h1>
+          Find <em>Trusted</em> and <em>Expert</em>/<em>Experienced</em
+          ><br />Local Services<br />Near You
+        </h1>
+
+        <p>
+          Stop relying on guesswork and people that can't meetup the deadline.
+          VerifiedNG connects you with locally trusted, community-vouched
+          teachers, plumbers, tailors, electricians, mechanics and more — right
+          in your neighbourhood or in every corner of the country.
+        </p>
+
+        <div class="hero-search">
+          <input
+            type="text"
+            id="serviceInput"
+            placeholder="What service do you need? (e.g. Plumber, Tailor)" />
+          <div class="search-divider"></div>
+          <input
+            type="text"
+            id="locationInput"
+            placeholder="📍  Your area (e.g. Ogun, Calabar, Abuja, Lagos ...)" />
+          <button class="btn-primary" onclick="handleSearch()">Find 🔎</button>
+        </div>
+
+        <div class="hero-stats">
+          <div class="stat">
+            <div class="num">
+              3,400<span><sup>+</sup></span>
+            </div>
+            <div class="label">Verified Providers</div>
+          </div>
+          <div class="stat">
+            <div class="num">
+              18<span
+                >k<sup><sup>+</sup></sup></span
+              >
+            </div>
+            <div class="label">Jobs Completed</div>
+          </div>
+          <div class="stat">
+            <div class="num">4.9<span>★★★★★</span></div>
+            <div class="label">Average Rating</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HIRE CARD 1 -->
+      <div class="homepage-hero-card">
+        <div class="hero-visual">
+          <div class="floating-review">
+            <div class="rev-stars">★★★★★</div>
+            <div class="rev-text">
+              "I'm not a programmer nor knew anything about coding, but I love
+              her work and humbleness that i decided my daughter is gonna follow
+              same path!"
+            </div>
+            <div class="rev-name">— Mrs. Asiwaju, FCT, Abuja.</div>
+          </div>
+
+          <div class="hero-card-main">
+            <div
+              class="provider-profile"
+              onclick="
+                window.location.href = 'all-providers-profile.html?id=9'
+              ">
+              <div class="avatar green">💻</div>
+              <button class="provider-info">
+                <h4>Miss. Mervelous O.</h4>
+                <div class="role">
+                  Full Stack Website Developer · Lagos, Nigeria
+                </div>
+                <div class="verified-badge">✓ Verified</div>
+              </button>
+            </div>
+            <div class="provider-details">
+              <div class="detail-box">
+                <div class="d-val">24|7</div>
+                <div class="d-val">Worldwide</div>
+                <div class="d-label">Availability</div>
+              </div>
+              <div class="detail-box">
+                <div class="d-val">4.7 <sup>★★★★★</sup></div>
+                <div class="d-label">Rating</div>
+              </div>
+              <div class="detail-box">
+                <div class="d-val">46<sup>+</sup></div>
+                <div class="d-label">Jobs Done</div>
+              </div>
+              <div class="detail-box">
+                <div class="d-val">2yr+<sup>+</sup></div>
+                <div class="d-label">Experience</div>
+              </div>
+            </div>
+            <div class="action-row">
+              <button
+                class="btn-hire"
+                onclick="
+                  window.location.href = 'all-providers-profile.html?id=9'
+                ">
+                Hire Now
+              </button>
+              <button class="btn-msg">Message</button>
+            </div>
+          </div>
+
+          <div class="floating-stat">
+            <div class="fs-num">97%</div>
+            <div class="fs-label">Job Success Rate</div>
+          </div>
+        </div>
+
+        <!-- HIRE CARD 2 -->
+        <div class="hero-visual">
+          <div class="floating-review">
+            <div class="rev-stars">★★★★★</div>
+            <div class="rev-text">
+              "Fixed my generator in 30 mins. Absolute legend!"
+            </div>
+            <div class="rev-name">— Olamide S., Agege, Lagos.</div>
+          </div>
+
+          <div class="hero-card-main">
+            <div
+              class="provider-profile"
+              onclick="
+                window.location.href = 'all-providers-profile.html?id=7'
+              ">
+              <div class="avatar green">🔧</div>
+              <button class="provider-info">
+                <h4>Mr. Obasola S.O</h4>
+                <div class="role">Chief Mechanic · Lagos</div>
+                <div class="verified-badge">✓ Verified</div>
+              </button>
+            </div>
+            <div class="provider-details">
+              <div class="detail-box">
+                <div class="d-val">24|7</div>
+                <div class="d-label">Availability</div>
+              </div>
+              <div class="detail-box">
+                <div class="d-val">4.9 <sup>★★★★★</sup></div>
+                <div class="d-label">Rating</div>
+              </div>
+              <div class="detail-box">
+                <div class="d-val">100<sup>+</sup></div>
+                <div class="d-label">Jobs Done</div>
+              </div>
+              <div class="detail-box">
+                <div class="d-val">3yrs<sup>+</sup></div>
+                <div class="d-label">Experience</div>
+              </div>
+            </div>
+            <div class="action-row">
+              <button
+                class="btn-hire"
+                onclick="
+                  window.location.href = 'all-providers-profile.html?id=7'
+                ">
+                Hire Now
+              </button>
+              <button class="btn-msg">Message</button>
+            </div>
+          </div>
+
+          <div class="floating-stat">
+            <div class="fs-num">98%</div>
+            <div class="fs-label">Job Success Rate</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TRUST BAR -->
+    <div class="trust-bar">
+      <div class="trust-item">
+        <span class="ti-icon">🛡️</span>
+        <span
+          ><strong>Community Verified</strong> — Every provider is
+          professionally <em>vouched for</em> and <em>verified</em> by our
+          community</span
+        >
+      </div>
+      <div class="trust-divider"></div>
+      <div class="trust-item">
+        <span class="ti-icon">📍</span>
+        <span
+          ><strong>Hyper-local</strong> — Find people in your exact
+          <em> area </em> and <em> farther </em> away — we cover every corner of
+          <em>Nigeria</em>
+        </span>
+      </div>
+      <div class="trust-divider"></div>
+      <div class="trust-item">
+        <span class="ti-icon">💬</span>
+        <span
+          ><strong>Real Reviews</strong> — only from
+          <em>verified customers</em></span
+        >
+      </div>
+      <div class="trust-divider"></div>
+      <div class="trust-item">
+        <span class="ti-icon">⚡</span>
+        <span
+          ><strong>Fast Response</strong> — most providers reply
+          <em>as soon as possible </em></span
+        >
+      </div>
+    </div>
+
+    <!-- CATEGORIES -->
+    <section class="categories">
+      <div class="categories-header">
+        <div>
+          <div class="section-tag">What We Offer</div>
+          <h2 class="section-title">Browse by Service<br />Category</h2>
+          <p class="section-sub">
+            From fixing your leaky pipe, to sowing beauty into your body, to
+            teaching your child — we cover every essential service you need in
+            Nigeria.
+          </p>
+        </div>
+        <a href="search.html" class="see-all">View all categories →</a>
+      </div>
+
+      <div class="category-grid">
+        <div
+          class="cat-card"
+          onclick="window.location.href = 'search.html?service=Electrical'">
+          <span class="cat-icon">⚡</span>
+          <h4>Electrical</h4>
+          <p>Wiring, installations, generators & solar systems</p>
+          <span class="cat-count">280 providers</span>
+        </div>
+        <div
+          class="cat-card"
+          onclick="window.location.href = 'search.html?service=Plumbing'">
+          <span class="cat-icon">🔧</span>
+          <h4>Plumbing</h4>
+          <p>Pipe repairs, installations, water systems & drainage</p>
+          <span class="cat-count">340 providers</span>
+        </div>
+        <div
+          class="cat-card"
+          onclick="window.location.href = 'search.html?service=Tutoring'">
+          <span class="cat-icon">📚</span>
+          <h4>Private Tutoring</h4>
+          <p>WAEC, JAMB, primary, secondary & university levels</p>
+          <span class="cat-count">520 providers</span>
+        </div>
+        <div
+          class="cat-card"
+          onclick="window.location.href = 'search.html?service=Auto Mechanic'">
+          <span class="cat-icon">🚗</span>
+          <h4>Auto Mechanic</h4>
+          <p>Repairs, servicing, diagnostics & mobile mechanics</p>
+          <span class="cat-count">190 providers</span>
+        </div>
+        <div
+          class="cat-card"
+          onclick="window.location.href = 'search.html?service=Cleaning'">
+          <span class="cat-icon">🧹</span>
+          <h4>Cleaning</h4>
+          <p>Home cleaning, deep cleaning, post-construction</p>
+          <span class="cat-count">210 providers</span>
+        </div>
+        <div
+          class="cat-card"
+          onclick="window.location.href = 'search.html?service=ContentCreator'">
+          <span class="cat-icon">📸</span>
+          <h4>Photography</h4>
+          <p>Events, portraits, weddings & commercial shoots</p>
+          <span class="cat-count">165 providers</span>
+        </div>
+        <div
+          class="cat-card"
+          onclick="window.location.href = 'search.html?service=Tailoring'">
+          <span class="cat-icon">✂️</span>
+          <h4>Tailoring</h4>
+          <p>Bespoke fashion, alterations, native & English styles</p>
+          <span class="cat-count">300 providers</span>
+        </div>
+        <div
+          class="cat-card"
+          onclick="window.location.href = 'search.html?service=Catering'">
+          <span class="cat-icon">🍳</span>
+          <h4>Catering & Cooks</h4>
+          <p>Private chefs, event catering & meal prep services</p>
+          <span class="cat-count">155 providers</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section id="how-it-works" class="how-it-works">
+      <div class="section-tag">Simple Process</div>
+      <h2 class="section-title">How VerifiedNG Works</h2>
+      <p class="section-sub">
+        Three simple steps to get any job done by someone you can actually
+        trust.
+      </p>
+
+      <div class="how-grid">
+        <div class="steps">
+          <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-content">
+              <h4>Search for What You Need</h4>
+              <p>
+                Type the service you need and your location (optional). We
+                instantly show you verified providers nearby with real ratings
+                and honest profiles.
+              </p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-content">
+              <h4>Check Their Verification & Reviews</h4>
+              <p>
+                Every provider has been vouched for by their community —
+                neighbours, churches, mosques, former employers. You see real
+                reviews from real customers, not fake stars.
+              </p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-content">
+              <h4>Hire and Get the Job Done</h4>
+              <p>
+                Message or call directly through the app. Agree on price. Get
+                the job done. Leave a review to help your community. Simple as
+                that.
+              </p>
+            </div>
+          </div>
+          <div class="step step-cta">
+            <div class="step-content">
+              <h4>Are You a Skilled Provider?</h4>
+              <p>
+                Create your profile, get verified by your community and start
+                receiving jobs from people near you. It's completely free to
+                join.
+              </p>
+              <button
+                class="hire-primary"
+                style="margin-top: 16px"
+                onclick="window.location.href = 'signup-provider.html'">
+                Join as a Provider
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="how-visual">
+          <div class="phone-mockup">
+            <div class="phone-screen">
+              <div class="phone-header">
+                <div class="ph-label">Available near you</div>
+                <div class="ph-title">Electricians · Lekki</div>
+              </div>
+              <div class="phone-list">
+                <div class="phone-item">
+                  <div class="pi-avatar" style="background: #e6f9ee">⚡</div>
+                  <div class="pi-info">
+                    <div class="pi-name">Olamide Obago</div>
+                    <div class="pi-role">4.9 <sup>★★★★★</sup> · 118 jobs</div>
+                  </div>
+                  <div class="pi-price">₦Talk-Price</div>
+                </div>
+                <div class="phone-item">
+                  <div class="pi-avatar" style="background: #fff8ec">⚡</div>
+                  <div class="pi-info">
+                    <div class="pi-name">John Ugberikoko</div>
+                    <div class="pi-role">4.8 <sup>★★★★★</sup> · 92 jobs</div>
+                  </div>
+                  <div class="pi-price">₦Talk-Price</div>
+                </div>
+                <div class="phone-item">
+                  <div class="pi-avatar" style="background: #eef3ff">⚡</div>
+                  <div class="pi-info">
+                    <div class="pi-name">Yusuf Aminu</div>
+                    <div class="pi-role">4.7 <sup>★★★★★</sup> · 73 jobs</div>
+                  </div>
+                  <div class="pi-price">₦Talk-Price</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURED PROVIDERS -->
+    <section class="providers">
+      <div class="providers-header">
+        <div>
+          <div class="section-tag">Top Talent</div>
+          <h2 class="section-title">Featured Verified<br />Providers</h2>
+          <p class="section-sub">
+            Some of our highest-rated and most trusted service providers this
+            month.
+          </p>
+        </div>
+        <a href="search.html" class="see-all">See all providers →</a>
+      </div>
+
+      <div class="provider-grid">
+        <div
+          class="provider-card"
+          onclick="window.location.href = 'all-providers-profile.html?id=7'">
+          <div class="pc-header">
+            <div class="pc-avatar">🔧</div>
+            <div class="pc-info">
+              <h4>Mr. Obasola S.O</h4>
+              <div class="pc-role">Chief Mechanic</div>
+            </div>
+            <div class="pc-verified">✓ Verified</div>
+          </div>
+          <div class="pc-body">
+            <div class="pc-rating">
+              <span class="score">4.9</span>
+              <span class="stars"><sup>★★★★★</sup></span>
+              <span class="count">(247 reviews)</span>
+            </div>
+            <div class="pc-tags">
+              <span class="tag">Lagos</span>
+              <span class="tag">Mechanic</span>
+              <span class="tag">Generator</span>
+            </div>
+            <div class="pc-footer">
+              <div class="pc-price">
+                <div class="from">Starting from</div>
+                <span class="amount">₦Talk-Price</span>
+                <span class="per">/job</span>
+              </div>
+              <button class="btn-hire-sm">Hire Now</button>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="provider-card"
+          onclick="window.location.href = 'all-providers-profile.html?id=8'">
+          <div class="pc-header gold-bg">
+            <div class="pc-avatar">📚</div>
+            <div class="pc-info">
+              <h4>Miss Pulchritude</h4>
+              <div class="pc-role">WAEC & JAMB Tutor</div>
+            </div>
+            <div class="pc-verified">✓ Verified</div>
+          </div>
+          <div class="pc-body">
+            <div class="pc-rating">
+              <span class="score">5.0</span>
+              <span class="stars"><sup>★★★★★</sup></span>
+              <span class="count">(183 reviews)</span>
+            </div>
+            <div class="pc-tags">
+              <span class="tag">Ogun State</span>
+              <span class="tag">Mathematics</span>
+              <span class="tag">Physics</span>
+              <span class="tag">Science</span>
+            </div>
+            <div class="pc-footer">
+              <div class="pc-price">
+                <div class="from">Starting from</div>
+                <span class="amount">₦Talk-Price</span>
+                <span class="per">/session</span>
+              </div>
+              <button class="btn-hire-sm">Book Now</button>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="provider-card"
+          onclick="window.location.href = 'all-providers-profile.html?id=4'">
+          <div class="pc-header dark-bg">
+            <div class="pc-avatar">🚗</div>
+            <div class="pc-info">
+              <h4>Miss Haleemah Amope</h4>
+              <div class="pc-role">Content Creator</div>
+            </div>
+            <div class="pc-verified">✓ Verified</div>
+          </div>
+          <div class="pc-body">
+            <div class="pc-rating">
+              <span class="score">4.8</span>
+              <span class="stars"><sup>★★★★★</sup></span>
+              <span class="count">(312 reviews)</span>
+            </div>
+            <div class="pc-tags">
+              <span class="tag">Ikeja</span>
+              <span class="tag">Social Media</span>
+              <span class="tag">Ads Service</span>
+            </div>
+            <div class="pc-footer">
+              <div class="pc-price">
+                <div class="from">Starting from</div>
+                <span class="amount">₦Talk-Price</span>
+                <span class="per">/job</span>
+              </div>
+              <button class="btn-hire-sm">Hire Now</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TESTIMONIALS -->
+    <section class="testimonials">
+      <div class="testimonials-header">
+        <div>
+          <div class="section-tag">Real Stories</div>
+          <h2 class="section-title">Nigerians Trust<br />VerifiedNG</h2>
+          <p class="section-sub">
+            Real reviews from real people across Lagos. No fake stars.
+          </p>
+        </div>
+        <a href="#" class="see-all" style="color: rgba(255, 255, 255, 0.5)"
+          >Read more stories →</a
+        >
+      </div>
+
+      <div class="testi-grid">
+        <div class="testi-card">
+          <div class="testi-stars">★★★★★</div>
+          <p class="testi-text">
+            "I used to spend days asking around for a reliable electrician.
+            Found one on VerifiedNG in 5 minutes. He came, fixed everything, and
+            the price was less than expected. No funny business."
+          </p>
+          <div class="testi-author">
+            <div class="testi-avatar">👩🏾</div>
+            <div class="testi-info">
+              <div class="t-name">Iya Haleemah</div>
+              <div class="t-loc">Ilorin, Kwara State</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testi-card featured">
+          <div class="testi-stars">★★★★★</div>
+          <p class="testi-text">
+            "As a plumber, I was struggling to get customers beyond my street.
+            Since joining VerifiedNG I'm booked almost every day. My income has
+            tripled in 3 months. This app is a blessing."
+          </p>
+          <div class="testi-author">
+            <div class="testi-avatar">👨🏾</div>
+            <div class="testi-info">
+              <div class="t-name">Mr. Suleiman C.</div>
+              <div class="t-loc">Verified Provider · Yaba, Lagos</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testi-card">
+          <div class="testi-stars">★★★★★</div>
+          <p class="testi-text">
+            "My daughter's WAEC results improved from C6 to B2 in mathematics
+            after just one month with a tutor I found here. The verification
+            system really works — you know who you're dealing with."
+          </p>
+          <div class="testi-author">
+            <div class="testi-avatar">👨🏾</div>
+            <div class="testi-info">
+              <div class="t-name">Misturah Dad</div>
+              <div class="t-loc">Ibadan City,Oyo</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA SECTION -->
+    <section class="cta-section">
+      <div class="cta-box">
+        <h2>Ready to Join VerifiedNG?</h2>
+        <p>
+          Whether you need a service or you provide one — there's a place for
+          you here.
+        </p>
+        <div class="cta-buttons">
+          <button
+            class="btn-white"
+            onclick="window.location.href = 'search.html'">
+            Find a Service Provider
+          </button>
+          <button
+            class="btn-outline-white"
+            onclick="window.location.href = 'signup-customer.html'">
+            List Our Skills — It's Free
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="#" class="logo">Verified<span>NG</span></a>
+          <p>
+            Connecting Nigerians with trusted, home-based community-verified
+            local service providers. Building trust, one job at a time, and
+            helping skilled providers grow their business and serve their
+            communities better.
+          </p>
+          <div class="footer-social">
+            <a href="#" class="social-btn1">W</a>
+            <a href="#" class="social-btn2">𝕏</a>
+            <a href="#" class="social-btn3">in</a>
+            <a href="#" class="social-btn4">f</a>
+            <a href="#" class="social-btn5">t</a>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <h5>For Customers</h5>
+          <ul>
+            <li><a href="search.html">Find Services</a></li>
+            <li><a href="#how-it-works">How It Works</a></li>
+            <li><a href="#">Browse Categories</a></li>
+            <li><a href="#">Safety Tips</a></li>
+            <li><a href="#">Post a Job</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>For Providers</h5>
+          <ul>
+            <li><a href="signup-provider.html">Create a Profile</a></li>
+            <li><a href="signup-provider.html">Get Verified</a></li>
+            <li><a href="#">Provider App</a></li>
+            <li><a href="#">Earn More</a></li>
+            <li><a href="#">Provider Stories</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Company</h5>
+          <ul>
+            <li><a href="#">About Us</a></li>
+            <li><a href="#">Blog</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Contact Us</a></li>
+            <li><a href="#">Press</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>© 2026 <span>VerifiedNG</span>. Built by Obago in Nigeria.</p>
+        <div class="footer-bottom-links">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Cookie Policy</a>
+        </div>
+      </div>
+    </footer>
+    <script src="js/homepage.js"></script>
+    <script src="js/providers-data.js"></script>
+    <script src="js/index-hire.js"></script>
+  </body>
+</html>
