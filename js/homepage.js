@@ -34,9 +34,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // Sign out button
       document.getElementById("signOutBtn").onclick = function () {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        window.location.reload();
+        signOut();
       };
     }
   }
