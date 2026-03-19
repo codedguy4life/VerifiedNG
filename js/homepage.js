@@ -28,9 +28,9 @@ document.addEventListener("DOMContentLoaded", function () {
     if (navActions) {
       // Replace both buttons with greeting and sign out
       navActions.innerHTML = `
-        <span class="btn-ghost">Hi, ${userData.fullName.split(" ")[0]} 👋</span>
-        <button class="btn-primary" id="signOutBtn">Sign Out</button>
-      `;
+  <a href="dashboard.html" class="btn-ghost" style="text-decoration:none">Hi, ${userData.fullName.split(" ")[0]} 👋</a>
+  <button class="btn-primary" id="signOutBtn">Sign Out</button>
+`;
 
       // Sign out button
       document.getElementById("signOutBtn").onclick = function () {

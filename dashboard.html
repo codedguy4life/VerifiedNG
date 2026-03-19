@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard — VerifiedNG</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap"
+      rel="stylesheet" />
+    <link rel="stylesheet" href="styles/homepage.css" />
+    <link rel="stylesheet" href="styles/dashboard.css" />
+  </head>
+  <body>
+    <!-- NAV — same as homepage -->
+    <nav>
+      <a href="index.html" class="logo"
+        >Verified<span>NG</span> <sup>BETA</sup></a
+      >
+      <ul class="nav-links">
+        <li>
+          <button
+            class="btn-ghost"
+            onclick="window.location.href = 'search.html'">
+            Find Services
+          </button>
+        </li>
+        <li>
+          <button
+            class="btn-ghost"
+            onclick="window.location.href = 'signup-provider.html'">
+            Become a Provider
+          </button>
+        </li>
+      </ul>
+      <div class="nav-actions">
+        <span id="navGreeting" class="btn-ghost"></span>
+        <button class="btn-ghost" onclick="signOut()">Sign Out</button>
+      </div>
+    </nav>
+
+    <!-- DASHBOARD -->
+    <div class="dashboard-wrapper">
+      <!-- WELCOME BANNER -->
+      <div class="welcome-banner">
+        <div>
+          <h1>Welcome back, <em id="firstName">...</em> 👋</h1>
+          <p>Here is your VerifiedNG account overview</p>
+        </div>
+        <div class="active-badge">✓ Active Account</div>
+      </div>
+
+      <!-- STATS -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-num">0</div>
+          <div class="stat-label">Services Hired</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">0</div>
+          <div class="stat-label">Reviews Given</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">0</div>
+          <div class="stat-label">Saved Providers</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="memberDays">1</div>
+          <div class="stat-label">Days as Member</div>
+        </div>
+      </div>
+
+      <!-- MAIN GRID -->
+      <div class="main-grid">
+        <!-- PROFILE INFO -->
+        <div class="dash-card">
+          <h3>👤 Profile Info</h3>
+          <div class="profile-item">
+            <span class="p-label">Full Name</span>
+            <span class="p-value" id="userFullName">...</span>
+          </div>
+          <div class="profile-item">
+            <span class="p-label">Email</span>
+            <span class="p-value" id="userEmail">...</span>
+          </div>
+          <div class="profile-item">
+            <span class="p-label">Account Type</span>
+            <span class="p-value">
+              <span class="role-tag" id="userRole">...</span>
+            </span>
+          </div>
+          <div class="profile-item">
+            <span class="p-label">Status</span>
+            <span class="p-value" style="color: #00c853">Active ✓</span>
+          </div>
+          <button class="sign-out-btn" onclick="signOut()">Sign Out</button>
+        </div>
+
+        <!-- QUICK ACTIONS -->
+        <div class="dash-card">
+          <h3>⚡ Quick Actions</h3>
+          <div class="actions-grid">
+            <a href="search.html" class="action-btn">
+              <div class="a-icon">🔍</div>
+              <div class="a-label">Find a Service</div>
+            </a>
+            <a href="signup-provider.html" class="action-btn">
+              <div class="a-icon">🛠️</div>
+              <div class="a-label">Become a Provider</div>
+            </a>
+            <a href="index.html" class="action-btn">
+              <div class="a-icon">🏠</div>
+              <div class="a-label">Go Home</div>
+            </a>
+            <a href="#" class="action-btn">
+              <div class="a-icon">✏️</div>
+              <div class="a-label">Edit Profile</div>
+            </a>
+          </div>
+        </div>
+
+        <!-- RECENT ACTIVITY -->
+        <div class="dash-card" style="grid-column: 1 / -1">
+          <h3>🕐 Recent Activity</h3>
+          <div class="activity-item">
+            <div class="activity-icon">🎉</div>
+            <div>
+              <div class="activity-text">Account created successfully</div>
+              <div class="activity-time">Welcome to VerifiedNG!</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-icon">🔐</div>
+            <div>
+              <div class="activity-text">Logged in to your account</div>
+              <div class="activity-time">Just now</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-icon">🔍</div>
+            <div>
+              <div class="activity-text">No services hired yet</div>
+              <div class="activity-time">Start by searching for a service</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/dashboard.js"></script>
+  </body>
+</html>
