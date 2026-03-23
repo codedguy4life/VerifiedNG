@@ -25,8 +25,18 @@
         <button class="btn-primary" onclick="handleSearch()">Find 🔎</button>
       </div>
       <div class="nav-actions">
-        <button class="btn-ghost">Log In</button>
-        <button class="btn-primary">Sign Up</button>
+        <button
+          class="btn-ghost"
+          id="navLoginBtn"
+          onclick="window.location.href = 'login.html'">
+          Log In
+        </button>
+        <button
+          class="btn-primary"
+          id="navSignupBtn"
+          onclick="window.location.href = 'signup-customer.html'">
+          Sign Up Free
+        </button>
       </div>
     </nav>
 
@@ -282,6 +292,7 @@
       </main>
     </div>
 
+    <script src="js/auth.js"></script>
     <script src="js/providers-data.js"></script>
     <script src="js/search.js"></script>
   </body>

@@ -225,3 +225,18 @@ window.onload = function () {
   renderCards(providers);
   applyFilters(); // ← this applies the pre-ticked filter immediately
 };
+// UPDATE NAV BASED ON LOGIN STATE
+document.addEventListener("DOMContentLoaded", function () {
+  const user = getCurrentUser();
+  const navActions = document.querySelector(".nav-actions");
+
+  if (navActions && user) {
+    navActions.innerHTML = `
+      <a href="dashboard.html" class="btn-ghost" 
+        style="text-decoration:none">
+        Hi, ${user.fullName.split(" ")[0]} 👋
+      </a>
+      <button class="btn-ghost" onclick="signOut()">Sign Out</button>
+    `;
+  }
+});

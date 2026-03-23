@@ -66,15 +66,8 @@ window.onload = function () {
     .map((tag) => `<span class="skill-tag">${tag}</span>`)
     .join("");
 
-  // Gallery — use tags as placeholder gallery items
-  document.getElementById("providerGallery").innerHTML = [
-    provider.emoji,
-    "🏆",
-    "⭐",
-    "📋",
-    "✅",
-    "🎯",
-  ]
+  // Gallery — use actual gallery
+  document.getElementById("providerGallery").innerHTML = provider.gallery
     .map(
       (icon) => `
     <div class="gallery-item">
@@ -297,3 +290,21 @@ function submitHireRequest() {
     btn.style.pointerEvents = "auto";
   }, 1500);
 }
+
+// UPDATE NAV BASED ON LOGIN STATE
+document.addEventListener("DOMContentLoaded", function () {
+  const user = getCurrentUser();
+  const navActions = document.querySelector(".nav-actions");
+
+  if (navActions) {
+    if (user) {
+      navActions.innerHTML = `
+        <a href="dashboard.html" class="btn-ghost" 
+          style="text-decoration:none">
+          Hi, ${user.fullName.split(" ")[0]} 👋
+        </a>
+        <button class="btn-ghost" onclick="signOut()">Sign Out</button>
+      `;
+    }
+  }
+});

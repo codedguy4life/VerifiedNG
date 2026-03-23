@@ -187,7 +187,7 @@ function handleSignup(e) {
   btn.classList.add("loading");
 
   // Send data to backend
-  fetch("http://localhost:5000/api/auth/register", {
+  fetch("https://verifiedng-backend.onrender.com/api/auth/register", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -206,10 +206,35 @@ function handleSignup(e) {
         btn.textContent = "Account Created!";
         window.location.href = "index.html";
       } else {
-        // Backend returned an error
         btn.textContent = "Create My Account";
         btn.classList.remove("loading");
-        alert(data.message);
+
+        // Show error on correct field instead of alert
+        if (data.message.includes("Email")) {
+          showError("emailInput", "emailError", data.message);
+          document.getElementById("emailInput").scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
+        } else if (data.message.includes("Phone")) {
+          showError("phoneInput", "phoneError", data.message);
+          document.getElementById("phoneInput").scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
+        } else {
+          // Generic error — show under submit button
+          const errMsg = document.getElementById("submitBtn");
+          const existing = document.getElementById("generalError");
+          if (!existing) {
+            const err = document.createElement("p");
+            err.id = "generalError";
+            err.style.cssText =
+              "color:red;text-align:center;margin-top:8px;font-size:0.9rem";
+            err.textContent = data.message;
+            errMsg.parentNode.insertBefore(err, errMsg.nextSibling);
+          }
+        }
       }
     })
     .catch((error) => {

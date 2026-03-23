@@ -21,13 +21,68 @@ function goToStep(step) {
 
 function submitForm() {
   if (!validateStep(4)) return;
-  document.getElementById("step4").classList.remove("active");
-  document.getElementById("circle4").classList.remove("active");
-  document.getElementById("circle4").classList.add("done");
-  document.getElementById("circle4").textContent = "✓";
-  document.getElementById("line3")?.classList.add("done");
-  document.getElementById("step5").classList.add("active");
-  window.scrollTo({ top: 0, behavior: "smooth" });
+
+  const firstName = document.getElementById("firstName").value.trim();
+  const lastName = document.getElementById("lastName").value.trim();
+  const phone = document.getElementById("phoneInput").value.trim();
+  const email = document.getElementById("emailInput").value.trim();
+  const state = document.getElementById("stateInput").value;
+  const city = document.getElementById("cityInput").value.trim();
+  const category = document.getElementById("categoryInput").value;
+  const bio = document.getElementById("bioInput").value.trim();
+  const password = document.getElementById("providerPass").value;
+  const voucherName = document.getElementById("voucherName").value.trim();
+  const voucherPhone = document.getElementById("voucherPhone").value.trim();
+
+  const skills = [];
+  document.querySelectorAll(".skill-option.selected").forEach((skill) => {
+    skills.push(skill.textContent.trim());
+  });
+
+  fetch("https://verifiedng-backend.onrender.com/api/auth/register", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      fullName: firstName + " " + lastName,
+      email,
+      password,
+      phone,
+      role: "provider",
+      category,
+      bio,
+      skills,
+      state,
+      city,
+      voucherName,
+      voucherPhone,
+    }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.message === "Account created successfully!") {
+        document.getElementById("step4").classList.remove("active");
+        document.getElementById("circle4").classList.remove("active");
+        document.getElementById("circle4").classList.add("done");
+        document.getElementById("circle4").textContent = "✓";
+        document.getElementById("line3")?.classList.add("done");
+        document.getElementById("step5").classList.add("active");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } else {
+        if (data.message.includes("Email")) {
+          goToStep(1);
+          setTimeout(() => showFieldError("emailInput", data.message), 300);
+        } else if (data.message.includes("Phone")) {
+          goToStep(1);
+          setTimeout(() => showFieldError("phoneInput", data.message), 300);
+        } else {
+          showFieldError("providerPass", data.message);
+        }
+      }
+    })
+    .catch((error) => {
+      alert("Something went wrong. Please try again.");
+      console.log("Error:", error);
+    });
 }
 
 function showFieldError(id, message) {
@@ -43,14 +98,11 @@ function showFieldError(id, message) {
     "color:#e53935;font-size:12px;margin-top:4px;display:block";
   err.textContent = message;
   el.parentNode.insertBefore(err, el.nextSibling);
-
   el.addEventListener("input", function clearErrorOnType() {
     el.style.borderColor = "";
     el.style.background = "";
-
     const e = document.getElementById(id + "_err");
     if (e) e.remove();
-
     el.removeEventListener("input", clearErrorOnType);
   });
 }
@@ -113,7 +165,6 @@ function validateStep(step) {
   if (step === 2) {
     const category = document.getElementById("categoryInput").value;
     const bio = document.getElementById("bioInput").value.trim();
-
     if (!category) {
       showFieldError("categoryInput", "Please select your main category");
       isValid = false;
@@ -130,7 +181,6 @@ function validateStep(step) {
   if (step === 3) {
     const voucherName = document.getElementById("voucherName").value.trim();
     const voucherPhone = document.getElementById("voucherPhone").value.trim();
-
     if (!voucherName) {
       showFieldError("voucherName", "Please enter your voucher's name");
       isValid = false;
@@ -148,7 +198,6 @@ function validateStep(step) {
     const pass = document.getElementById("providerPass").value;
     const pass2 = document.getElementById("providerPass2").value;
     const terms = document.getElementById("providerTerms").checked;
-
     if (!pass || pass.length < 8) {
       showFieldError("providerPass", "Password must be at least 8 characters");
       isValid = false;

@@ -85,7 +85,7 @@ function handleLogin(e) {
   btn.classList.add("loading");
 
   // Send to real backend
-  fetch("http://localhost:5000/api/auth/login", {
+  fetch("https://verifiedng-backend.onrender.com/api/auth/login", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
