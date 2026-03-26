@@ -202,7 +202,7 @@ function handleSignup(e) {
   })
     .then((response) => response.json())
     .then((data) => {
-      if (data.message === "Account created successfully!") {
+      if (data.user) {
         btn.textContent = "Account Created!";
         window.location.href = "index.html";
       } else {
