@@ -32,7 +32,7 @@ window.onload = function () {
   const avatar = document.getElementById("providerAvatar");
   avatar.style.background = provider.avatarBg || "#e6f9ee";
   avatar.innerHTML =
-    provider.emoji +
+    `<i class="${provider.icon}"></i>` +
     `<div class="online-dot ${provider.availability}" id="onlineDot"></div>`;
 
   // Hero info
@@ -70,11 +70,11 @@ window.onload = function () {
   document.getElementById("providerGallery").innerHTML = provider.gallery
     .map(
       (icon) => `
-    <div class="gallery-item">
-      ${icon}
-      <div class="overlay">View</div>
-    </div>
-  `,
+  <div class="gallery-item">
+    <i class="${icon}"></i>
+    <div class="overlay">View</div>
+  </div>
+`,
     )
     .join("");
 
