@@ -1,14 +1,9 @@
 // ─── PROFILE PAGE JS ───
-// Reads the provider ID from the URL and fills the page dynamically
 
 window.onload = function () {
-  // Step 1 — Read the ID from the URL
   const id = new URLSearchParams(window.location.search).get("id");
-
-  // Step 2 — Find the matching provider from data.js
   const provider = providers.find((p) => p.id == id);
 
-  // Step 3 — If no provider found, show not found message
   if (!provider) {
     document.querySelector(".profile-hero").innerHTML = `
       <div class="not-found">
@@ -20,28 +15,20 @@ window.onload = function () {
     return;
   }
 
-  // ─── FILL THE PAGE ───
-
-  // Page title
+  // Page title and breadcrumb
   document.title = provider.name + " — VerifiedNG";
-
-  // Breadcrumb
   document.getElementById("breadcrumbName").textContent = provider.name;
 
-  // Avatar
+  // Avatar — render Bootstrap icon
   const avatar = document.getElementById("providerAvatar");
   avatar.style.background = provider.avatarBg || "#e6f9ee";
-  avatar.innerHTML =
-    `<i class="${provider.icon}"></i>` +
-    `<div class="online-dot ${provider.availability}" id="onlineDot"></div>`;
+  avatar.innerHTML = `<i class="${provider.icon}"></i><div class="online-dot ${provider.availability}" id="onlineDot"></div>`;
 
   // Hero info
   document.getElementById("providerName").textContent = provider.name;
-  document.getElementById("providerRole").textContent =
-    provider.role + " · " + provider.location;
+  document.getElementById("providerRole").textContent = provider.role + " · " + provider.location;
   document.getElementById("providerRating").textContent = provider.rating;
-  document.getElementById("providerReviews").textContent =
-    "(" + provider.reviews + " reviews)";
+  document.getElementById("providerReviews").textContent = "(" + provider.reviewCount + " reviews)";
   document.getElementById("providerLocation").textContent = provider.location;
   document.getElementById("providerAvailText").textContent = provider.availText;
 
@@ -50,108 +37,99 @@ window.onload = function () {
   document.getElementById("panelPrice").textContent = provider.price;
   document.getElementById("panelPer").textContent = provider.per;
 
-  // Stats bar
-  document.getElementById("statJobs").innerHTML =
-    provider.jobs + "<span>+</span>";
-  document.getElementById("statExperience").innerHTML =
-    provider.experienceYears;
-  document.getElementById("statRating").innerHTML =
-    provider.rating + "<span>★</span>";
+  // Stats
+  document.getElementById("statJobs").innerHTML = provider.jobs + "<span>+</span>";
+  document.getElementById("statExperience").innerHTML = provider.experienceYears;
+  document.getElementById("statRating").innerHTML = provider.rating + "<span>★</span>";
 
   // Bio
   document.getElementById("providerBio").textContent = provider.bio;
 
-  // Skills tags
+  // Skills
   document.getElementById("providerSkills").innerHTML = provider.skills
     .map((tag) => `<span class="skill-tag">${tag}</span>`)
     .join("");
 
-  // Gallery — use actual gallery
+  // Gallery — render Bootstrap icons properly
   document.getElementById("providerGallery").innerHTML = provider.gallery
-    .map(
-      (icon) => `
-  <div class="gallery-item">
-    <i class="${icon}"></i>
-    <div class="overlay">View</div>
-  </div>
-`,
-    )
-    .join("");
+    .map((icon) => `
+      <div class="gallery-item">
+        <i class="${icon}"></i>
+        <div class="overlay">View</div>
+      </div>
+    `).join("");
 
   // Reviews
   document.getElementById("reviewRating").textContent = provider.rating;
-  document.getElementById("reviewCount").textContent =
-    provider.reviewCount + " reviews";
+  document.getElementById("reviewCount").textContent = provider.reviewCount + " reviews";
 
-  if (provider.reviews?.length) {
+  if (provider.reviews && provider.reviews.length) {
     document.getElementById("reviewList").innerHTML = provider.reviews
-      .map(
-        (r) => `
-      <div class="review-card">
-        <div class="review-top">
-          <div class="reviewer">
-            <div class="reviewer-avatar">${r.avatar}</div>
-            <div class="reviewer-info">
-              <div class="r-name">${r.name}</div>
-              <div class="r-date">${r.date}</div>
+      .map((r) => `
+        <div class="review-card">
+          <div class="review-top">
+            <div class="reviewer">
+              <div class="reviewer-avatar"><i class="${r.avatar}"></i></div>
+              <div class="reviewer-info">
+                <div class="r-name">${r.name}</div>
+                <div class="r-date">${r.date}</div>
+              </div>
             </div>
+            <div class="review-stars">${r.stars}</div>
           </div>
-          <div class="review-stars">${r.stars}</div>
+          <p class="review-text">${r.text}</p>
+          <span class="review-tag">${r.tag}</span>
         </div>
-        <p class="review-text">${r.text}</p>
-        <span class="review-tag">${r.tag}</span>
-      </div>
-    `,
-      )
-      .join("");
+      `).join("");
   }
 
   // Modal
   document.getElementById("modalTitle").textContent = "Hire " + provider.name;
   document.getElementById("modalServices").innerHTML =
-    provider.tags.map((tag) => `<option>${tag}</option>`).join("") +
-    "<option>Other</option>";
+    provider.tags.map((tag) => `<option>${tag}</option>`).join("") + "<option>Other</option>";
 
   // Sidebar
   document.getElementById("sidebarLocation").textContent = provider.location;
-  document.getElementById("sidebarAvailability").textContent =
-    provider.availText;
+  document.getElementById("sidebarAvailability").textContent = provider.availText;
   document.getElementById("sidebarJobs").textContent = provider.jobs + "+";
-  document.getElementById("sidebarExperience").textContent =
-    provider.experience;
+  document.getElementById("sidebarExperience").textContent = provider.experienceYears;
   document.getElementById("sidebarRating").textContent = provider.rating + " ★";
 
-  // Experience Stats Bar
-  document.getElementById("statExperience").innerHTML =
-    provider.experienceYears;
-  document.getElementById("sidebarExperience").textContent =
-    provider.experienceYears;
-  // Similar providers — show 3 others in the same category
+  // Experience
+  if (provider.experience && provider.experience.length > 0) {
+    document.getElementById("providerExperience").innerHTML = provider.experience
+      .map((e) => `
+        <div class="exp-item">
+          <div class="exp-icon"><i class="${e.icon}"></i></div>
+          <div class="exp-info">
+            <h4>${e.title}</h4>
+            <p>${e.desc}</p>
+            <div class="exp-date">${e.date}</div>
+          </div>
+        </div>
+      `).join("");
+  }
+
+  // Similar providers
   const similar = providers
     .filter((p) => p.category === provider.category && p.id !== provider.id)
     .slice(0, 3);
 
-  if (provider.experience && provider.experience.length > 0) {
-    document.getElementById("providerExperience").innerHTML =
-      provider.experience
-        .map(
-          (e) => `
-    <div class="exp-item">
-      <div class="exp-icon">
-  <i class="${e.icon}"></i>
-</div>
-      <div class="exp-info">
-        <h4>${e.title}</h4>
-        <p>${e.desc}</p>
-        <div class="exp-date">${e.date}</div>
-      </div>
-    </div>
-  `,
-        )
-        .join("");
+  if (similar.length > 0) {
+    document.getElementById("similarList").innerHTML = similar
+      .map((p) => `
+        <div class="similar-item" onclick="window.location.href='all-providers-profile.html?id=${p.id}'" style="cursor:pointer;display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f0f0f0">
+          <div style="width:36px;height:36px;border-radius:50%;background:${p.avatarBg};display:flex;align-items:center;justify-content:center;font-size:1rem">
+            <i class="${p.icon}"></i>
+          </div>
+          <div>
+            <div style="font-weight:600;font-size:0.85rem">${p.name}</div>
+            <div style="font-size:0.75rem;color:#888">${p.rating} ★ · ${p.jobs}+ jobs</div>
+          </div>
+        </div>
+      `).join("");
   } else {
-    document.getElementById("similarList").innerHTML =
-      '<p style="font-size:13px;color:var(--mid)">No similar providers found yet.</p>';
+    document.getElementById("similarList").innerHTML = '<p style="font-size:13px;color:#888">No similar providers found yet.</p>';
   }
 };
 
@@ -173,6 +151,18 @@ document.addEventListener("DOMContentLoaded", function () {
       if (e.target === this) closeModal();
     });
   }
+
+  // Update nav based on login state
+  const user = getCurrentUser();
+  const navActions = document.querySelector(".nav-actions");
+  if (navActions && user) {
+    navActions.innerHTML = `
+      <a href="dashboard.html" class="btn-ghost" style="text-decoration:none">
+        Hi, ${user.fullName.split(" ")[0]} <i class="bi bi-person-circle"></i>
+      </a>
+      <button class="btn-ghost" onclick="signOut()">Sign Out</button>
+    `;
+  }
 });
 
 // ─── SHARE BUTTONS ───
@@ -189,20 +179,17 @@ function copyLink() {
 
 function shareTwitter() {
   const url = encodeURIComponent(window.location.href);
-  window.open(
-    `https://twitter.com/intent/tweet?url=${url}&text=Found a great provider on VerifiedNG!`,
-  );
+  window.open(`https://twitter.com/intent/tweet?url=${url}&text=Found a great provider on VerifiedNG!`);
 }
 
+// ─── HIRE REQUEST ───
 function submitHireRequest() {
   let isValid = true;
 
-  // Full Name
   const name = document.getElementById("hireName").value.trim();
   if (!name) {
     document.getElementById("hireName").classList.add("error");
-    document.getElementById("hireNameError").textContent =
-      "Please enter your full name";
+    document.getElementById("hireNameError").textContent = "Please enter your full name";
     document.getElementById("hireNameError").classList.add("show");
     isValid = false;
   } else {
@@ -211,19 +198,16 @@ function submitHireRequest() {
     document.getElementById("hireNameError").classList.remove("show");
   }
 
-  // Phone
   const phone = document.getElementById("hirePhone").value.trim();
   const phoneValid = /^0[7-9][0-1]\d{8}$/.test(phone);
   if (!phone) {
     document.getElementById("hirePhone").classList.add("error");
-    document.getElementById("hirePhoneError").textContent =
-      "Please enter your phone number";
+    document.getElementById("hirePhoneError").textContent = "Please enter your phone number";
     document.getElementById("hirePhoneError").classList.add("show");
     isValid = false;
   } else if (!phoneValid) {
     document.getElementById("hirePhone").classList.add("error");
-    document.getElementById("hirePhoneError").textContent =
-      "Enter a valid Nigerian number e.g. 08012345678";
+    document.getElementById("hirePhoneError").textContent = "Enter a valid Nigerian number e.g. 08012345678";
     document.getElementById("hirePhoneError").classList.add("show");
     isValid = false;
   } else {
@@ -232,12 +216,10 @@ function submitHireRequest() {
     document.getElementById("hirePhoneError").classList.remove("show");
   }
 
-  // Service
   const service = document.getElementById("modalServices").value;
   if (!service) {
     document.getElementById("modalServices").classList.add("error");
-    document.getElementById("hireServiceError").textContent =
-      "Please select a service";
+    document.getElementById("hireServiceError").textContent = "Please select a service";
     document.getElementById("hireServiceError").classList.add("show");
     isValid = false;
   } else {
@@ -246,18 +228,15 @@ function submitHireRequest() {
     document.getElementById("hireServiceError").classList.remove("show");
   }
 
-  // Description
   const desc = document.getElementById("hireDescription").value.trim();
   if (!desc) {
     document.getElementById("hireDescription").classList.add("error");
-    document.getElementById("hireDescError").textContent =
-      "Please describe what you need done";
+    document.getElementById("hireDescError").textContent = "Please describe what you need done";
     document.getElementById("hireDescError").classList.add("show");
     isValid = false;
   } else if (desc.length < 20) {
     document.getElementById("hireDescription").classList.add("error");
-    document.getElementById("hireDescError").textContent =
-      "Please give a bit more detail — at least 20 characters";
+    document.getElementById("hireDescError").textContent = "Please give a bit more detail — at least 20 characters";
     document.getElementById("hireDescError").classList.add("show");
     isValid = false;
   } else {
@@ -267,15 +246,14 @@ function submitHireRequest() {
   }
 
   if (!isValid) {
-    const btn = document.getElementById("hireSubmitBtn");
+    const btn = document.getElementById("modalSubmitBtn");
     btn.style.animation = "none";
-    btn.offsetHeight; // trigger reflow
+    btn.offsetHeight;
     btn.style.animation = "shake 0.4s ease";
     return;
   }
 
-  // All good — show success
-  const btn = document.getElementById("hireSubmitBtn");
+  const btn = document.getElementById("modalSubmitBtn");
   btn.textContent = "Sending Request...";
   btn.style.opacity = "0.7";
   btn.style.pointerEvents = "none";
@@ -283,7 +261,6 @@ function submitHireRequest() {
   setTimeout(() => {
     closeModal();
     alert("Hire request sent! The provider will contact you shortly.");
-    // Reset form
     document.getElementById("hireName").value = "";
     document.getElementById("hirePhone").value = "";
     document.getElementById("hireDescription").value = "";
@@ -292,21 +269,3 @@ function submitHireRequest() {
     btn.style.pointerEvents = "auto";
   }, 1500);
 }
-
-// UPDATE NAV BASED ON LOGIN STATE
-document.addEventListener("DOMContentLoaded", function () {
-  const user = getCurrentUser();
-  const navActions = document.querySelector(".nav-actions");
-
-  if (navActions) {
-    if (user) {
-      navActions.innerHTML = `
-        <a href="dashboard.html" class="btn-ghost" 
-          style="text-decoration:none">
-          Hi, ${user.fullName.split(" ")[0]} 👋
-        </a>
-        <button class="btn-ghost" onclick="signOut()">Sign Out</button>
-      `;
-    }
-  }
-});
