@@ -39,7 +39,7 @@ function submitForm() {
     skills.push(skill.textContent.trim());
   });
 
-  fetch("https://verifiedng-backend.onrender.com/api/auth/register", {
+  fetch(`${API_URL}/api/auth/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
