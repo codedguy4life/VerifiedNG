@@ -8,14 +8,17 @@
       href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap"
       rel="stylesheet" />
     <link rel="stylesheet" href="styles/homepage.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
   </head>
 
   <body>
     <!-- ANNOUNCEMENT BAR -->
     <div class="announcement">
-      🎉 We just launched Nationwide but active in Lagos most!
-      <span>Sign up free today</span> — first 100 providers get verified for
-      free.
+      <i class="bi bi-megaphone"></i> We just launched Nationwide but active in
+      Lagos most! <span>Sign up free today</span> — first 100 providers get
+      verified for free.
     </div>
 
     <!-- NAVIGATION -->
@@ -31,7 +34,7 @@
               id="navServiceInput"
               placeholder="Find Services" />
             <button class="btn-primary" onclick="handleNavSearch()">
-              Find 🔎
+              Find <i class="bi bi-search"></i>
             </button>
           </div>
         </li>
@@ -81,7 +84,7 @@
         </h1>
 
         <p>
-          Stop relying on guesswork and people that can't meetup the deadline.
+          Stop relying on guesswork and people that can't meet the deadline.
           VerifiedNG connects you with locally trusted, community-vouched
           teachers, plumbers, tailors, electricians, mechanics and more — right
           in your neighbourhood or in every corner of the country.
@@ -96,8 +99,10 @@
           <input
             type="text"
             id="locationInput"
-            placeholder="📍  Your area (e.g. Ogun, Calabar, Abuja, Lagos ...)" />
-          <button class="btn-primary" onclick="handleSearch()">Find 🔎</button>
+            placeholder="Your area (e.g. Ogun, Calabar, Abuja, Lagos ...)" />
+          <button class="btn-primary" onclick="handleSearch()">
+            Find <i class="bi bi-search"></i>
+          </button>
         </div>
 
         <div class="hero-stats">
@@ -141,13 +146,15 @@
               onclick="
                 window.location.href = 'all-providers-profile.html?id=9'
               ">
-              <div class="avatar green">💻</div>
+              <div class="avatar green"><i class="bi bi-laptop"></i></div>
               <button class="provider-info">
                 <h4>Miss. Mervelous O.</h4>
                 <div class="role">
                   Full Stack Website Developer · Lagos, Nigeria
                 </div>
-                <div class="verified-badge">✓ Verified</div>
+                <div class="verified-badge">
+                  <i class="bi bi-patch-check"></i> Verified
+                </div>
               </button>
             </div>
             <div class="provider-details">
@@ -177,7 +184,9 @@
                 ">
                 Hire Now
               </button>
-              <button class="btn-msg">Message</button>
+              <button class="btn-msg">
+                <i class="bi bi-chat-dots"></i> Message
+              </button>
             </div>
           </div>
 
@@ -203,11 +212,13 @@
               onclick="
                 window.location.href = 'all-providers-profile.html?id=7'
               ">
-              <div class="avatar green">🔧</div>
+              <div class="avatar green"><i class="bi bi-wrench"></i></div>
               <button class="provider-info">
                 <h4>Mr. Obasola S.O</h4>
                 <div class="role">Chief Mechanic · Lagos</div>
-                <div class="verified-badge">✓ Verified</div>
+                <div class="verified-badge">
+                  <i class="bi bi-patch-check"></i> Verified
+                </div>
               </button>
             </div>
             <div class="provider-details">
@@ -236,7 +247,9 @@
                 ">
                 Hire Now
               </button>
-              <button class="btn-msg">Message</button>
+              <button class="btn-msg">
+                <i class="bi bi-chat-dots"></i> Message
+              </button>
             </div>
           </div>
 
@@ -251,7 +264,7 @@
     <!-- TRUST BAR -->
     <div class="trust-bar">
       <div class="trust-item">
-        <span class="ti-icon">🛡️</span>
+        <span class="ti-icon"><i class="bi bi-shield-check"></i></span>
         <span
           ><strong>Community Verified</strong> — Every provider is
           professionally <em>vouched for</em> and <em>verified</em> by our
@@ -260,16 +273,16 @@
       </div>
       <div class="trust-divider"></div>
       <div class="trust-item">
-        <span class="ti-icon">📍</span>
+        <span class="ti-icon"><i class="bi bi-geo-alt-fill"></i></span>
         <span
           ><strong>Hyper-local</strong> — Find people in your exact
-          <em> area </em> and <em> farther </em> away — we cover every corner of
-          <em>Nigeria</em>
-        </span>
+          <em>area</em> and <em>farther</em> away — we cover every corner of
+          <em>Nigeria</em></span
+        >
       </div>
       <div class="trust-divider"></div>
       <div class="trust-item">
-        <span class="ti-icon">💬</span>
+        <span class="ti-icon"><i class="bi bi-chat-quote"></i></span>
         <span
           ><strong>Real Reviews</strong> — only from
           <em>verified customers</em></span
@@ -277,10 +290,10 @@
       </div>
       <div class="trust-divider"></div>
       <div class="trust-item">
-        <span class="ti-icon">⚡</span>
+        <span class="ti-icon"><i class="bi bi-lightning-charge"></i></span>
         <span
           ><strong>Fast Response</strong> — most providers reply
-          <em>as soon as possible </em></span
+          <em>as soon as possible</em></span
         >
       </div>
     </div>
@@ -304,7 +317,9 @@
         <div
           class="cat-card"
           onclick="window.location.href = 'search.html?service=Electrical'">
-          <span class="cat-icon">⚡</span>
+          <span class="cat-icon"
+            ><i class="bi bi-lightning-charge-fill"></i
+          ></span>
           <h4>Electrical</h4>
           <p>Wiring, installations, generators & solar systems</p>
           <span class="cat-count">280 providers</span>
@@ -312,7 +327,7 @@
         <div
           class="cat-card"
           onclick="window.location.href = 'search.html?service=Plumbing'">
-          <span class="cat-icon">🔧</span>
+          <span class="cat-icon"><i class="bi bi-wrench-adjustable"></i></span>
           <h4>Plumbing</h4>
           <p>Pipe repairs, installations, water systems & drainage</p>
           <span class="cat-count">340 providers</span>
@@ -320,7 +335,7 @@
         <div
           class="cat-card"
           onclick="window.location.href = 'search.html?service=Tutoring'">
-          <span class="cat-icon">📚</span>
+          <span class="cat-icon"><i class="bi bi-book"></i></span>
           <h4>Private Tutoring</h4>
           <p>WAEC, JAMB, primary, secondary & university levels</p>
           <span class="cat-count">520 providers</span>
@@ -328,7 +343,7 @@
         <div
           class="cat-card"
           onclick="window.location.href = 'search.html?service=Auto Mechanic'">
-          <span class="cat-icon">🚗</span>
+          <span class="cat-icon"><i class="bi bi-car-front"></i></span>
           <h4>Auto Mechanic</h4>
           <p>Repairs, servicing, diagnostics & mobile mechanics</p>
           <span class="cat-count">190 providers</span>
@@ -336,7 +351,7 @@
         <div
           class="cat-card"
           onclick="window.location.href = 'search.html?service=Cleaning'">
-          <span class="cat-icon">🧹</span>
+          <span class="cat-icon"><i class="bi bi-stars"></i></span>
           <h4>Cleaning</h4>
           <p>Home cleaning, deep cleaning, post-construction</p>
           <span class="cat-count">210 providers</span>
@@ -344,7 +359,7 @@
         <div
           class="cat-card"
           onclick="window.location.href = 'search.html?service=ContentCreator'">
-          <span class="cat-icon">📸</span>
+          <span class="cat-icon"><i class="bi bi-camera"></i></span>
           <h4>Photography</h4>
           <p>Events, portraits, weddings & commercial shoots</p>
           <span class="cat-count">165 providers</span>
@@ -352,7 +367,7 @@
         <div
           class="cat-card"
           onclick="window.location.href = 'search.html?service=Tailoring'">
-          <span class="cat-icon">✂️</span>
+          <span class="cat-icon"><i class="bi bi-scissors"></i></span>
           <h4>Tailoring</h4>
           <p>Bespoke fashion, alterations, native & English styles</p>
           <span class="cat-count">300 providers</span>
@@ -360,7 +375,7 @@
         <div
           class="cat-card"
           onclick="window.location.href = 'search.html?service=Catering'">
-          <span class="cat-icon">🍳</span>
+          <span class="cat-icon"><i class="bi bi-cup-hot"></i></span>
           <h4>Catering & Cooks</h4>
           <p>Private chefs, event catering & meal prep services</p>
           <span class="cat-count">155 providers</span>
@@ -439,7 +454,9 @@
               </div>
               <div class="phone-list">
                 <div class="phone-item">
-                  <div class="pi-avatar" style="background: #e6f9ee">⚡</div>
+                  <div class="pi-avatar" style="background: #e6f9ee">
+                    <i class="bi bi-lightning-charge"></i>
+                  </div>
                   <div class="pi-info">
                     <div class="pi-name">Olamide Obago</div>
                     <div class="pi-role">4.9 <sup>★★★★★</sup> · 118 jobs</div>
@@ -447,7 +464,9 @@
                   <div class="pi-price">₦Talk-Price</div>
                 </div>
                 <div class="phone-item">
-                  <div class="pi-avatar" style="background: #fff8ec">⚡</div>
+                  <div class="pi-avatar" style="background: #fff8ec">
+                    <i class="bi bi-lightning-charge"></i>
+                  </div>
                   <div class="pi-info">
                     <div class="pi-name">John Ugberikoko</div>
                     <div class="pi-role">4.8 <sup>★★★★★</sup> · 92 jobs</div>
@@ -455,7 +474,9 @@
                   <div class="pi-price">₦Talk-Price</div>
                 </div>
                 <div class="phone-item">
-                  <div class="pi-avatar" style="background: #eef3ff">⚡</div>
+                  <div class="pi-avatar" style="background: #eef3ff">
+                    <i class="bi bi-lightning-charge"></i>
+                  </div>
                   <div class="pi-info">
                     <div class="pi-name">Yusuf Aminu</div>
                     <div class="pi-role">4.7 <sup>★★★★★</sup> · 73 jobs</div>
@@ -488,12 +509,14 @@
           class="provider-card"
           onclick="window.location.href = 'all-providers-profile.html?id=7'">
           <div class="pc-header">
-            <div class="pc-avatar">🔧</div>
+            <div class="pc-avatar"><i class="bi bi-wrench"></i></div>
             <div class="pc-info">
               <h4>Mr. Obasola S.O</h4>
               <div class="pc-role">Chief Mechanic</div>
             </div>
-            <div class="pc-verified">✓ Verified</div>
+            <div class="pc-verified">
+              <i class="bi bi-patch-check"></i> Verified
+            </div>
           </div>
           <div class="pc-body">
             <div class="pc-rating">
@@ -521,12 +544,14 @@
           class="provider-card"
           onclick="window.location.href = 'all-providers-profile.html?id=8'">
           <div class="pc-header gold-bg">
-            <div class="pc-avatar">📚</div>
+            <div class="pc-avatar"><i class="bi bi-book"></i></div>
             <div class="pc-info">
               <h4>Miss Pulchritude</h4>
               <div class="pc-role">WAEC & JAMB Tutor</div>
             </div>
-            <div class="pc-verified">✓ Verified</div>
+            <div class="pc-verified">
+              <i class="bi bi-patch-check"></i> Verified
+            </div>
           </div>
           <div class="pc-body">
             <div class="pc-rating">
@@ -555,12 +580,14 @@
           class="provider-card"
           onclick="window.location.href = 'all-providers-profile.html?id=4'">
           <div class="pc-header dark-bg">
-            <div class="pc-avatar">🚗</div>
+            <div class="pc-avatar"><i class="bi bi-camera"></i></div>
             <div class="pc-info">
               <h4>Miss Haleemah Amope</h4>
               <div class="pc-role">Content Creator</div>
             </div>
-            <div class="pc-verified">✓ Verified</div>
+            <div class="pc-verified">
+              <i class="bi bi-patch-check"></i> Verified
+            </div>
           </div>
           <div class="pc-body">
             <div class="pc-rating">
@@ -610,7 +637,7 @@
             the price was less than expected. No funny business."
           </p>
           <div class="testi-author">
-            <div class="testi-avatar">👩🏾</div>
+            <div class="testi-avatar"><i class="bi bi-person-circle"></i></div>
             <div class="testi-info">
               <div class="t-name">Iya Haleemah</div>
               <div class="t-loc">Ilorin, Kwara State</div>
@@ -626,7 +653,7 @@
             tripled in 3 months. This app is a blessing."
           </p>
           <div class="testi-author">
-            <div class="testi-avatar">👨🏾</div>
+            <div class="testi-avatar"><i class="bi bi-person-circle"></i></div>
             <div class="testi-info">
               <div class="t-name">Mr. Suleiman C.</div>
               <div class="t-loc">Verified Provider · Yaba, Lagos</div>
@@ -642,10 +669,10 @@
             system really works — you know who you're dealing with."
           </p>
           <div class="testi-author">
-            <div class="testi-avatar">👨🏾</div>
+            <div class="testi-avatar"><i class="bi bi-person-circle"></i></div>
             <div class="testi-info">
               <div class="t-name">Misturah Dad</div>
-              <div class="t-loc">Ibadan City,Oyo</div>
+              <div class="t-loc">Ibadan City, Oyo</div>
             </div>
           </div>
         </div>
@@ -669,7 +696,7 @@
           <button
             class="btn-outline-white"
             onclick="window.location.href = 'signup-customer.html'">
-            List Your Skills
+            List Your Skills — It's Free
           </button>
         </div>
       </div>
@@ -682,16 +709,14 @@
           <a href="#" class="logo">Verified<span>NG</span></a>
           <p>
             Connecting Nigerians with trusted, home-based community-verified
-            local service providers. Building trust, one job at a time, and
-            helping skilled providers grow their business and serve their
-            communities better.
+            local service providers. Building trust, one job at a time.
           </p>
           <div class="footer-social">
-            <a href="#" class="social-btn1">W</a>
-            <a href="#" class="social-btn2">𝕏</a>
-            <a href="#" class="social-btn3">in</a>
-            <a href="#" class="social-btn4">f</a>
-            <a href="#" class="social-btn5">t</a>
+            <a href="#" class="social-btn1"><i class="bi bi-whatsapp"></i></a>
+            <a href="#" class="social-btn2"><i class="bi bi-twitter-x"></i></a>
+            <a href="#" class="social-btn3"><i class="bi bi-linkedin"></i></a>
+            <a href="#" class="social-btn4"><i class="bi bi-facebook"></i></a>
+            <a href="#" class="social-btn5"><i class="bi bi-tiktok"></i></a>
           </div>
         </div>
 
@@ -738,10 +763,11 @@
         </div>
       </div>
     </footer>
+
     <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
     <script src="js/homepage.js"></script>
     <script src="js/providers-data.js"></script>
     <script src="js/index-hire.js"></script>
-    <script src="js/auth.js"></script>
   </body>
 </html>
