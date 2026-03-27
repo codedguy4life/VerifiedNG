@@ -7,6 +7,9 @@
     <link
       href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap"
       rel="stylesheet" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
     <link rel="stylesheet" href="styles/all-providers-profile.css" />
   </head>
   <body>
@@ -58,11 +61,12 @@
             </div>
             <div class="meta-divider"></div>
             <div class="meta-item">
-              📍 <strong id="providerLocation">—</strong>
+              <i class="bi bi-geo-alt"></i>
+              <strong id="providerLocation">—</strong>
             </div>
             <div class="meta-divider"></div>
             <div class="meta-item">
-              ⚡
+              <i class="bi bi-lightning-charge"></i>
               <strong id="providerAvailText" style="color: #00b85e">—</strong>
             </div>
           </div>
@@ -80,7 +84,9 @@
             <div class="per" id="panelPer">per job</div>
           </div>
           <button class="hire-btn" onclick="openModal()">Hire Now</button>
-          <button class="msg-btn">💬 Send Message</button>
+          <button class="msg-btn">
+            <i class="bi bi-chat-dots"></i> Send Message
+          </button>
         </div>
       </div>
     </div>
@@ -114,31 +120,31 @@
       <div class="profile-left">
         <!-- BIO -->
         <div class="section-card">
-          <h3><span>👤</span> About Me</h3>
+          <h3><i class="bi bi-person"></i>About Me</h3>
           <p class="bio-text" id="providerBio">Loading...</p>
         </div>
         <!-- EXPERIENCE -->
         <div class="section-card">
-          <h3><span>💼</span> Work Experience</h3>
+          <h3><i class="bi bi-briefcase"></i>Work Experience</h3>
           <div class="experience-list" id="providerExperience"></div>
         </div>
 
         <!-- SKILLS -->
         <div class="section-card">
-          <h3><span>🛠️</span> Skills & Specialisations</h3>
+          <h3><i class="bi bi-tools"></i>Skills & Specialisations</h3>
           <div class="skills-grid" id="providerSkills"></div>
         </div>
 
         <!-- GALLERY -->
         <div class="section-card">
-          <h3><span>📸</span> Past Work Gallery</h3>
+          <h3><i class="bi bi-images"></i> Past Work Gallery</h3>
           <div class="gallery-grid" id="providerGallery"></div>
         </div>
 
         <!-- REVIEWS -->
         <div class="section-card">
           <div class="reviews-header">
-            <h3><span>⭐</span> Customer Reviews</h3>
+            <h3><i class="bi bi-star-fill"></i> Customer Reviews</h3>
             <div class="overall-rating">
               <div class="big-rating" id="reviewRating">—</div>
               <div class="rating-breakdown">
@@ -210,12 +216,14 @@
         <div class="sidebar-card">
           <h4>Book or Contact</h4>
           <button class="contact-hire-btn" onclick="openModal()">
-            🤝 Hire Now
+            <i class="bi bi-hand-thumbs-up"></i> Hire Now
           </button>
-          <button class="contact-msg-btn">💬 Send Message</button>
+          <button class="contact-msg-btn">
+            <i class="bi bi-chat-dots"></i> Send Message
+          </button>
           <p class="contact-note">
-            🔒 Your details are safe. VerifiedNG never shares your personal
-            information.
+            <i class="bi bi-shiel-lock"></i> Your details are safe. VerifiedNG
+            never shares your personal information.
           </p>
         </div>
 
@@ -223,27 +231,33 @@
           <h4>Quick Info</h4>
           <div class="quick-info">
             <div class="qi-row">
-              <span class="qi-label">📍 Location</span
+              <span class="qi-label"
+                ><i class="bi bi-geo-alt"></i> Location</span
               ><span class="qi-value" id="sidebarLocation">—</span>
             </div>
             <div class="qi-row">
-              <span class="qi-label">⚡ Availability</span
+              <span class="qi-label"
+                ><i class="bi bi-lighning-charge"></i> Availability</span
               ><span class="qi-value green" id="sidebarAvailability">—</span>
             </div>
             <div class="qi-row">
-              <span class="qi-label">💼 Jobs Done</span
+              <span class="qi-label"
+                ><i class="bi bi-briefcase"></i> Jobs Done</span
               ><span class="qi-value" id="sidebarJobs">—</span>
             </div>
             <div class="qi-row">
-              <span class="qi-label">🏆 Experience</span
+              <span class="qi-label"
+                ><i class="bi bi-award"></i> Experience</span
               ><span class="qi-value" id="sidebarExperience">—</span>
             </div>
             <div class="qi-row">
-              <span class="qi-label">⭐ Rating</span
+              <span class="qi-label"
+                ><i class="bi bi-star-fill"></i> Rating</span
               ><span class="qi-value" id="sidebarRating">—</span>
             </div>
             <div class="qi-row">
-              <span class="qi-label">📅 Member Since</span
+              <span class="qi-label"
+                ><i class="bi bi-calendar"></i> Member Since</span
               ><span class="qi-value">2024</span>
             </div>
           </div>
