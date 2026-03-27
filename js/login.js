@@ -85,7 +85,7 @@ function handleLogin(e) {
   btn.classList.add("loading");
 
   // Send to real backend
- fetch(`${API_URL}/api/auth/register`, {
+  fetch(`${API_URL}/api/auth/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

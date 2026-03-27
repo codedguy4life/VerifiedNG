@@ -1,2 +1,2 @@
 // BACKEND URL — change this one line when URL changes
-const API_URL = "https://your-render-url.onrender.com";
+const API_URL = "https://verifiedng-backend.onrender.com";
