@@ -8,7 +8,7 @@ const providers = [
     name: "Mrs. Oyindamola",
     role: "Caterer & Baking Expert",
     category: "Catering",
-    icon: "bi bi-egg-fried",
+    icon: "bi bi-cup-hot",
     avatarBg: "#e6f9ee",
     rating: 4.9,
     reviewCount: 247,
@@ -37,7 +37,7 @@ const providers = [
     verified: true,
     experience: [
       {
-        icon: "bi bi-egg-fried",
+        icon: "bi bi-cup-hot",
         title: "Master Caterer — Self Employed",
         desc: "Running her own catering business serving events of all sizes across Kwara State and nationwide delivery.",
         date: "2019 — Present · 5 years",
@@ -49,7 +49,7 @@ const providers = [
         date: "2017 — 2019 · 2 years",
       },
       {
-        icon: "bi bi-egg-fried",
+        icon: "bi bi-fire",
         title: "Cook — KWASU",
         desc: "Started career cooking for student events and local functions in Malete.",
         date: "2014 — 2017 · 3 years",
@@ -57,7 +57,7 @@ const providers = [
     ],
     reviews: [
       {
-        avatar: "bi bi-person",
+        avatar: "bi bi-person-circle",
         name: "Hajia Bintu",
         date: "3 days ago · Ilorin, Kwara",
         stars: "★★★★★",
@@ -65,7 +65,7 @@ const providers = [
         tag: "Wedding Catering",
       },
       {
-        avatar: "bi bi-person",
+        avatar: "bi bi-person-circle",
         name: "Mr. Raheem",
         date: "2 weeks ago · Offa, Kwara",
         stars: "★★★★★",
@@ -73,7 +73,7 @@ const providers = [
         tag: "Corporate Event",
       },
       {
-        avatar: "bi bi-person",
+        avatar: "bi bi-person-circle",
         name: "Mrs. Pulch",
         date: "1 month ago · Malete",
         stars: "★★★★★",
@@ -82,11 +82,11 @@ const providers = [
       },
     ],
     gallery: [
-      "bi bi-image",
-      "bi bi-camera",
-      "bi bi-egg-fried",
+      "bi bi-cup-hot",
+      "bi bi-cake",
       "bi bi-fire",
       "bi bi-basket",
+      "bi bi-box",
       "bi bi-stars",
     ],
   },
@@ -125,7 +125,7 @@ const providers = [
     verified: true,
     experience: [
       {
-        icon: "🧠",
+        icon: "bi bi-lightbulb",
         title: "Life Coach & Counselor — Self Employed",
         desc: "Running independent counseling and life coaching practice, serving clients across Delta State and online nationwide.",
         date: "2020 — Present · 4 years",
@@ -137,7 +137,7 @@ const providers = [
         date: "2018 — 2020 · 2 years",
       },
       {
-        icon: "🎓",
+        icon: "bi bi-mortarboard",
         title: "Volunteer Mentor — Delta State Youth Centre",
         desc: "Mentored young people on career development and goal setting.",
         date: "2016 — 2018 · 2 years",
@@ -145,7 +145,7 @@ const providers = [
     ],
     reviews: [
       {
-        avatar: "bi bi-person",
+        avatar: "bi bi-person-circle",
         name: "Chisom A.",
         date: "1 week ago · Warri",
         stars: "★★★★★",
@@ -153,7 +153,7 @@ const providers = [
         tag: "Career Counseling",
       },
       {
-        avatar: "bi bi-person",
+        avatar: "bi bi-person-circle",
         name: "Emeka's Dad",
         date: "3 weeks ago · Asaba",
         stars: "★★★★★",
@@ -161,7 +161,7 @@ const providers = [
         tag: "Academic Guidance",
       },
       {
-        avatar: "bi bi-person",
+        avatar: "bi bi-person-circle",
         name: "Blessing O.",
         date: "2 months ago · Lagos",
         stars: "★★★★★",
@@ -169,7 +169,14 @@ const providers = [
         tag: "Life Coaching",
       },
     ],
-    gallery: ["bi bi-book", "🧠", "🎯", "💡", "🌟", "✅"],
+    gallery: [
+      "bi bi-book",
+      "bi bi-lightbulb",
+      "bi bi-bullseye",
+      "bi bi-stars",
+      "bi bi-award",
+      "bi bi-check-circle",
+    ],
   },
 
   {
@@ -177,7 +184,7 @@ const providers = [
     name: "Mr. Fatai",
     role: "Auto Mechanic",
     category: "Auto Mechanic",
-    icon: "bi bi-lightning-charge",
+    icon: "bi bi-car-front",
     avatarBg: "#eef3ff",
     rating: 4.8,
     reviewCount: 312,
@@ -218,7 +225,7 @@ const providers = [
         date: "2000 — 2010 · 10 years",
       },
       {
-        icon: "🎓",
+        icon: "bi bi-mortarboard",
         title: "Mechanic — Mushin Auto Workshop",
         desc: "Trained under one of Lagos' most respected master mechanics. Learned the full trade from diagnostics to fabrication.",
         date: "1987 — 2000 · 13 years",
@@ -226,7 +233,7 @@ const providers = [
     ],
     reviews: [
       {
-        avatar: "bi bi-person",
+        avatar: "bi bi-person-circle",
         name: "Tunde A.",
         date: "1 week ago · Ikeja",
         stars: "★★★★★",
@@ -234,7 +241,7 @@ const providers = [
         tag: "Engine Repair",
       },
       {
-        avatar: "bi bi-person",
+        avatar: "bi bi-person-circle",
         name: "Mrs. Bello",
         date: "2 weeks ago · Ogba",
         stars: "★★★★★",
@@ -242,7 +249,7 @@ const providers = [
         tag: "Emergency Repair",
       },
       {
-        avatar: "bi bi-person",
+        avatar: "bi bi-person-circle",
         name: "Alhaji Musa",
         date: "1 month ago · Maryland",
         stars: "★★★★★",
@@ -253,10 +260,10 @@ const providers = [
     gallery: [
       "bi bi-car-front",
       "bi bi-tools",
-      "bi bi-camera",
-      "🛻",
-      "bi bi-briefcase",
-      "🔩",
+      "bi bi-wrench",
+      "bi bi-gear",
+      "bi bi-speedometer",
+      "bi bi-trophy",
     ],
   },
 
@@ -296,17 +303,17 @@ const providers = [
       {
         icon: "bi bi-camera",
         title: "Content Creator & Social Media Strategist — Self Employed",
-        desc: "Creating content and managing social media for small businesses across Lagos. Specialising in Instagram, TikTok and Facebook ads.",
+        desc: "Creating content and managing social media for small businesses across Lagos.",
         date: "2021 — Present · 3 years",
       },
       {
-        icon: "🎥",
+        icon: "bi bi-camera-video",
         title: "Video Editor — MediaHouse Lagos",
         desc: "Edited promotional videos, brand content and social media reels for local and international clients.",
         date: "2020 — 2021 · 1 year",
       },
       {
-        icon: "🎓",
+        icon: "bi bi-mortarboard",
         title: "Photography Intern — Clicks Studio",
         desc: "Trained in professional photography, lighting and post-production editing.",
         date: "2019 — 2020 · 1 year",
@@ -314,7 +321,7 @@ const providers = [
     ],
     reviews: [
       {
-        avatar: "bi bi-person",
+        avatar: "bi bi-person-circle",
         name: "Adeola B.",
         date: "5 days ago · Lekki",
         stars: "★★★★★",
@@ -322,7 +329,7 @@ const providers = [
         tag: "Social Media Management",
       },
       {
-        avatar: "bi bi-person",
+        avatar: "bi bi-person-circle",
         name: "Tunde Fabrics",
         date: "3 weeks ago · Ikeja",
         stars: "★★★★★",
@@ -330,7 +337,7 @@ const providers = [
         tag: "Product Photography",
       },
       {
-        avatar: "bi bi-person",
+        avatar: "bi bi-person-circle",
         name: "Mama Chichi",
         date: "2 months ago · Surulere",
         stars: "★★★★★",
@@ -338,7 +345,14 @@ const providers = [
         tag: "Video Content",
       },
     ],
-    gallery: ["bi bi-camera", "🎥", "📱", "✨", "🎨", "📊"],
+    gallery: [
+      "bi bi-camera",
+      "bi bi-camera-video",
+      "bi bi-phone",
+      "bi bi-palette",
+      "bi bi-graph-up",
+      "bi bi-stars",
+    ],
   },
 
   {
@@ -381,13 +395,13 @@ const providers = [
         date: "2018 — Present · 6 years",
       },
       {
-        icon: "☀️",
+        icon: "bi bi-sun",
         title: "Solar Technician — GreenPower Lagos",
         desc: "Installed and maintained solar power systems for homes and businesses across Lagos State.",
         date: "2016 — 2018 · 2 years",
       },
       {
-        icon: "🎓",
+        icon: "bi bi-mortarboard",
         title: "Electrical Apprentice — Apapa Technical Workshop",
         desc: "Completed full electrical engineering apprenticeship under licensed master electrician.",
         date: "2013 — 2016 · 3 years",
@@ -395,31 +409,38 @@ const providers = [
     ],
     reviews: [
       {
-        avatar: "bi bi-person",
+        avatar: "bi bi-person-circle",
         name: "Mrs. Fashola",
         date: "2 days ago · Victoria Island",
         stars: "★★★★★",
-        text: "He installed a complete solar system in our 4-bedroom house in one day. The work is neat, professional and the system has been running perfectly for 3 months. Highly recommended.",
+        text: "He installed a complete solar system in our 4-bedroom house in one day. The work is neat, professional and the system has been running perfectly for 3 months.",
         tag: "Solar Installation",
       },
       {
-        avatar: "bi bi-person",
+        avatar: "bi bi-person-circle",
         name: "Oga Biodun",
         date: "2 weeks ago · Apapa",
         stars: "★★★★★",
-        text: "Called him at 11pm for an electrical emergency and he arrived within 45 minutes. Fixed the fault, explained everything clearly, and the charge was very fair. This is the definition of reliable.",
+        text: "Called him at 11pm for an electrical emergency and he arrived within 45 minutes. Fixed the fault, explained everything clearly, and the charge was very fair.",
         tag: "Emergency Repair",
       },
       {
-        avatar: "bi bi-person",
+        avatar: "bi bi-person-circle",
         name: "Manager, Crest Hotel",
         date: "1 month ago · Ikeja",
         stars: "★★★★★",
-        text: "Rewired our entire hotel floor during renovation. Zero disruptions to operations, completed ahead of schedule and the work passed inspection first time. We will use him for all future projects.",
+        text: "Rewired our entire hotel floor during renovation. Zero disruptions to operations, completed ahead of schedule and the work passed inspection first time.",
         tag: "Commercial Wiring",
       },
     ],
-    gallery: ["bi bi-lightning-charge", "☀️", "🔌", "💡", "🏠", "🔋"],
+    gallery: [
+      "bi bi-lightning-charge",
+      "bi bi-sun",
+      "bi bi-plug",
+      "bi bi-lightbulb",
+      "bi bi-house",
+      "bi bi-battery-charging",
+    ],
   },
 
   {
@@ -427,7 +448,7 @@ const providers = [
     name: "Mr. Aminu Yusuf",
     role: "Professional Cleaner",
     category: "Cleaning",
-    icon: "bi bi-bucket",
+    icon: "bi bi-stars",
     avatarBg: "#eef3ff",
     rating: 4.6,
     reviewCount: 74,
@@ -438,7 +459,7 @@ const providers = [
     availability: "away",
     availText: "Away — back tomorrow",
     tags: ["Deep Clean", "Post-Construction", "Office"],
-    bio: "Professional cleaning service with my own trained team and equipment. We handle residential homes, offices and post-construction sites across Lagos. Fast, thorough and affordable.\n\nWe use professional-grade cleaning products and bring all equipment — you don't need to provide anything. Every job is done to the highest standard with attention to detail.\n\nWe also offer eco-friendly cleaning options for clients who prefer it. Flexible scheduling available including weekends. No job is too big or too small.",
+    bio: "Professional cleaning service with my own trained team and equipment. We handle residential homes, offices and post-construction sites across Lagos. Fast, thorough and affordable.\n\nWe use professional-grade cleaning products and bring all equipment — you don't need to provide anything. Every job is done to the highest standard with attention to detail.\n\nWe also offer eco-friendly cleaning options for clients who prefer it. Flexible scheduling available including weekends.",
     skills: [
       "Deep Cleaning",
       "Office Cleaning",
@@ -456,13 +477,13 @@ const providers = [
     verified: true,
     experience: [
       {
-        icon: "🧹",
+        icon: "bi bi-stars",
         title: "Professional Cleaning Service — Self Employed",
         desc: "Running a team-based cleaning service for homes, offices and post-construction sites across Lagos.",
         date: "2022 — Present · 2 years",
       },
       {
-        icon: "🏢",
+        icon: "bi bi-building",
         title: "Office Cleaner — CleanPro Lagos",
         desc: "Managed daily and deep cleaning operations for commercial office spaces in Lagos Island.",
         date: "2020 — 2022 · 2 years",
@@ -470,7 +491,7 @@ const providers = [
     ],
     reviews: [
       {
-        avatar: "bi bi-person",
+        avatar: "bi bi-person-circle",
         name: "Mrs. Okonkwo",
         date: "1 week ago · Lekki Phase 1",
         stars: "★★★★★",
@@ -478,7 +499,7 @@ const providers = [
         tag: "Deep Cleaning",
       },
       {
-        avatar: "bi bi-person",
+        avatar: "bi bi-person-circle",
         name: "Site Manager, Magodo Project",
         date: "3 weeks ago · Magodo",
         stars: "★★★★★",
@@ -486,7 +507,7 @@ const providers = [
         tag: "Post-Construction",
       },
       {
-        avatar: "bi bi-person",
+        avatar: "bi bi-person-circle",
         name: "Admin Manager, Lagos Office",
         date: "2 months ago · Victoria Island",
         stars: "★★★★★",
@@ -494,7 +515,14 @@ const providers = [
         tag: "Office Cleaning",
       },
     ],
-    gallery: ["🧹", "🏠", "🏢", "✨", "🧴", "💧"],
+    gallery: [
+      "bi bi-stars",
+      "bi bi-house",
+      "bi bi-building",
+      "bi bi-droplet",
+      "bi bi-shield-check",
+      "bi bi-award",
+    ],
   },
 
   {
@@ -502,7 +530,7 @@ const providers = [
     name: "Mr. Obasola S.O",
     role: "Chief Mechanic",
     category: "Auto Mechanic",
-    icon: "bi bi-person",
+    icon: "bi bi-wrench",
     avatarBg: "#e6f9ee",
     rating: 4.9,
     reviewCount: 247,
@@ -531,7 +559,7 @@ const providers = [
     verified: true,
     experience: [
       {
-        icon: "🔩",
+        icon: "bi bi-wrench",
         title: "Chief Mechanic — Obasola Auto Workshop",
         desc: "Owns and operates a full-service auto workshop in Yaba. Handles all vehicle brands with a team of trained mechanics.",
         date: "2016 — Present · 8 years",
@@ -543,7 +571,7 @@ const providers = [
         date: "2012 — 2016 · 4 years",
       },
       {
-        icon: "🎓",
+        icon: "bi bi-mortarboard",
         title: "Technical Trainee — NNPC Workshop",
         desc: "Completed advanced automotive engineering training at the NNPC technical workshop.",
         date: "2010 — 2012 · 2 years",
@@ -551,31 +579,38 @@ const providers = [
     ],
     reviews: [
       {
-        avatar: "bi bi-person",
+        avatar: "bi bi-person-circle",
         name: "Barrister Okafor",
         date: "4 days ago · Yaba",
         stars: "★★★★★",
-        text: "He diagnosed a fault that 3 other mechanics missed. Fixed it in 2 hours. The car has been running perfectly for 4 months since. His knowledge is exceptional and his honesty is rare in Lagos.",
+        text: "He diagnosed a fault that 3 other mechanics missed. Fixed it in 2 hours. The car has been running perfectly for 4 months since. His knowledge is exceptional.",
         tag: "Vehicle Diagnostics",
       },
       {
-        avatar: "bi bi-person",
+        avatar: "bi bi-person-circle",
         name: "Mrs. Adeyemi",
         date: "2 weeks ago · Agege",
         stars: "★★★★★",
-        text: "Brought my car for full servicing and gearbox repair. The work was thorough, the price was fair and he called me with updates throughout the process. Excellent customer service.",
+        text: "Brought my car for full servicing and gearbox repair. The work was thorough, the price was fair and he called me with updates throughout the process.",
         tag: "Full Servicing",
       },
       {
-        avatar: "bi bi-person",
+        avatar: "bi bi-person-circle",
         name: "Alhaji Rasheed",
         date: "1 month ago · Surulere",
         stars: "★★★★★",
-        text: "Been taking all my family's cars to him for 5 years. He has saved us hundreds of thousands of naira by giving honest assessments instead of recommending unnecessary repairs. A man of integrity.",
+        text: "Been taking all my family's cars to him for 5 years. He has saved us hundreds of thousands of naira by giving honest assessments. A man of integrity.",
         tag: "General Repairs",
       },
     ],
-    gallery: ["🔩", "bi bi-car-front", "⚙️", "bi bi-tools", "🛻", "🏆"],
+    gallery: [
+      "bi bi-wrench",
+      "bi bi-car-front",
+      "bi bi-gear",
+      "bi bi-tools",
+      "bi bi-speedometer",
+      "bi bi-trophy",
+    ],
   },
 
   {
@@ -594,7 +629,7 @@ const providers = [
     availability: "busy",
     availText: "Busy — replies soon",
     tags: ["Native Wear", "English Style", "Alterations"],
-    bio: "Fashion designer and tailor with 5 years of experience creating stunning native and English wear. Known for delivering exactly what the client envisions — sometimes even better.\n\nI work closely with each client from fabric selection to final fitting. Every stitch is done with care and precision. I never rush a job because quality is non-negotiable for me.\n\nI handle native agbada, babariga, aso-oke, English suits, dresses, alterations, bridal wear and corporate uniforms. Based in Ogun State but I can work with clients across Lagos.",
+    bio: "Fashion designer and tailor with 5 years of experience creating stunning native and English wear. Known for delivering exactly what the client envisions — sometimes even better.\n\nI work closely with each client from fabric selection to final fitting. Every stitch is done with care and precision. I never rush a job because quality is non-negotiable for me.\n\nI handle native agbada, babariga, aso-oke, English suits, dresses, alterations, bridal wear and corporate uniforms.",
     skills: [
       "Native Wear",
       "English Style",
@@ -612,19 +647,19 @@ const providers = [
     verified: true,
     experience: [
       {
-        icon: "✂️",
+        icon: "bi bi-scissors",
         title: "Fashion Designer — Pulchritude Styles",
         desc: "Running her own fashion design studio in Ogun State, creating custom native and English wear for clients across Nigeria.",
         date: "2019 — Present · 5 years",
       },
       {
-        icon: "👗",
+        icon: "bi bi-bag",
         title: "Tailor — Elegance Fashion House",
         desc: "Worked as a senior tailor creating bespoke outfits for weddings, events and corporate clients.",
         date: "2017 — 2019 · 2 years",
       },
       {
-        icon: "🎓",
+        icon: "bi bi-mortarboard",
         title: "Fashion Design Trainee — Ogun Style Academy",
         desc: "Completed professional fashion design training with specialisation in native and contemporary styles.",
         date: "2015 — 2017 · 2 years",
@@ -632,31 +667,38 @@ const providers = [
     ],
     reviews: [
       {
-        avatar: "bi bi-person",
+        avatar: "bi bi-person-circle",
         name: "Sis Folake",
         date: "1 week ago · Abeokuta",
         stars: "★★★★★",
-        text: "She made my complete aso-ebi outfit for my sister's wedding and I received so many compliments I lost count. The fitting was perfect and she delivered 3 days before the deadline. Absolutely exceptional.",
+        text: "She made my complete aso-ebi outfit for my sister's wedding and I received so many compliments I lost count. The fitting was perfect and she delivered 3 days before the deadline.",
         tag: "Native Wear",
       },
       {
-        avatar: "bi bi-person",
+        avatar: "bi bi-person-circle",
         name: "Mr. Adewale",
         date: "3 weeks ago · Lagos",
         stars: "★★★★★",
-        text: "Had her make 3 agbada sets for my graduation. She captured my style perfectly even from just a description and photos. The embroidery work is stunning. Will definitely come back.",
+        text: "Had her make 3 agbada sets for my graduation. She captured my style perfectly even from just a description and photos. The embroidery work is stunning.",
         tag: "Men's Native Wear",
       },
       {
-        avatar: "bi bi-person",
+        avatar: "bi bi-person-circle",
         name: "Bride Tolani",
         date: "2 months ago · Ogun State",
         stars: "★★★★★",
-        text: "She made my wedding dress and all bridesmaid outfits. The attention to detail was incredible. She made me feel so beautiful on my special day. Best tailor in Ogun State without question.",
+        text: "She made my wedding dress and all bridesmaid outfits. The attention to detail was incredible. She made me feel so beautiful on my special day.",
         tag: "Bridal Wear",
       },
     ],
-    gallery: ["✂️", "👗", "🪡", "👔", "💍", "🌸"],
+    gallery: [
+      "bi bi-scissors",
+      "bi bi-bag",
+      "bi bi-palette",
+      "bi bi-suit-heart",
+      "bi bi-gem",
+      "bi bi-stars",
+    ],
   },
 
   {
@@ -664,7 +706,7 @@ const providers = [
     name: "Miss Marvelous O.",
     role: "Software Developer",
     category: "Programming",
-    icon: "💻",
+    icon: "bi bi-laptop",
     avatarBg: "#eef3ff",
     rating: 4.7,
     reviewCount: 130,
@@ -695,19 +737,19 @@ const providers = [
     verified: true,
     experience: [
       {
-        icon: "💻",
+        icon: "bi bi-laptop",
         title: "Full Stack Developer — TechHub Lagos",
         desc: "Building complex web applications and system integrations for clients across Africa and internationally.",
         date: "2023 — Present · 1 year",
       },
       {
-        icon: "🌐",
+        icon: "bi bi-globe",
         title: "Web Developer — Digital Solutions Agency",
         desc: "Developed and maintained multiple React and Node.js applications for local and international clients.",
         date: "2022 — 2023 · 1 year",
       },
       {
-        icon: "🎓",
+        icon: "bi bi-mortarboard",
         title: "Junior Developer — Freelance",
         desc: "Started career building websites and web applications for local businesses across Ogun and Lagos States.",
         date: "2021 — 2022 · 1 year",
@@ -715,23 +757,23 @@ const providers = [
     ],
     reviews: [
       {
-        avatar: "bi bi-person",
+        avatar: "bi bi-person-circle",
         name: "Mrs. Asiwaju",
         date: "2 weeks ago · FCT, Abuja",
         stars: "★★★★★",
-        text: "I know nothing about coding but she made the whole process easy and stress-free. She built our company website from scratch and it looks stunning. Professional, patient and very talented.",
+        text: "I know nothing about coding but she made the whole process easy and stress-free. She built our company website from scratch and it looks stunning.",
         tag: "Website Development",
       },
       {
-        avatar: "bi bi-person",
+        avatar: "bi bi-person-circle",
         name: "Alhaji Zeeno",
         date: "1 month ago · Surulere",
         stars: "★★★★★",
-        text: "Fixed critical backend bugs that two other developers couldn't solve. She documented everything clearly and trained my team on the solution. Exceptional technical knowledge.",
+        text: "Fixed critical backend bugs that two other developers couldn't solve. She documented everything clearly and trained my team on the solution.",
         tag: "Backend Development",
       },
       {
-        avatar: "bi bi-person",
+        avatar: "bi bi-person-circle",
         name: "Anifowoshe",
         date: "2 months ago · Yaba",
         stars: "★★★★★",
@@ -739,7 +781,14 @@ const providers = [
         tag: "API Integration",
       },
     ],
-    gallery: ["💻", "🖥️", "📱", "⚙️", "🔐", "🚀"],
+    gallery: [
+      "bi bi-laptop",
+      "bi bi-display",
+      "bi bi-phone",
+      "bi bi-gear",
+      "bi bi-shield-lock",
+      "bi bi-rocket",
+    ],
   },
 
   {
@@ -782,13 +831,13 @@ const providers = [
         date: "2019 — Present · 5 years",
       },
       {
-        icon: "🏗️",
+        icon: "bi bi-building",
         title: "Plumber — Kaduna Construction Company",
         desc: "Handled plumbing installations for new residential and commercial building projects.",
         date: "2017 — 2019 · 2 years",
       },
       {
-        icon: "🎓",
+        icon: "bi bi-mortarboard",
         title: "Plumbing Apprentice — Mallam Isa Workshop",
         desc: "Learned the full plumbing trade from a master plumber with over 20 years experience.",
         date: "2015 — 2017 · 2 years",
@@ -796,23 +845,23 @@ const providers = [
     ],
     reviews: [
       {
-        avatar: "bi bi-person",
+        avatar: "bi bi-person-circle",
         name: "Mrs. Uche",
         date: "1 week ago · Kaduna",
         stars: "★★★★★",
-        text: "He fixed a major pipe burst in my kitchen quickly and cleanly. No mess left behind, the repair is solid and the price was very fair. Will definitely call him again.",
+        text: "He fixed a major pipe burst in my kitchen quickly and cleanly. No mess left behind, the repair is solid and the price was very fair.",
         tag: "Emergency Repair",
       },
       {
-        avatar: "bi bi-person",
+        avatar: "bi bi-person-circle",
         name: "Site Engineer, GRA Project",
         date: "1 month ago · Kaduna GRA",
         stars: "★★★★★",
-        text: "He did all the plumbing for our 8-unit estate. Very professional, completed on schedule and the work passed inspection without any issues. Highly recommended for large projects.",
+        text: "He did all the plumbing for our 8-unit estate. Very professional, completed on schedule and the work passed inspection without any issues.",
         tag: "Commercial Plumbing",
       },
       {
-        avatar: "bi bi-person",
+        avatar: "bi bi-person-circle",
         name: "Mr. Danladi",
         date: "2 months ago · Tudun Wada",
         stars: "★★★★★",
@@ -820,6 +869,13 @@ const providers = [
         tag: "Drainage Repair",
       },
     ],
-    gallery: ["bi bi-tools", "🏠", "💧", "🚿", "🛁", "⚙️"],
+    gallery: [
+      "bi bi-tools",
+      "bi bi-house",
+      "bi bi-droplet",
+      "bi bi-water",
+      "bi bi-wrench-adjustable",
+      "bi bi-gear",
+    ],
   },
 ];
