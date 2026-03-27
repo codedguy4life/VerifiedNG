@@ -8,7 +8,7 @@ const providers = [
     name: "Mrs. Oyindamola",
     role: "Caterer & Baking Expert",
     category: "Catering",
-    emoji: "👩🏽‍🍳",
+    emoji: "bi bi-egg-fried",
     avatarBg: "#e6f9ee",
     rating: 4.9,
     reviewCount: 247,
@@ -37,7 +37,7 @@ const providers = [
     verified: true,
     experience: [
       {
-        icon: "👩🏽‍🍳",
+        icon: "bi bi-egg-fried",
         title: "Master Caterer — Self Employed",
         desc: "Running her own catering business serving events of all sizes across Kwara State and nationwide delivery.",
         date: "2019 — Present · 5 years",
@@ -57,7 +57,7 @@ const providers = [
     ],
     reviews: [
       {
-        avatar: "👩🏾",
+        avatar: "bi bi-person",
         name: "Hajia Bintu",
         date: "3 days ago · Ilorin, Kwara",
         stars: "★★★★★",
@@ -65,7 +65,7 @@ const providers = [
         tag: "Wedding Catering",
       },
       {
-        avatar: "👨🏾",
+        avatar: "bi bi-person",
         name: "Mr. Raheem",
         date: "2 weeks ago · Offa, Kwara",
         stars: "★★★★★",
@@ -73,7 +73,7 @@ const providers = [
         tag: "Corporate Event",
       },
       {
-        avatar: "👩🏾",
+        avatar: "bi bi-person",
         name: "Mrs. Pulch",
         date: "1 month ago · Malete",
         stars: "★★★★★",
@@ -89,7 +89,7 @@ const providers = [
     name: "Miss Gift",
     role: "Counselor & Life Coach",
     category: "Tutoring",
-    emoji: "📚",
+    emoji: "bi bi-book",
     avatarBg: "#fff8ec",
     rating: 5.0,
     reviewCount: 183,
@@ -124,7 +124,7 @@ const providers = [
         date: "2020 — Present · 4 years",
       },
       {
-        icon: "📚",
+        icon: "bi bi-book",
         title: "Academic Counselor — Warri Secondary School",
         desc: "Guided students through WAEC preparation, university applications and career choices.",
         date: "2018 — 2020 · 2 years",
@@ -138,7 +138,7 @@ const providers = [
     ],
     reviews: [
       {
-        avatar: "👩🏾",
+        avatar: "bi bi-person",
         name: "Chisom A.",
         date: "1 week ago · Warri",
         stars: "★★★★★",
@@ -146,7 +146,7 @@ const providers = [
         tag: "Career Counseling",
       },
       {
-        avatar: "👨🏾",
+        avatar: "bi bi-person",
         name: "Emeka's Dad",
         date: "3 weeks ago · Asaba",
         stars: "★★★★★",
@@ -154,7 +154,7 @@ const providers = [
         tag: "Academic Guidance",
       },
       {
-        avatar: "👩🏾",
+        avatar: "bi bi-person",
         name: "Blessing O.",
         date: "2 months ago · Lagos",
         stars: "★★★★★",
@@ -162,7 +162,7 @@ const providers = [
         tag: "Life Coaching",
       },
     ],
-    gallery: ["📚", "🧠", "🎯", "💡", "🌟", "✅"],
+    gallery: ["bi bi-book", "🧠", "🎯", "💡", "🌟", "✅"],
   },
 
   {
@@ -170,7 +170,7 @@ const providers = [
     name: "Mr. Fatai",
     role: "Auto Mechanic",
     category: "Auto Mechanic",
-    emoji: "🚗",
+    emoji: "bi bi-car-front",
     avatarBg: "#eef3ff",
     rating: 4.8,
     reviewCount: 312,
@@ -199,7 +199,7 @@ const providers = [
     verified: true,
     experience: [
       {
-        icon: "🚗",
+        icon: "bi bi-car-front",
         title: "Senior Mobile Mechanic — Self Employed",
         desc: "Running independent mobile mechanic service across Ikeja and Lagos, specialising in Japanese car brands.",
         date: "2010 — Present · 14 years",
@@ -219,7 +219,7 @@ const providers = [
     ],
     reviews: [
       {
-        avatar: "👨🏾",
+        avatar: "bi bi-person",
         name: "Tunde A.",
         date: "1 week ago · Ikeja",
         stars: "★★★★★",
@@ -227,7 +227,7 @@ const providers = [
         tag: "Engine Repair",
       },
       {
-        avatar: "👩🏾",
+        avatar: "bi bi-person",
         name: "Mrs. Bello",
         date: "2 weeks ago · Ogba",
         stars: "★★★★★",
@@ -235,7 +235,7 @@ const providers = [
         tag: "Emergency Repair",
       },
       {
-        avatar: "👨🏾",
+        avatar: "bi bi-person",
         name: "Alhaji Musa",
         date: "1 month ago · Maryland",
         stars: "★★★★★",
@@ -243,7 +243,7 @@ const providers = [
         tag: "Full Servicing",
       },
     ],
-    gallery: ["🚗", "🔧", "⚙️", "🛻", "💿", "🔩"],
+    gallery: ["bi bi-car-front", "🔧", "⚙️", "🛻", "💿", "🔩"],
   },
 
   {
@@ -251,7 +251,7 @@ const providers = [
     name: "Miss Haleemah Amope",
     role: "Content Creator",
     category: "ContentCreator",
-    emoji: "📸",
+    emoji: "bi bi-camera",
     avatarBg: "#ffeef3",
     rating: 4.7,
     reviewCount: 98,
@@ -280,7 +280,7 @@ const providers = [
     verified: true,
     experience: [
       {
-        icon: "📸",
+        icon: "bi bi-camera",
         title: "Content Creator & Social Media Strategist — Self Employed",
         desc: "Creating content and managing social media for small businesses across Lagos. Specialising in Instagram, TikTok and Facebook ads.",
         date: "2021 — Present · 3 years",
@@ -300,7 +300,7 @@ const providers = [
     ],
     reviews: [
       {
-        avatar: "👩🏾",
+        avatar: "bi bi-person",
         name: "Adeola B.",
         date: "5 days ago · Lekki",
         stars: "★★★★★",
@@ -308,7 +308,7 @@ const providers = [
         tag: "Social Media Management",
       },
       {
-        avatar: "👨🏾",
+        avatar: "bi bi-person",
         name: "Tunde Fabrics",
         date: "3 weeks ago · Ikeja",
         stars: "★★★★★",
@@ -316,7 +316,7 @@ const providers = [
         tag: "Product Photography",
       },
       {
-        avatar: "👩🏾",
+        avatar: "bi bi-person",
         name: "Mama Chichi",
         date: "2 months ago · Surulere",
         stars: "★★★★★",
@@ -324,7 +324,7 @@ const providers = [
         tag: "Video Content",
       },
     ],
-    gallery: ["📸", "🎥", "📱", "✨", "🎨", "📊"],
+    gallery: ["bi bi-camera", "🎥", "📱", "✨", "🎨", "📊"],
   },
 
   {
@@ -332,7 +332,7 @@ const providers = [
     name: "Alhaji Suleiman",
     role: "Electrical Engineer",
     category: "Electrical",
-    emoji: "⚡",
+    emoji: "bi bi-lightning-charge",
     avatarBg: "#fffbec",
     rating: 4.9,
     reviewCount: 156,
@@ -361,7 +361,7 @@ const providers = [
     verified: true,
     experience: [
       {
-        icon: "⚡",
+        icon: "bi bi-lightning-charge",
         title: "Licensed Electrician — Self Employed",
         desc: "Handling residential and commercial electrical projects across Lagos. Specialising in solar and generator systems.",
         date: "2018 — Present · 6 years",
@@ -381,7 +381,7 @@ const providers = [
     ],
     reviews: [
       {
-        avatar: "👩🏾",
+        avatar: "bi bi-person",
         name: "Mrs. Fashola",
         date: "2 days ago · Victoria Island",
         stars: "★★★★★",
@@ -389,7 +389,7 @@ const providers = [
         tag: "Solar Installation",
       },
       {
-        avatar: "👨🏾",
+        avatar: "bi bi-person",
         name: "Oga Biodun",
         date: "2 weeks ago · Apapa",
         stars: "★★★★★",
@@ -397,7 +397,7 @@ const providers = [
         tag: "Emergency Repair",
       },
       {
-        avatar: "👨🏾",
+        avatar: "bi bi-person",
         name: "Manager, Crest Hotel",
         date: "1 month ago · Ikeja",
         stars: "★★★★★",
@@ -405,7 +405,7 @@ const providers = [
         tag: "Commercial Wiring",
       },
     ],
-    gallery: ["⚡", "☀️", "🔌", "💡", "🏠", "🔋"],
+    gallery: ["bi bi-lightning-charge", "☀️", "🔌", "💡", "🏠", "🔋"],
   },
 
   {
@@ -456,7 +456,7 @@ const providers = [
     ],
     reviews: [
       {
-        avatar: "👩🏾",
+        avatar: "bi bi-person",
         name: "Mrs. Okonkwo",
         date: "1 week ago · Lekki Phase 1",
         stars: "★★★★★",
@@ -464,7 +464,7 @@ const providers = [
         tag: "Deep Cleaning",
       },
       {
-        avatar: "👨🏾",
+        avatar: "bi bi-person",
         name: "Site Manager, Magodo Project",
         date: "3 weeks ago · Magodo",
         stars: "★★★★★",
@@ -472,7 +472,7 @@ const providers = [
         tag: "Post-Construction",
       },
       {
-        avatar: "👩🏾",
+        avatar: "bi bi-person",
         name: "Admin Manager, Lagos Office",
         date: "2 months ago · Victoria Island",
         stars: "★★★★★",
@@ -523,7 +523,7 @@ const providers = [
         date: "2016 — Present · 8 years",
       },
       {
-        icon: "🚗",
+        icon: "bi bi-car-front",
         title: "Senior Mechanic — Coscharis Motors",
         desc: "Worked as senior mechanic for one of Nigeria's largest car dealerships handling premium vehicle brands.",
         date: "2012 — 2016 · 4 years",
@@ -537,7 +537,7 @@ const providers = [
     ],
     reviews: [
       {
-        avatar: "👨🏾",
+        avatar: "bi bi-person",
         name: "Barrister Okafor",
         date: "4 days ago · Yaba",
         stars: "★★★★★",
@@ -545,7 +545,7 @@ const providers = [
         tag: "Vehicle Diagnostics",
       },
       {
-        avatar: "👩🏾",
+        avatar: "bi bi-person",
         name: "Mrs. Adeyemi",
         date: "2 weeks ago · Agege",
         stars: "★★★★★",
@@ -553,7 +553,7 @@ const providers = [
         tag: "Full Servicing",
       },
       {
-        avatar: "👨🏾",
+        avatar: "bi bi-person",
         name: "Alhaji Rasheed",
         date: "1 month ago · Surulere",
         stars: "★★★★★",
@@ -561,7 +561,7 @@ const providers = [
         tag: "General Repairs",
       },
     ],
-    gallery: ["🔩", "🚗", "⚙️", "🔧", "🛻", "🏆"],
+    gallery: ["🔩", "bi bi-car-front", "⚙️", "🔧", "🛻", "🏆"],
   },
 
   {
@@ -618,7 +618,7 @@ const providers = [
     ],
     reviews: [
       {
-        avatar: "👩🏾",
+        avatar: "bi bi-person",
         name: "Sis Folake",
         date: "1 week ago · Abeokuta",
         stars: "★★★★★",
@@ -626,7 +626,7 @@ const providers = [
         tag: "Native Wear",
       },
       {
-        avatar: "👨🏾",
+        avatar: "bi bi-person",
         name: "Mr. Adewale",
         date: "3 weeks ago · Lagos",
         stars: "★★★★★",
@@ -634,7 +634,7 @@ const providers = [
         tag: "Men's Native Wear",
       },
       {
-        avatar: "👩🏾",
+        avatar: "bi bi-person",
         name: "Bride Tolani",
         date: "2 months ago · Ogun State",
         stars: "★★★★★",
@@ -701,7 +701,7 @@ const providers = [
     ],
     reviews: [
       {
-        avatar: "👩🏾",
+        avatar: "bi bi-person",
         name: "Mrs. Asiwaju",
         date: "2 weeks ago · FCT, Abuja",
         stars: "★★★★★",
@@ -709,7 +709,7 @@ const providers = [
         tag: "Website Development",
       },
       {
-        avatar: "👨🏾",
+        avatar: "bi bi-person",
         name: "Alhaji Zeeno",
         date: "1 month ago · Surulere",
         stars: "★★★★★",
@@ -717,7 +717,7 @@ const providers = [
         tag: "Backend Development",
       },
       {
-        avatar: "👨🏾",
+        avatar: "bi bi-person",
         name: "Anifowoshe",
         date: "2 months ago · Yaba",
         stars: "★★★★★",
@@ -782,7 +782,7 @@ const providers = [
     ],
     reviews: [
       {
-        avatar: "👩🏾",
+        avatar: "bi bi-person",
         name: "Mrs. Uche",
         date: "1 week ago · Kaduna",
         stars: "★★★★★",
@@ -790,7 +790,7 @@ const providers = [
         tag: "Emergency Repair",
       },
       {
-        avatar: "👨🏾",
+        avatar: "bi bi-person",
         name: "Site Engineer, GRA Project",
         date: "1 month ago · Kaduna GRA",
         stars: "★★★★★",
@@ -798,7 +798,7 @@ const providers = [
         tag: "Commercial Plumbing",
       },
       {
-        avatar: "👨🏾",
+        avatar: "bi bi-person",
         name: "Mr. Danladi",
         date: "2 months ago · Tudun Wada",
         stars: "★★★★★",
