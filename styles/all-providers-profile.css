@@ -188,6 +188,13 @@ nav {
   flex-shrink: 0;
   position: relative;
 }
+
+.profile-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
 .online-dot {
   position: absolute;
   bottom: 8px;
@@ -534,6 +541,12 @@ nav {
   margin-bottom: 20px;
   padding-bottom: 16px;
   border-bottom: 1px solid var(--border);
+}
+.reviewer-avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
 }
 .reviews-header h3 {
   margin-bottom: 0;

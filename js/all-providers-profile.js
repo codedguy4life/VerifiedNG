@@ -31,9 +31,10 @@ window.onload = function () {
   // Avatar
   const avatar = document.getElementById("providerAvatar");
   avatar.style.background = provider.avatarBg || "#e6f9ee";
-  avatar.innerHTML =
-    `<i class="${provider.icon}"></i>` +
-    `<div class="online-dot ${provider.availability}" id="onlineDot"></div>`;
+  avatar.innerHTML = `
+  <img src="${provider.image}" alt="${provider.name}" class="profile-img" />
+  <div class="online-dot ${provider.availability}" id="onlineDot"></div>
+`;
 
   // Hero info
   document.getElementById("providerName").textContent = provider.name;
@@ -90,7 +91,7 @@ window.onload = function () {
       <div class="review-card">
         <div class="review-top">
           <div class="reviewer">
-            <div class="reviewer-avatar">${r.avatar}</div>
+            <div class="reviewer-avatar"><i class="${r.avatar}"></div>
             <div class="reviewer-info">
               <div class="r-name">${r.name}</div>
               <div class="r-date">${r.date}</div>
