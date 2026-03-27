@@ -81,7 +81,14 @@ const providers = [
         tag: "Baking",
       },
     ],
-    gallery: ["bi bi-image", "bi bi-camera", "🍗", "🥘", "🍱", "🎉"],
+    gallery: [
+      "bi bi-image",
+      "bi bi-camera",
+      "bi bi-egg-fried",
+      "bi bi-fire",
+      "bi bi-basket",
+      "bi bi-stars",
+    ],
   },
 
   {

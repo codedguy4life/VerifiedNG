@@ -39,7 +39,7 @@ function renderCards(list) {
       (p, i) => `
         <div class="provider-card" style="animation-delay: ${i * 0.07}s" onclick="window.location.href='all-providers-profile.html?id=${p.id}'">
           <div class="card-top">
-            <div class="card-avatar" style="background:${p.avatarBg}">${p.emoji}</div>
+            <div class="card-avatar" style="background:${p.avatarBg}">${p.icon}</div>
             <div class="card-info">
               <div class="card-name-row">
                 <span class="card-name">${p.name}</span>
