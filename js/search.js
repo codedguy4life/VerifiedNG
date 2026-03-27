@@ -27,7 +27,9 @@ function renderCards(list) {
 
   document.getElementById("resultCount").textContent = list.length;
 
-  grid.innerHTML = list.map((p, i) => `
+  grid.innerHTML = list
+    .map(
+      (p, i) => `
     <div class="provider-card" style="animation-delay: ${i * 0.07}s" onclick="window.location.href='all-providers-profile.html?id=${p.id}'">
       <div class="card-top">
         <div class="card-avatar" style="background:${p.avatarBg}">
@@ -42,7 +44,7 @@ function renderCards(list) {
           <div class="card-rating">
             <span class="stars">★★★★★</span>
             <span class="score">${p.rating}</span>
-            <span class="reviews">(${p.reviews} reviews)</span>
+            <span class="reviews">(${p.reviewCount} reviews)</span>
           </div>
           <div class="card-location">
             <i class="bi bi-geo-alt-fill"></i> ${p.location}
@@ -88,23 +90,31 @@ function renderCards(list) {
         </div>
       </div>
     </div>
-  `).join("");
+  `,
+    )
+    .join("");
 }
 
 function applyFilters() {
   let filtered = [...providers];
 
-  const checkedCategories = [...document.querySelectorAll("#categoryFilter input:checked")].map((i) => i.value);
+  const checkedCategories = [
+    ...document.querySelectorAll("#categoryFilter input:checked"),
+  ].map((i) => i.value);
   if (checkedCategories.length > 0) {
     filtered = filtered.filter((p) => checkedCategories.includes(p.category));
   }
 
-  const checkedLocations = [...document.querySelectorAll("#locationFilter input:checked")].map((i) => i.value);
+  const checkedLocations = [
+    ...document.querySelectorAll("#locationFilter input:checked"),
+  ].map((i) => i.value);
   if (checkedLocations.length > 0) {
     filtered = filtered.filter((p) => checkedLocations.includes(p.locationKey));
   }
 
-  const minRating = parseFloat(document.querySelector('input[name="rating"]:checked')?.value || 0);
+  const minRating = parseFloat(
+    document.querySelector('input[name="rating"]:checked')?.value || 0,
+  );
   if (minRating > 0) {
     filtered = filtered.filter((p) => p.rating >= minRating);
   }
@@ -117,7 +127,9 @@ function applyFilters() {
 }
 
 function clearFilters() {
-  document.querySelectorAll('input[type="checkbox"]').forEach((cb) => (cb.checked = false));
+  document
+    .querySelectorAll('input[type="checkbox"]')
+    .forEach((cb) => (cb.checked = false));
   document.querySelector('input[name="rating"][value="0"]').checked = true;
   applyFilters();
 }
@@ -125,7 +137,9 @@ function clearFilters() {
 function setView(view, btn) {
   currentView = view;
   const grid = document.getElementById("resultsGrid");
-  document.querySelectorAll(".view-btn").forEach((b) => b.classList.remove("active"));
+  document
+    .querySelectorAll(".view-btn")
+    .forEach((b) => b.classList.remove("active"));
   btn.classList.add("active");
   grid.className = view === "list" ? "results-grid list-view" : "results-grid";
 }
@@ -162,7 +176,8 @@ window.onload = function () {
   const { service, location } = getUrlParams();
 
   document.getElementById("searchTermDisplay").textContent = `"${service}"`;
-  document.getElementById("locationDisplay").innerHTML = `<i class="bi bi-geo-alt-fill"></i> ${location}`;
+  document.getElementById("locationDisplay").innerHTML =
+    `<i class="bi bi-geo-alt-fill"></i> ${location}`;
   document.getElementById("activeServiceTag").innerHTML =
     `<i class="bi bi-tools"></i> ${service} <button onclick="removeServiceFilter()">✕</button>`;
 
@@ -172,13 +187,17 @@ window.onload = function () {
     locTag.style.display = "inline-flex";
   }
 
-  document.getElementById("navServiceInput").value = service !== "All Services" ? service : "";
-  document.getElementById("navLocationInput").value = location !== "Nigeria" ? location : "";
+  document.getElementById("navServiceInput").value =
+    service !== "All Services" ? service : "";
+  document.getElementById("navLocationInput").value =
+    location !== "Nigeria" ? location : "";
 
   if (service && service !== "All Services") {
-    document.querySelectorAll("#categoryFilter input[type='checkbox']").forEach((cb) => {
-      if (cb.value.toLowerCase() === service.toLowerCase()) cb.checked = true;
-    });
+    document
+      .querySelectorAll("#categoryFilter input[type='checkbox']")
+      .forEach((cb) => {
+        if (cb.value.toLowerCase() === service.toLowerCase()) cb.checked = true;
+      });
   }
 
   renderCards(providers);
