@@ -243,7 +243,14 @@ const providers = [
         tag: "Full Servicing",
       },
     ],
-    gallery: ["bi bi-car-front", "bi bi-tools", "⚙️", "🛻", "💿", "🔩"],
+    gallery: [
+      "bi bi-car-front",
+      "bi bi-tools",
+      "bi bi-camera",
+      "🛻",
+      "bi bi-briefcase",
+      "🔩",
+    ],
   },
 
   {

@@ -137,7 +137,9 @@ window.onload = function () {
         .map(
           (e) => `
     <div class="exp-item">
-      <div class="exp-icon">${e.icon}</div>
+      <div class="exp-icon">
+  <i class="${e.icon}"></i>
+</div>
       <div class="exp-info">
         <h4>${e.title}</h4>
         <p>${e.desc}</p>
