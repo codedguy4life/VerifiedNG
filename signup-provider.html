@@ -7,6 +7,9 @@
     <link
       href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap"
       rel="stylesheet" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
     <link rel="stylesheet" href="styles/signup-provider.css" />
   </head>
   <body>
@@ -157,7 +160,9 @@
             <div class="form-group">
               <label>Profile Photo</label>
               <label class="upload-area" for="profilePhoto">
-                <div class="up-icon" id="profileIcon">🤳</div>
+                <div class="up-icon" id="profileIcon">
+                  <i class="bi bi-person-bounding-box"></i>
+                </div>
                 <div class="up-title" id="profileTitle">
                   Upload a clear photo of yourself
                 </div>
@@ -286,7 +291,9 @@
             <div class="form-group">
               <label>Work Gallery (optional)</label>
               <label class="upload-area" for="galleryUpload">
-                <div class="up-icon">🖼️</div>
+                <div class="up-icon" id="profileIcon">
+                  <i class="bi bi-images"></i>
+                </div>
                 <div class="up-title">Upload photos of your past work</div>
                 <div class="up-sub">
                   Profiles with work photos get 3x more enquiries · Up to 6
@@ -321,7 +328,9 @@
             <div class="form-group">
               <label>Government ID</label>
               <label class="upload-area" for="idUpload">
-                <div class="up-icon" id="idIcon">🪪</div>
+                <div class="up-icon" id="idIcon">
+                  <i class="bi bi-card-heading"></i>
+                </div>
                 <div class="up-title" id="idTitle">
                   Upload your NIN, Voter's Card, or Driver's Licence, or any
                   Vadi ID card
@@ -402,7 +411,7 @@
                   type="button"
                   class="toggle-pass"
                   onclick="togglePass('providerPass')">
-                  👁️
+                  <i class="bi bi-eye"></i>
                 </button>
               </div>
             </div>
@@ -417,7 +426,7 @@
                   type="button"
                   class="toggle-pass"
                   onclick="togglePass('providerPass2')">
-                  👁️
+                  <i class="bi bi-eye"></i>
                 </button>
               </div>
             </div>
@@ -453,7 +462,7 @@
       <!-- ─── SUCCESS SCREEN ─── -->
       <div class="form-step" id="step5">
         <div class="success-screen">
-          <div class="success-icon">🎉</div>
+          <div class="success-icon"><i class="bi bi-patch-check-fill"></i></div>
           <h2>Application Submitted!</h2>
           <p>
             Welcome to VerifiedNG. Your provider application is being reviewed.
