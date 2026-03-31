@@ -135,7 +135,13 @@
               <div class="a-icon"><i class="bi bi-house"></i></div>
               <div class="a-label">Go Home</div>
             </a>
-            <a href="#" class="action-btn">
+            <a
+              href="#"
+              class="action-btn"
+              onclick="
+                openEditProfile();
+                return false;
+              ">
               <div class="a-icon"><i class="bi bi-pencil"></i></div>
               <div class="a-label">Edit Profile</div>
             </a>
@@ -166,6 +172,189 @@
               <div class="activity-time">Start by searching for a service</div>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+    <!-- EDIT PROFILE MODAL -->
+    <div
+      id="editModal"
+      style="
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+      ">
+      <div
+        style="
+          background: white;
+          border-radius: 16px;
+          padding: 32px;
+          width: 90%;
+          max-width: 500px;
+          max-height: 90vh;
+          overflow-y: auto;
+        ">
+        <h3 style="font-family: Syne, sans-serif; margin-bottom: 20px">
+          Edit Profile
+        </h3>
+
+        <div style="margin-bottom: 16px">
+          <label
+            style="
+              display: block;
+              margin-bottom: 6px;
+              font-size: 0.85rem;
+              color: #888;
+            "
+            >Full Name</label
+          >
+          <input
+            id="editFullName"
+            type="text"
+            style="
+              width: 100%;
+              padding: 10px;
+              border: 1px solid #ddd;
+              border-radius: 8px;
+              font-family:
+                DM Sans,
+                sans-serif;
+            " />
+        </div>
+        <div style="margin-bottom: 16px">
+          <label
+            style="
+              display: block;
+              margin-bottom: 6px;
+              font-size: 0.85rem;
+              color: #888;
+            "
+            >Phone Number</label
+          >
+          <input
+            id="editPhone"
+            type="tel"
+            style="
+              width: 100%;
+              padding: 10px;
+              border: 1px solid #ddd;
+              border-radius: 8px;
+              font-family:
+                DM Sans,
+                sans-serif;
+            " />
+        </div>
+        <div style="margin-bottom: 16px">
+          <label
+            style="
+              display: block;
+              margin-bottom: 6px;
+              font-size: 0.85rem;
+              color: #888;
+            "
+            >State</label
+          >
+          <input
+            id="editState"
+            type="text"
+            style="
+              width: 100%;
+              padding: 10px;
+              border: 1px solid #ddd;
+              border-radius: 8px;
+              font-family:
+                DM Sans,
+                sans-serif;
+            " />
+        </div>
+        <div style="margin-bottom: 16px">
+          <label
+            style="
+              display: block;
+              margin-bottom: 6px;
+              font-size: 0.85rem;
+              color: #888;
+            "
+            >City / Area</label
+          >
+          <input
+            id="editCity"
+            type="text"
+            style="
+              width: 100%;
+              padding: 10px;
+              border: 1px solid #ddd;
+              border-radius: 8px;
+              font-family:
+                DM Sans,
+                sans-serif;
+            " />
+        </div>
+        <div style="margin-bottom: 16px">
+          <label
+            style="
+              display: block;
+              margin-bottom: 6px;
+              font-size: 0.85rem;
+              color: #888;
+            "
+            >Bio</label
+          >
+          <textarea
+            id="editBio"
+            rows="4"
+            style="
+              width: 100%;
+              padding: 10px;
+              border: 1px solid #ddd;
+              border-radius: 8px;
+              font-family:
+                DM Sans,
+                sans-serif;
+              resize: vertical;
+            "></textarea>
+        </div>
+
+        <div style="display: flex; gap: 12px; margin-top: 8px">
+          <button
+            onclick="saveProfile()"
+            id="saveProfileBtn"
+            style="
+              flex: 1;
+              background: #1a1a2e;
+              color: white;
+              border: none;
+              padding: 12px;
+              border-radius: 8px;
+              cursor: pointer;
+              font-family:
+                DM Sans,
+                sans-serif;
+            ">
+            Save Changes
+          </button>
+          <button
+            onclick="closeEditProfile()"
+            style="
+              flex: 1;
+              background: #f0f0f0;
+              color: #1a1a2e;
+              border: none;
+              padding: 12px;
+              border-radius: 8px;
+              cursor: pointer;
+              font-family:
+                DM Sans,
+                sans-serif;
+            ">
+            Cancel
+          </button>
         </div>
       </div>
     </div>

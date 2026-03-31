@@ -1,3 +1,62 @@
+// Fetch real providers from backend and merge with static data
+async function loadRealProviders() {
+  try {
+    const response = await fetch(`${API_URL}/api/providers`);
+    const data = await response.json();
+
+    if (data.providers && data.providers.length > 0) {
+      // Convert DB providers to match our display format
+      const dbProviders = data.providers.map((p, index) => ({
+        id: "db_" + p._id,
+        name: p.fullName,
+        role: p.category || "Service Provider",
+        category: p.category || "Other",
+        icon: getCategoryIcon(p.category),
+        avatarBg: "#e6f9ee",
+        rating: 4.5,
+        reviewCount: 0,
+        jobs: 0,
+        experienceYears: "New",
+        location: p.city ? `${p.city}, ${p.state}` : p.state || "Nigeria",
+        locationKey: p.state || "Nigeria",
+        availability: "online",
+        availText: "Available Now",
+        tags: p.skills ? p.skills.slice(0, 3) : [p.category || "Service"],
+        bio: p.bio || "Verified provider on VerifiedNG.",
+        price: "₦Talk-Price",
+        per: "/job",
+        verified: false,
+        reviews: [],
+        gallery: [],
+        experience: [],
+        skills: p.skills || [],
+      }));
+
+      // Add real providers to beginning of array
+      providers.unshift(...dbProviders);
+    }
+  } catch (error) {
+    console.log("Could not load real providers:", error);
+  }
+}
+
+// Helper to get icon based on category
+function getCategoryIcon(category) {
+  const icons = {
+    Plumbing: "bi bi-tools",
+    Electrical: "bi bi-lightning-charge",
+    "Auto Mechanic": "bi bi-car-front",
+    Tutoring: "bi bi-book",
+    Cleaning: "bi bi-stars",
+    Photography: "bi bi-camera",
+    Tailoring: "bi bi-scissors",
+    Catering: "bi bi-cup-hot",
+    Programming: "bi bi-laptop",
+    ContentCreator: "bi bi-camera-video",
+  };
+  return icons[category] || "bi bi-person-workspace";
+}
+
 // ─── SEARCH PAGE JS ───
 
 let currentView = "grid";
@@ -172,7 +231,10 @@ function closeFilters() {
   document.getElementById("filterDrawer").classList.remove("open");
 }
 
-window.onload = function () {
+window.onload = async function () {
+  // Load real providers first
+  await loadRealProviders();
+
   const { service, location } = getUrlParams();
 
   document.getElementById("searchTermDisplay").textContent = `"${service}"`;
