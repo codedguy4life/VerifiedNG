@@ -41,7 +41,7 @@ function saveProfile() {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
-      authorization: token,
+      authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({
       fullName: document.getElementById("editFullName").value,

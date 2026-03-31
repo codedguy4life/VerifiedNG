@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Become a Provider — VerifiedNG</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap"
+      rel="stylesheet" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+    <link rel="stylesheet" href="styles/signup-provider.css" />
+  </head>
+  <body>
+    <nav>
+      <a href="index.html" class="logo"
+        >Verified<span>NG</span> <sup>BETA</sup></a
+      >
+      <div class="nav-right">
+        <a href="dashboard.html">Back to Dashboard</a>
+      </div>
+    </nav>
+
+    <div class="main-content">
+      <div class="page-header">
+        <div class="page-tag">Upgrade Account</div>
+        <h1>Become a Verified Provider</h1>
+        <p>
+          You already have an account — just tell us about your skills and we'll
+          upgrade you to a provider.
+        </p>
+      </div>
+
+      <div class="form-card">
+        <h3>Your Skills & Services</h3>
+
+        <div class="form-fields">
+          <div class="form-group">
+            <label>Your Main Category</label>
+            <select id="categoryInput">
+              <option value="" disabled selected>
+                What service do you offer?
+              </option>
+              <option>Programming</option>
+              <option>Plumbing</option>
+              <option>Electrical</option>
+              <option>Auto Mechanic</option>
+              <option>Tutoring</option>
+              <option>Cleaning</option>
+              <option>Photography</option>
+              <option>Tailoring</option>
+              <option>Catering</option>
+              <option>Content Creator</option>
+              <option>Graphic Designer</option>
+              <option>Carpenter</option>
+              <option>Painter</option>
+              <option>Driver</option>
+              <option>Other</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Specific Skills (select all that apply)</label>
+            <div class="skills-picker" id="skillsPicker">
+              <div class="skill-option" onclick="toggleSkill(this)">
+                Engine Repair
+              </div>
+              <div class="skill-option" onclick="toggleSkill(this)">
+                Diagnostics
+              </div>
+              <div class="skill-option" onclick="toggleSkill(this)">
+                Solar Systems
+              </div>
+              <div class="skill-option" onclick="toggleSkill(this)">
+                Generator Repair
+              </div>
+              <div class="skill-option" onclick="toggleSkill(this)">
+                Pipe Installation
+              </div>
+              <div class="skill-option" onclick="toggleSkill(this)">
+                WAEC Tutoring
+              </div>
+              <div class="skill-option" onclick="toggleSkill(this)">
+                JAMB Tutoring
+              </div>
+              <div class="skill-option" onclick="toggleSkill(this)">
+                Wedding Photography
+              </div>
+              <div class="skill-option" onclick="toggleSkill(this)">
+                Native Wear
+              </div>
+              <div class="skill-option" onclick="toggleSkill(this)">
+                Event Catering
+              </div>
+              <div class="skill-option" onclick="toggleSkill(this)">
+                Social Media
+              </div>
+              <div class="skill-option" onclick="toggleSkill(this)">
+                Deep Cleaning
+              </div>
+              <div class="skill-option" onclick="toggleSkill(this)">
+                Mobile Service
+              </div>
+              <div class="skill-option" onclick="toggleSkill(this)">
+                Home Visits
+              </div>
+              <div class="skill-option" onclick="toggleSkill(this)">
+                Web Development
+              </div>
+              <div class="skill-option" onclick="toggleSkill(this)">
+                Mobile App
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Tell Customers About Yourself</label>
+            <textarea
+              id="bioInput"
+              rows="5"
+              placeholder="Describe your experience, what makes you different, and why customers should choose you..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Community Voucher Name</label>
+            <input
+              type="text"
+              id="voucherName"
+              placeholder="Name of someone who can vouch for you" />
+          </div>
+
+          <div class="form-group">
+            <label>Voucher's Phone Number</label>
+            <input
+              type="tel"
+              id="voucherPhone"
+              placeholder="e.g. 08012345678" />
+          </div>
+
+          <div class="form-group">
+            <label>Relationship to Voucher</label>
+            <select id="voucherRelation">
+              <option value="" disabled selected>Select relationship</option>
+              <option>Former Employer</option>
+              <option>Current Employer</option>
+              <option>Pastor / Imam</option>
+              <option>Community Leader</option>
+              <option>Neighbour</option>
+              <option>Previous Customer</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+
+        <p id="errorMsg" style="color: red; display: none; margin-top: 8px"></p>
+
+        <button
+          onclick="upgradeToProvider()"
+          id="upgradeBtn"
+          style="
+            width: 100%;
+            background: #1a1a2e;
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            font-family:
+              DM Sans,
+              sans-serif;
+            margin-top: 20px;
+          ">
+          Submit Provider Application
+        </button>
+      </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+      // Protect this page — must be logged in
+      const user = checkAuth();
+
+      // If already a provider — redirect to dashboard
+      if (user && user.role === "provider") {
+        window.location.href = "dashboard.html";
+      }
+
+      function toggleSkill(el) {
+        el.classList.toggle("selected");
+      }
+
+      function upgradeToProvider() {
+        const category = document.getElementById("categoryInput").value;
+        const bio = document.getElementById("bioInput").value.trim();
+        const voucherName = document.getElementById("voucherName").value.trim();
+        const voucherPhone = document
+          .getElementById("voucherPhone")
+          .value.trim();
+        const token = localStorage.getItem("token");
+
+        const errorMsg = document.getElementById("errorMsg");
+        errorMsg.style.display = "none";
+
+        if (!category) {
+          errorMsg.textContent = "Please select your category";
+          errorMsg.style.display = "block";
+          return;
+        }
+        if (!bio || bio.length < 30) {
+          errorMsg.textContent =
+            "Please write at least 30 characters about yourself";
+          errorMsg.style.display = "block";
+          return;
+        }
+        if (!voucherName) {
+          errorMsg.textContent = "Please enter your voucher name";
+          errorMsg.style.display = "block";
+          return;
+        }
+        if (!voucherPhone) {
+          errorMsg.textContent = "Please enter voucher phone number";
+          errorMsg.style.display = "block";
+          return;
+        }
+
+        const skills = [];
+        document
+          .querySelectorAll(".skill-option.selected")
+          .forEach((s) => skills.push(s.textContent.trim()));
+
+        const btn = document.getElementById("upgradeBtn");
+        btn.textContent = "Submitting...";
+
+        fetch(`${API_URL}/api/user/upgrade-provider`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            category,
+            bio,
+            skills,
+            voucherName,
+            voucherPhone,
+          }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.user) {
+              // Update localStorage with new provider role
+              localStorage.setItem("user", JSON.stringify(data.user));
+              btn.textContent = "Application Submitted!";
+              setTimeout(() => {
+                window.location.href = "dashboard.html";
+              }, 1500);
+            } else {
+              btn.textContent = "Submit Provider Application";
+              errorMsg.textContent = data.message || "Something went wrong";
+              errorMsg.style.display = "block";
+            }
+          })
+          .catch(() => {
+            btn.textContent = "Submit Provider Application";
+            errorMsg.textContent = "Something went wrong. Try again.";
+            errorMsg.style.display = "block";
+          });
+      }
+    </script>
+  </body>
+</html>
