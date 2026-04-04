@@ -203,6 +203,9 @@ function handleSignup(e) {
     .then((response) => response.json())
     .then((data) => {
       if (data.user) {
+        // Auto login — save token and user immediately
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
         btn.textContent = "Account Created!";
         window.location.href = "index.html";
       } else {

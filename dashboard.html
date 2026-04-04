@@ -74,20 +74,22 @@
       <!-- STATS -->
       <div class="stats-row">
         <div class="stat-card">
+          <div class="stat-num" id="loginCount">1</div>
+          <div class="stat-label">Total Logins</div>
+        </div>
+        <div class="stat-card">
           <div class="stat-num">0</div>
           <div class="stat-label">Services Hired</div>
         </div>
         <div class="stat-card">
-          <div class="stat-num">0</div>
-          <div class="stat-label">Reviews Given</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-num">0</div>
-          <div class="stat-label">Saved Providers</div>
-        </div>
-        <div class="stat-card">
           <div class="stat-num" id="memberDays">1</div>
           <div class="stat-label">Days as Member</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="lastLogin" style="font-size: 0.75rem">
+            —
+          </div>
+          <div class="stat-label">Last Login</div>
         </div>
       </div>
 
@@ -153,21 +155,25 @@
             <div class="activity-icon"><i class="bi bi-check-circle"></i></div>
             <div>
               <div class="activity-text">Account created successfully</div>
-              <div class="activity-time">Welcome to VerifiedNG!</div>
+              <div class="activity-time" id="joinedDate">
+                Welcome to VerifiedNG!
+              </div>
             </div>
           </div>
           <div class="activity-item">
             <div class="activity-icon"><i class="bi bi-shield-lock"></i></div>
             <div>
-              <div class="activity-text">Logged in to your account</div>
-              <div class="activity-time">Just now</div>
+              <div class="activity-text">Last login</div>
+              <div class="activity-time" id="lastLoginActivity">Just now</div>
             </div>
           </div>
           <div class="activity-item">
-            <div class="activity-icon"><i class="bi bi-search"></i></div>
+            <div class="activity-icon"><i class="bi bi-graph-up"></i></div>
             <div>
-              <div class="activity-text">No services hired yet</div>
-              <div class="activity-time">Start by searching for a service</div>
+              <div class="activity-text" id="totalLoginsText">
+                Total logins: 1
+              </div>
+              <div class="activity-time">Keep exploring VerifiedNG!</div>
             </div>
           </div>
         </div>

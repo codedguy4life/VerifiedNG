@@ -385,6 +385,27 @@ nav {
   margin-top: 2px;
 }
 
+.bi {
+  display: inline-block;
+  line-height: 1;
+}
+
+.cat-icon .bi,
+.ti-icon .bi {
+  font-size: 1.8rem;
+}
+
+.pi-avatar .bi {
+  font-size: 1.2rem;
+}
+
+.pc-avatar .bi {
+  font-size: 1.5rem;
+}
+
+.avatar .bi {
+  font-size: 1.5rem;
+}
 /* ─── HERO VISUAL ─── */
 .hero-visual {
   position: relative;

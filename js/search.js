@@ -161,14 +161,24 @@ function applyFilters() {
     ...document.querySelectorAll("#categoryFilter input:checked"),
   ].map((i) => i.value);
   if (checkedCategories.length > 0) {
-    filtered = filtered.filter((p) => checkedCategories.includes(p.category));
+    filtered = filtered.filter((p) =>
+      checkedCategories.some(
+        (cat) => p.category?.toLowerCase() === cat.toLowerCase(),
+      ),
+    );
   }
 
   const checkedLocations = [
     ...document.querySelectorAll("#locationFilter input:checked"),
   ].map((i) => i.value);
   if (checkedLocations.length > 0) {
-    filtered = filtered.filter((p) => checkedLocations.includes(p.locationKey));
+    filtered = filtered.filter((p) =>
+      checkedLocations.some(
+        (loc) =>
+          p.locationKey?.toLowerCase() === loc.toLowerCase() ||
+          p.location?.toLowerCase().includes(loc.toLowerCase()),
+      ),
+    );
   }
 
   const minRating = parseFloat(
@@ -232,7 +242,6 @@ function closeFilters() {
 }
 
 window.onload = async function () {
-  // Load real providers first
   await loadRealProviders();
 
   const { service, location } = getUrlParams();
@@ -254,18 +263,21 @@ window.onload = async function () {
   document.getElementById("navLocationInput").value =
     location !== "Nigeria" ? location : "";
 
+  // Auto-tick matching category
   if (service && service !== "All Services") {
     document
       .querySelectorAll("#categoryFilter input[type='checkbox']")
       .forEach((cb) => {
-        if (cb.value.toLowerCase() === service.toLowerCase()) cb.checked = true;
+        if (cb.value.toLowerCase() === service.toLowerCase()) {
+          cb.checked = true;
+        }
       });
   }
 
-  renderCards(providers);
+  // Apply filters AFTER ticking — this is what was missing
   applyFilters();
 
-  // Update nav based on login state
+  // Nav login state
   const user = getCurrentUser();
   const navActions = document.querySelector(".nav-actions");
   if (navActions && user) {

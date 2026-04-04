@@ -17,6 +17,36 @@ if (user) {
   document.getElementById("userAvatar").textContent = initials.toUpperCase();
 }
 
+// Real stats
+document.getElementById("loginCount").textContent = user.loginCount || 1;
+
+// Fill activity section
+if (user.createdAt) {
+  const joined = new Date(user.createdAt);
+  document.getElementById("joinedDate").textContent =
+    "Joined " +
+    joined.toLocaleDateString("en-NG", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+}
+
+if (user.lastLogin) {
+  const last = new Date(user.lastLogin);
+  document.getElementById("lastLoginActivity").textContent =
+    last.toLocaleDateString("en-NG", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+}
+
+document.getElementById("totalLoginsText").textContent =
+  `Total logins: ${user.loginCount || 1}`;
+
 // EDIT PROFILE
 function openEditProfile() {
   const user = getCurrentUser();

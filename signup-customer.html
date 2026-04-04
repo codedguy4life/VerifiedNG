@@ -86,19 +86,22 @@
 
         <!-- ACCOUNT TYPE -->
         <div class="account-type">
-          <div class="type-btn active" onclick="selectType(this, 'customer')">
+          <div class="type-btn active">
             <div class="type-icon"><i class="bi bi-search"></i></div>
-            <span class="type-label">I Need a Service</span>
-            <span class="type-sub">Find trusted providers</span>
-          </div>
-          <div
-            class="type-btn"
-            onclick="window.location.href = 'signup-provider.html'">
-            <div class="type-icon"><i class="bi bi-tools"></i></div>
-            <span class="type-label">I Offer a Service</span>
-            <span class="type-sub">Grow your business</span>
+            <span class="type-label">Create Account</span>
+            <span class="type-sub">For everyone — customers & providers</span>
           </div>
         </div>
+        <p
+          style="
+            font-size: 0.85rem;
+            color: #888;
+            margin-bottom: 16px;
+            text-align: center;
+          ">
+          <i class="bi bi-info-circle"></i> Want to offer services? Create your
+          account first — you can set up your provider profile after.
+        </p>
 
         <form class="signup-form" onsubmit="handleSignup(event)">
           <!-- NAME ROW -->

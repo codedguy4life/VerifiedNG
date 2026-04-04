@@ -21,17 +21,44 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (user) {
     const userData = JSON.parse(user);
-
-    // Get the nav-actions buttons
     const navActions = document.querySelector(".nav-actions");
 
     if (navActions) {
-      // Replace both buttons with greeting and sign out
       navActions.innerHTML = `
-  <a href="dashboard.html" class="btn-ghost" style="text-decoration:none">Hi, ${userData.fullName.split(" ")[0]} 👋</a>
-  <button class="btn-primary" id="signOutBtn">Sign Out</button>
-`;
+        <a href="dashboard.html" class="btn-ghost" style="text-decoration:none">
+          Hi, ${userData.fullName.split(" ")[0]} <i class="bi bi-person-circle"></i>
+        </a>
+        <button class="btn-ghost" onclick="signOut()">Sign Out</button>
+      `;
+    }
 
+    // Show "become a provider" banner for customers only
+    if (userData.role === "customer") {
+      const banner = document.createElement("div");
+      banner.style.cssText = `
+        background: #1a1a2e; color: white; text-align: center;
+        padding: 12px 20px; font-family: DM Sans, sans-serif;
+        font-size: 0.9rem; position: relative;
+      `;
+      banner.innerHTML = `
+        <i class="bi bi-tools"></i> Are you a skilled provider? 
+        <a href="upgrade-to-provider.html" 
+          style="color:#00c853;font-weight:600;margin-left:8px;text-decoration:none;">
+          Set up your provider profile →
+        </a>
+      `;
+      document.body.insertBefore(banner, document.body.firstChild);
+
+      function goToProviderSignup() {
+        const user = getCurrentUser();
+        if (user) {
+          // Already logged in — go to upgrade page
+          window.location.href = "upgrade-to-provider.html";
+        } else {
+          // Not logged in — go to full signup
+          window.location.href = "signup-provider.html";
+        }
+      }
       // Sign out button
       document.getElementById("signOutBtn").onclick = function () {
         signOut();
