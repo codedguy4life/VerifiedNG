@@ -1,46 +1,46 @@
 // Fetch real providers from backend and merge with static data
+
 async function loadRealProviders() {
   try {
     const response = await fetch(`${API_URL}/api/providers`);
     const data = await response.json();
 
     if (data.providers && data.providers.length > 0) {
-      // Convert DB providers to match our display format
-      const dbProviders = data.providers.map((p, index) => ({
+      const dbProviders = data.providers.map((p) => ({
         id: "db_" + p._id,
+        dbId: p._id,
         name: p.fullName,
         role: p.category || "Service Provider",
         category: p.category || "Other",
         icon: getCategoryIcon(p.category),
-        avatarBg: "#e6f9ee",
+        avatarBg: getAvatarBg(p.category),
         rating: 4.5,
         reviewCount: 0,
         jobs: 0,
         experienceYears: "New",
-        location: p.city ? `${p.city}, ${p.state}` : p.state || "Nigeria",
+        location:
+          p.city && p.state ? `${p.city}, ${p.state}` : p.state || "Nigeria",
         locationKey: p.state || "Nigeria",
         availability: "online",
         availText: "Available Now",
         tags: p.skills ? p.skills.slice(0, 3) : [p.category || "Service"],
-        bio: p.bio || "Verified provider on VerifiedNG.",
+        bio: p.bio || "Verified service provider on VerifiedNG.",
         price: "₦Talk-Price",
         per: "/job",
-        verified: false,
+        verified: p.isVerified || false,
         reviews: [],
         gallery: [],
         experience: [],
         skills: p.skills || [],
       }));
 
-      // Add real providers to beginning of array
       providers.unshift(...dbProviders);
     }
   } catch (error) {
-    console.log("Could not load real providers:", error);
+    console.log("Could not load live providers:", error);
   }
 }
 
-// Helper to get icon based on category
 function getCategoryIcon(category) {
   const icons = {
     Plumbing: "bi bi-tools",
@@ -53,8 +53,27 @@ function getCategoryIcon(category) {
     Catering: "bi bi-cup-hot",
     Programming: "bi bi-laptop",
     ContentCreator: "bi bi-camera-video",
+    "Graphic Designer": "bi bi-palette",
+    Carpenter: "bi bi-hammer",
+    Painter: "bi bi-brush",
+    Driver: "bi bi-truck",
   };
   return icons[category] || "bi bi-person-workspace";
+}
+
+function getAvatarBg(category) {
+  const bgs = {
+    Plumbing: "#e6f9ee",
+    Electrical: "#fffbec",
+    "Auto Mechanic": "#eef3ff",
+    Tutoring: "#fff8ec",
+    Cleaning: "#f0f0ff",
+    Photography: "#ffeef3",
+    Tailoring: "#ffeef3",
+    Catering: "#e6f9ee",
+    Programming: "#eef3ff",
+  };
+  return bgs[category] || "#f5f5f5";
 }
 
 // ─── SEARCH PAGE JS ───

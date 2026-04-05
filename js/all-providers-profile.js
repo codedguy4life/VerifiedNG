@@ -212,6 +212,11 @@ function submitHireRequest() {
   let isValid = true;
 
   const name = document.getElementById("hireName").value.trim();
+  const phone = document.getElementById("hirePhone").value.trim();
+  const service = document.getElementById("modalServices").value;
+  const desc = document.getElementById("hireDescription").value.trim();
+  const phoneValid = /^0[7-9][0-1]\d{8}$/.test(phone);
+
   if (!name) {
     document.getElementById("hireName").classList.add("error");
     document.getElementById("hireNameError").textContent =
@@ -220,12 +225,9 @@ function submitHireRequest() {
     isValid = false;
   } else {
     document.getElementById("hireName").classList.remove("error");
-    document.getElementById("hireName").classList.add("success");
     document.getElementById("hireNameError").classList.remove("show");
   }
 
-  const phone = document.getElementById("hirePhone").value.trim();
-  const phoneValid = /^0[7-9][0-1]\d{8}$/.test(phone);
   if (!phone) {
     document.getElementById("hirePhone").classList.add("error");
     document.getElementById("hirePhoneError").textContent =
@@ -240,63 +242,82 @@ function submitHireRequest() {
     isValid = false;
   } else {
     document.getElementById("hirePhone").classList.remove("error");
-    document.getElementById("hirePhone").classList.add("success");
     document.getElementById("hirePhoneError").classList.remove("show");
   }
 
-  const service = document.getElementById("modalServices").value;
-  if (!service) {
-    document.getElementById("modalServices").classList.add("error");
-    document.getElementById("hireServiceError").textContent =
-      "Please select a service";
-    document.getElementById("hireServiceError").classList.add("show");
-    isValid = false;
-  } else {
-    document.getElementById("modalServices").classList.remove("error");
-    document.getElementById("modalServices").classList.add("success");
-    document.getElementById("hireServiceError").classList.remove("show");
-  }
-
-  const desc = document.getElementById("hireDescription").value.trim();
-  if (!desc) {
+  if (!desc || desc.length < 20) {
     document.getElementById("hireDescription").classList.add("error");
-    document.getElementById("hireDescError").textContent =
-      "Please describe what you need done";
-    document.getElementById("hireDescError").classList.add("show");
-    isValid = false;
-  } else if (desc.length < 20) {
-    document.getElementById("hireDescription").classList.add("error");
-    document.getElementById("hireDescError").textContent =
-      "Please give a bit more detail — at least 20 characters";
+    document.getElementById("hireDescError").textContent = desc
+      ? "Please give a bit more detail — at least 20 characters"
+      : "Please describe what you need done";
     document.getElementById("hireDescError").classList.add("show");
     isValid = false;
   } else {
     document.getElementById("hireDescription").classList.remove("error");
-    document.getElementById("hireDescription").classList.add("success");
     document.getElementById("hireDescError").classList.remove("show");
   }
 
-  if (!isValid) {
-    const btn = document.getElementById("modalSubmitBtn");
-    btn.style.animation = "none";
-    btn.offsetHeight;
-    btn.style.animation = "shake 0.4s ease";
-    return;
-  }
+  if (!isValid) return;
 
   const btn = document.getElementById("modalSubmitBtn");
-  btn.textContent = "Sending Request...";
+  btn.textContent = "Sending...";
   btn.style.opacity = "0.7";
   btn.style.pointerEvents = "none";
 
-  setTimeout(() => {
-    closeModal();
-    alert("Hire request sent! The provider will contact you shortly.");
-    document.getElementById("hireName").value = "";
-    document.getElementById("hirePhone").value = "";
-    document.getElementById("hireDescription").value = "";
-    btn.textContent = "Send Hire Request";
-    btn.style.opacity = "1";
-    btn.style.pointerEvents = "auto";
-  }, 1500);
+  // Get provider info from the page
+  const providerName = document.getElementById("providerName").textContent;
+  const urlParams = new URLSearchParams(window.location.search);
+  const providerId = urlParams.get("id") || "static";
+
+  fetch(`${API_URL}/api/hire`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      providerName,
+      providerId,
+      customerName: name,
+      customerPhone: phone,
+      serviceNeeded: service,
+      description: desc,
+    }),
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.request || data.message === "Hire request sent successfully!") {
+        closeModal();
+        // Show success message on page instead of alert
+        const successBanner = document.createElement("div");
+        successBanner.style.cssText = `
+        position: fixed; top: 20px; right: 20px; z-index: 9999;
+        background: #00c853; color: white; padding: 16px 24px;
+        border-radius: 10px; font-family: DM Sans, sans-serif;
+        font-size: 0.95rem; box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        animation: slideIn 0.3s ease;
+      `;
+        successBanner.innerHTML = `<i class="bi bi-check-circle"></i> Hire request sent! The provider will contact you shortly.`;
+        document.body.appendChild(successBanner);
+        setTimeout(() => successBanner.remove(), 4000);
+
+        // Reset form
+        document.getElementById("hireName").value = "";
+        document.getElementById("hirePhone").value = "";
+        document.getElementById("hireDescription").value = "";
+      } else {
+        document.getElementById("hireDescError").textContent =
+          data.message || "Something went wrong";
+        document.getElementById("hireDescError").classList.add("show");
+      }
+
+      btn.textContent = "Send Hire Request";
+      btn.style.opacity = "1";
+      btn.style.pointerEvents = "auto";
+    })
+    .catch(() => {
+      document.getElementById("hireDescError").textContent =
+        "Something went wrong. Try again.";
+      document.getElementById("hireDescError").classList.add("show");
+      btn.textContent = "Send Hire Request";
+      btn.style.opacity = "1";
+      btn.style.pointerEvents = "auto";
+    });
 }

@@ -2,11 +2,10 @@
 const user = checkAuth();
 
 if (user) {
+
   // ─── FILL USER INFO ───
-  document.getElementById("firstName").textContent =
-    user.fullName.split(" ")[0];
-  document.getElementById("navGreeting").textContent =
-    "Hi, " + user.fullName.split(" ")[0];
+  document.getElementById("firstName").textContent = user.fullName.split(" ")[0];
+  document.getElementById("navGreeting").textContent = "Hi, " + user.fullName.split(" ")[0];
   document.getElementById("userFullName").textContent = user.fullName;
   document.getElementById("userEmail").textContent = user.email;
   document.getElementById("userRole").textContent =
@@ -31,22 +30,18 @@ if (user) {
   // Last login in stats card
   if (user.lastLogin) {
     const last = new Date(user.lastLogin);
-    document.getElementById("lastLogin").textContent = last.toLocaleDateString(
-      "en-NG",
-      {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-      },
-    );
+    document.getElementById("lastLogin").textContent = last.toLocaleDateString("en-NG", {
+      day: "numeric",
+      month: "short",
+      year: "numeric"
+    });
   }
 
   // ─── ACTIVITY SECTION ───
   if (user.createdAt) {
     const joined = new Date(user.createdAt);
     document.getElementById("joinedDate").textContent =
-      "Joined " +
-      joined.toLocaleDateString("en-NG", {
+      "Joined " + joined.toLocaleDateString("en-NG", {
         day: "numeric",
         month: "long",
         year: "numeric",
@@ -67,6 +62,7 @@ if (user) {
 
   document.getElementById("totalLoginsText").textContent =
     `Total logins: ${user.loginCount || 1}`;
+
 }
 
 // ─── EDIT PROFILE ───
