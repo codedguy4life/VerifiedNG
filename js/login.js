@@ -144,3 +144,51 @@ function selectType(btn, type) {
     .forEach((b) => b.classList.remove("active"));
   btn.classList.add("active");
 }
+
+// ─── FORGOT PASSWORD MODAL ───
+function showForgotPassword() {
+  document.getElementById("forgotModal").style.display = "flex";
+}
+
+function hideForgotPassword() {
+  document.getElementById("forgotModal").style.display = "none";
+  document.getElementById("forgotEmail").value = "";
+  document.getElementById("forgotSuccess").style.display = "none";
+  document.getElementById("forgotError").style.display = "none";
+}
+
+function sendResetLink() {
+  const email = document.getElementById("forgotEmail").value.trim();
+  const btn = document.getElementById("sendResetBtn");
+
+  document.getElementById("forgotSuccess").style.display = "none";
+  document.getElementById("forgotError").style.display = "none";
+
+  if (!email) {
+    document.getElementById("forgotErrorText").textContent =
+      "Please enter your email address";
+    document.getElementById("forgotError").style.display = "block";
+    return;
+  }
+
+  btn.textContent = "Sending...";
+  btn.style.opacity = "0.7";
+
+  fetch(`${API_URL}/api/auth/forgot-password`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      document.getElementById("forgotSuccess").style.display = "block";
+      btn.textContent = "Sent!";
+    })
+    .catch(() => {
+      document.getElementById("forgotErrorText").textContent =
+        "Something went wrong. Try again.";
+      document.getElementById("forgotError").style.display = "block";
+      btn.textContent = "Send Reset Link";
+      btn.style.opacity = "1";
+    });
+}
