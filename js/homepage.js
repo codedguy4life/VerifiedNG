@@ -66,3 +66,28 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 });
+
+// Enter key triggers search
+document.addEventListener("DOMContentLoaded", function () {
+  const navInput = document.getElementById("navServiceInput");
+  const heroServiceInput = document.getElementById("serviceInput");
+  const heroLocationInput = document.getElementById("locationInput");
+
+  if (navInput) {
+    navInput.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") handleNavSearch();
+    });
+  }
+
+  if (heroServiceInput) {
+    heroServiceInput.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") handleSearch();
+    });
+  }
+
+  if (heroLocationInput) {
+    heroLocationInput.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") handleSearch();
+    });
+  }
+});

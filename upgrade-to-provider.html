@@ -18,7 +18,9 @@
         >Verified<span>NG</span> <sup>BETA</sup></a
       >
       <div class="nav-right">
-        <a href="dashboard.html">Back to Dashboard</a>
+        <a href="dashboard.html"
+          ><i class="bi bi-arrow-left"></i> Back to Dashboard</a
+        >
       </div>
     </nav>
 
@@ -27,13 +29,71 @@
         <div class="page-tag">Upgrade Account</div>
         <h1>Become a Verified Provider</h1>
         <p>
-          You already have an account — just tell us about your skills and we'll
-          upgrade you to a provider.
+          Your account details are already saved — just tell us about your
+          skills.
         </p>
       </div>
 
+      <!-- PRE-FILLED INFO CARD -->
+      <div
+        class="form-card"
+        style="
+          margin-bottom: 24px;
+          background: #f8f9ff;
+          border: 1px solid #e0e0ff;
+        ">
+        <h3 style="color: #1a1a2e; margin-bottom: 16px">
+          <i class="bi bi-person-check"></i> Your Account Details
+        </h3>
+        <p style="color: #666; font-size: 0.9rem; margin-bottom: 12px">
+          These are already saved from your account. No need to fill them again.
+        </p>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px">
+          <div>
+            <div style="font-size: 0.8rem; color: #888">Full Name</div>
+            <div style="font-weight: 600; color: #1a1a2e" id="prefilledName">
+              —
+            </div>
+          </div>
+          <div>
+            <div style="font-size: 0.8rem; color: #888">Phone</div>
+            <div style="font-weight: 600; color: #1a1a2e" id="prefilledPhone">
+              —
+            </div>
+          </div>
+          <div>
+            <div style="font-size: 0.8rem; color: #888">Email</div>
+            <div style="font-weight: 600; color: #1a1a2e" id="prefilledEmail">
+              —
+            </div>
+          </div>
+          <div>
+            <div style="font-size: 0.8rem; color: #888">Location</div>
+            <div
+              style="font-weight: 600; color: #1a1a2e"
+              id="prefilledLocation">
+              —
+            </div>
+          </div>
+        </div>
+        <a
+          href="dashboard.html"
+          style="
+            font-size: 0.8rem;
+            color: #1a1a2e;
+            margin-top: 12px;
+            display: inline-block;
+          ">
+          <i class="bi bi-pencil"></i> Edit these details in your dashboard
+        </a>
+      </div>
+
+      <!-- PROVIDER SKILLS FORM -->
       <div class="form-card">
         <h3>Your Skills & Services</h3>
+        <p class="card-desc">
+          Tell us what service you offer so customers can find you.
+        </p>
 
         <div class="form-fields">
           <div class="form-group">
@@ -58,6 +118,7 @@
               <option>Driver</option>
               <option>Other</option>
             </select>
+            <span class="error-text" id="categoryError"></span>
           </div>
 
           <div class="form-group">
@@ -119,7 +180,8 @@
             <textarea
               id="bioInput"
               rows="5"
-              placeholder="Describe your experience, what makes you different, and why customers should choose you..."></textarea>
+              placeholder="Describe your experience and why customers should choose you. Minimum 30 characters."></textarea>
+            <span class="error-text" id="bioError"></span>
           </div>
 
           <div class="form-group">
@@ -127,33 +189,19 @@
             <input
               type="text"
               id="voucherName"
-              placeholder="Name of someone who can vouch for you" />
+              placeholder="Name of someone who can vouch for you (pastor, employer, neighbour)" />
+            <span class="error-text" id="voucherNameError"></span>
           </div>
 
           <div class="form-group">
-            <label>Voucher's Phone Number</label>
+            <label>Voucher Phone Number</label>
             <input
               type="tel"
               id="voucherPhone"
               placeholder="e.g. 08012345678" />
-          </div>
-
-          <div class="form-group">
-            <label>Relationship to Voucher</label>
-            <select id="voucherRelation">
-              <option value="" disabled selected>Select relationship</option>
-              <option>Former Employer</option>
-              <option>Current Employer</option>
-              <option>Pastor / Imam</option>
-              <option>Community Leader</option>
-              <option>Neighbour</option>
-              <option>Previous Customer</option>
-              <option>Other</option>
-            </select>
+            <span class="error-text" id="voucherPhoneError"></span>
           </div>
         </div>
-
-        <p id="errorMsg" style="color: red; display: none; margin-top: 8px"></p>
 
         <button
           onclick="upgradeToProvider()"
@@ -167,12 +215,11 @@
             border-radius: 8px;
             font-size: 1rem;
             cursor: pointer;
-            font-family:
-              DM Sans,
-              sans-serif;
+            font-family: &quot;DM Sans&quot;, sans-serif;
             margin-top: 20px;
+            font-weight: 600;
           ">
-          Submit Provider Application
+          <i class="bi bi-patch-check"></i> Submit Provider Application
         </button>
       </div>
     </div>
@@ -180,19 +227,54 @@
     <script src="js/config.js"></script>
     <script src="js/auth.js"></script>
     <script>
-      // Protect this page — must be logged in
       const user = checkAuth();
 
-      // If already a provider — redirect to dashboard
       if (user && user.role === "provider") {
         window.location.href = "dashboard.html";
+      }
+
+      // Pre-fill from existing account
+      if (user) {
+        document.getElementById("prefilledName").textContent =
+          user.fullName || "—";
+        document.getElementById("prefilledPhone").textContent =
+          user.phone || "—";
+        document.getElementById("prefilledEmail").textContent =
+          user.email || "—";
+        document.getElementById("prefilledLocation").textContent =
+          user.city && user.state
+            ? `${user.city}, ${user.state}`
+            : user.state || "—";
       }
 
       function toggleSkill(el) {
         el.classList.toggle("selected");
       }
 
+      function showError(id, msg) {
+        const el = document.getElementById(id);
+        el.textContent = msg;
+        el.style.color = "red";
+        el.style.fontSize = "0.82rem";
+        el.style.display = "block";
+        el.style.marginTop = "4px";
+      }
+
+      function clearErrors() {
+        [
+          "categoryError",
+          "bioError",
+          "voucherNameError",
+          "voucherPhoneError",
+        ].forEach((id) => {
+          document.getElementById(id).textContent = "";
+        });
+      }
+
       function upgradeToProvider() {
+        clearErrors();
+        let isValid = true;
+
         const category = document.getElementById("categoryInput").value;
         const bio = document.getElementById("bioInput").value.trim();
         const voucherName = document.getElementById("voucherName").value.trim();
@@ -201,38 +283,36 @@
           .value.trim();
         const token = localStorage.getItem("token");
 
-        const errorMsg = document.getElementById("errorMsg");
-        errorMsg.style.display = "none";
-
         if (!category) {
-          errorMsg.textContent = "Please select your category";
-          errorMsg.style.display = "block";
-          return;
+          showError("categoryError", "Please select your service category");
+          isValid = false;
         }
         if (!bio || bio.length < 30) {
-          errorMsg.textContent =
-            "Please write at least 30 characters about yourself";
-          errorMsg.style.display = "block";
-          return;
+          showError(
+            "bioError",
+            "Please write at least 30 characters about yourself",
+          );
+          isValid = false;
         }
         if (!voucherName) {
-          errorMsg.textContent = "Please enter your voucher name";
-          errorMsg.style.display = "block";
-          return;
+          showError("voucherNameError", "Please enter your voucher name");
+          isValid = false;
         }
         if (!voucherPhone) {
-          errorMsg.textContent = "Please enter voucher phone number";
-          errorMsg.style.display = "block";
-          return;
+          showError("voucherPhoneError", "Please enter voucher phone number");
+          isValid = false;
         }
 
+        if (!isValid) return;
+
         const skills = [];
-        document
-          .querySelectorAll(".skill-option.selected")
-          .forEach((s) => skills.push(s.textContent.trim()));
+        document.querySelectorAll(".skill-option.selected").forEach((s) => {
+          skills.push(s.textContent.trim());
+        });
 
         const btn = document.getElementById("upgradeBtn");
         btn.textContent = "Submitting...";
+        btn.style.opacity = "0.7";
 
         fetch(`${API_URL}/api/user/upgrade-provider`, {
           method: "PUT",
@@ -251,22 +331,22 @@
           .then((res) => res.json())
           .then((data) => {
             if (data.user) {
-              // Update localStorage with new provider role
               localStorage.setItem("user", JSON.stringify(data.user));
-              btn.textContent = "Application Submitted!";
-              setTimeout(() => {
-                window.location.href = "dashboard.html";
-              }, 1500);
+              btn.innerHTML =
+                '<i class="bi bi-check-circle"></i> Application Submitted!';
+              setTimeout(() => (window.location.href = "dashboard.html"), 1500);
             } else {
-              btn.textContent = "Submit Provider Application";
-              errorMsg.textContent = data.message || "Something went wrong";
-              errorMsg.style.display = "block";
+              btn.innerHTML =
+                '<i class="bi bi-patch-check"></i> Submit Provider Application';
+              btn.style.opacity = "1";
+              showError("bioError", data.message || "Something went wrong");
             }
           })
           .catch(() => {
-            btn.textContent = "Submit Provider Application";
-            errorMsg.textContent = "Something went wrong. Try again.";
-            errorMsg.style.display = "block";
+            btn.innerHTML =
+              '<i class="bi bi-patch-check"></i> Submit Provider Application';
+            btn.style.opacity = "1";
+            showError("bioError", "Something went wrong. Try again.");
           });
       }
     </script>

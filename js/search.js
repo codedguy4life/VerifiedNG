@@ -178,24 +178,28 @@ function applyFilters() {
 
   const checkedCategories = [
     ...document.querySelectorAll("#categoryFilter input:checked"),
-  ].map((i) => i.value);
+  ].map((i) => i.value.toLowerCase());
+
   if (checkedCategories.length > 0) {
     filtered = filtered.filter((p) =>
       checkedCategories.some(
-        (cat) => p.category?.toLowerCase() === cat.toLowerCase(),
+        (cat) =>
+          p.category?.toLowerCase().includes(cat) ||
+          cat.includes(p.category?.toLowerCase()),
       ),
     );
   }
 
   const checkedLocations = [
     ...document.querySelectorAll("#locationFilter input:checked"),
-  ].map((i) => i.value);
+  ].map((i) => i.value.toLowerCase());
+
   if (checkedLocations.length > 0) {
     filtered = filtered.filter((p) =>
       checkedLocations.some(
         (loc) =>
-          p.locationKey?.toLowerCase() === loc.toLowerCase() ||
-          p.location?.toLowerCase().includes(loc.toLowerCase()),
+          p.locationKey?.toLowerCase().includes(loc) ||
+          p.location?.toLowerCase().includes(loc),
       ),
     );
   }
@@ -282,21 +286,24 @@ window.onload = async function () {
   document.getElementById("navLocationInput").value =
     location !== "Nigeria" ? location : "";
 
-  // Auto-tick matching category
+  // Auto-tick category checkbox — case insensitive
   if (service && service !== "All Services") {
     document
       .querySelectorAll("#categoryFilter input[type='checkbox']")
       .forEach((cb) => {
-        if (cb.value.toLowerCase() === service.toLowerCase()) {
+        if (
+          cb.value.toLowerCase() === service.toLowerCase() ||
+          service.toLowerCase().includes(cb.value.toLowerCase()) ||
+          cb.value.toLowerCase().includes(service.toLowerCase())
+        ) {
           cb.checked = true;
         }
       });
   }
 
-  // Apply filters AFTER ticking — this is what was missing
   applyFilters();
 
-  // Nav login state
+  // Update nav
   const user = getCurrentUser();
   const navActions = document.querySelector(".nav-actions");
   if (navActions && user) {
@@ -307,4 +314,22 @@ window.onload = async function () {
       <button class="btn-ghost" onclick="signOut()">Sign Out</button>
     `;
   }
+
+  // Enter key on search
+  const serviceInput = document.getElementById("navServiceInput");
+  const locationInput = document.getElementById("navLocationInput");
+  if (serviceInput)
+    serviceInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") handleSearch();
+    });
+  if (locationInput)
+    locationInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") handleSearch();
+    });
 };
+
+if (locationInput) {
+  locationInput.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") handleSearch();
+  });
+}

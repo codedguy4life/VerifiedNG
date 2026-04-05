@@ -98,7 +98,6 @@ function handleLogin(e) {
     .then((response) => response.json())
     .then((data) => {
       if (data.message === "Login successful!") {
-        // Save token to localStorage
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
         btn.textContent = "Logged In!";
@@ -106,14 +105,15 @@ function handleLogin(e) {
       } else {
         btn.textContent = "Log In";
         btn.classList.remove("loading");
-        alert(data.message);
+        // Show error inline — no alert
+        showError("loginIdentifier", "identifierError", data.message);
       }
     })
     .catch((error) => {
-      btn.textContent = "Log In";
-      btn.classList.remove("loading");
-      alert("Something went wrong. Please try again.");
-    });
+  btn.textContent = "Create My Account";
+  btn.classList.remove("loading");
+  showError("emailInput", "emailError", "Connection failed. Please try again.");
+});
 }
 
 // ─── REAL TIME VALIDATION ───

@@ -27,13 +27,16 @@ function signOut() {
   window.location.href = "login.html";
 }
 
+// Use this function on every "Become a Provider" button sitewide
 function goToProviderSignup() {
   const user = getCurrentUser();
   if (user) {
-    // Already logged in — go to upgrade page
-    window.location.href = "upgrade-to-provider.html";
+    if (user.role === "provider") {
+      window.location.href = "dashboard.html";
+    } else {
+      window.location.href = "upgrade-to-provider.html";
+    }
   } else {
-    // Not logged in — go to full signup
     window.location.href = "signup-provider.html";
   }
 }
