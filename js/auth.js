@@ -40,3 +40,22 @@ function goToProviderSignup() {
     window.location.href = "signup-provider.html";
   }
 }
+
+// Call this on every page to update nav based on login state
+function updateNavForLoginState() {
+  const user = getCurrentUser();
+  const navActions = document.querySelector(".nav-actions");
+  if (!navActions) return;
+
+  if (user) {
+    navActions.innerHTML = `
+      <a href="dashboard.html" class="btn-ghost" style="text-decoration:none;">
+        Hi, ${user.fullName.split(" ")[0]} <i class="bi bi-person-circle"></i>
+      </a>
+      <button class="btn-ghost" onclick="signOut()">Sign Out</button>
+    `;
+  }
+}
+
+// Auto-run on every page that loads auth.js
+document.addEventListener("DOMContentLoaded", updateNavForLoginState);

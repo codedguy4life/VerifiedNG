@@ -122,3 +122,61 @@ function saveProfile() {
       alert("Something went wrong. Try again.");
     });
 }
+
+// ─── DELETE PROFILE ───
+function showDeleteModal() {
+  document.getElementById("deleteModal").style.display = "flex";
+  document.getElementById("deletePassword").value = "";
+  document.getElementById("deleteError").style.display = "none";
+}
+
+function hideDeleteModal() {
+  document.getElementById("deleteModal").style.display = "none";
+}
+
+function confirmDeleteAccount() {
+  const password = document.getElementById("deletePassword").value;
+  const token = localStorage.getItem("token");
+  const btn = document.getElementById("deleteBtn");
+  const errorEl = document.getElementById("deleteError");
+
+  errorEl.style.display = "none";
+
+  if (!password) {
+    errorEl.textContent = "Please enter your password";
+    errorEl.style.display = "block";
+    return;
+  }
+
+  btn.textContent = "Deleting...";
+  btn.style.opacity = "0.7";
+
+  fetch(`${API_URL}/api/user/delete-account`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ password }),
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.message === "Account deleted successfully.") {
+        // Clear everything and redirect
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        window.location.href = "index.html";
+      } else {
+        errorEl.textContent = data.message;
+        errorEl.style.display = "block";
+        btn.textContent = "Yes, Delete My Account";
+        btn.style.opacity = "1";
+      }
+    })
+    .catch(() => {
+      errorEl.textContent = "Something went wrong. Try again.";
+      errorEl.style.display = "block";
+      btn.textContent = "Yes, Delete My Account";
+      btn.style.opacity = "1";
+    });
+}

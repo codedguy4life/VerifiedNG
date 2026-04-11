@@ -15,6 +15,42 @@ function handleSearch() {
   }
 }
 
+// Load real category counts from database
+function loadCategoryCounts() {
+  fetch(`${API_URL}/api/providers/counts`)
+    .then((res) => res.json())
+    .then((data) => {
+      if (!data.counts) return;
+
+      const counts = data.counts;
+
+      // Map category names to their card elements
+      const categoryMap = {
+        Electrical: "countElectrical",
+        Plumbing: "countPlumbing",
+        Tutoring: "countTutoring",
+        "Auto Mechanic": "countMechanic",
+        Cleaning: "countCleaning",
+        Photography: "countPhotography",
+        ContentCreator: "countPhotography",
+        Tailoring: "countTailoring",
+        Catering: "countCatering",
+      };
+
+      Object.keys(categoryMap).forEach((cat) => {
+        const el = document.getElementById(categoryMap[cat]);
+        if (el && counts[cat]) {
+          el.textContent = counts[cat] + " providers";
+        }
+      });
+    })
+    .catch((err) => console.log("Could not load counts:", err));
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  loadCategoryCounts();
+});
+
 // CHECK IF USER IS LOGGED IN
 document.addEventListener("DOMContentLoaded", function () {
   const user = localStorage.getItem("user");
