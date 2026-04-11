@@ -432,13 +432,13 @@
                 Create your profile, get verified by your community and start
                 receiving jobs from people near you. It's completely free to
                 join.
+                <button
+                  class="hire-primary"
+                  style="margin-top: 16px"
+                  onclick="goToProviderSignup()">
+                  Join as a Provider
+                </button>
               </p>
-              <button
-                class="hire-primary"
-                style="margin-top: 16px"
-                onclick="window.location.href = 'signup-provider.html'">
-                Join as a Provider
-              </button>
             </div>
           </div>
         </div>
@@ -691,10 +691,8 @@
             onclick="window.location.href = 'search.html'">
             Find a Service Provider
           </button>
-          <button
-            class="btn-outline-white"
-            onclick="window.location.href = 'signup-customer.html'">
-            Join as a Provider — It's Free
+          <button class="btn-outline-white" onclick="goToProviderSignup()">
+            List Your Skills — It's Free
           </button>
         </div>
       </div>
@@ -732,8 +730,27 @@
         <div class="footer-col">
           <h5>For Providers</h5>
           <ul>
-            <li><a href="signup-provider.html">Create a Profile</a></li>
-            <li><a href="signup-provider.html">Get Verified</a></li>
+            <li>
+              <a
+                href="#"
+                onclick="
+                  goToProviderSignup();
+                  return false;
+                "
+                >Create a Profile</a
+              >
+            </li>
+            <li>
+              <a
+                href="#"
+                onclick="
+                  goToProviderSignup();
+                  return false;
+                "
+                >Get Verified</a
+              >
+            </li>
+
             <li><a href="#">Provider App</a></li>
             <li><a href="#">Earn More</a></li>
             <li><a href="#">Provider Stories</a></li>
