@@ -152,7 +152,7 @@ function confirmDeleteAccount() {
   btn.style.opacity = "0.7";
 
   fetch(`${API_URL}/api/user/delete-account`, {
-    method: "DELETE",
+    method: "POST",
     headers: {
       "Content-Type": "application/json",
       authorization: `Bearer ${token}`,

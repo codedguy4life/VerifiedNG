@@ -47,6 +47,9 @@ function updateNavForLoginState() {
   const navActions = document.querySelector(".nav-actions");
   if (!navActions) return;
 
+  // Skip on dashboard — it handles its own nav
+  if (window.location.pathname.includes("dashboard")) return;
+
   if (user) {
     navActions.innerHTML = `
       <a href="dashboard.html" class="btn-ghost" style="text-decoration:none;">
