@@ -73,18 +73,9 @@ document.addEventListener("DOMContentLoaded", function () {
   const heroServiceInput = document.getElementById("serviceInput");
   const heroLocationInput = document.getElementById("locationInput");
 
-  if (navInput)
-    navInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") handleNavSearch();
-    });
-  if (heroServiceInput)
-    heroServiceInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") handleSearch();
-    });
-  if (heroLocationInput)
-    heroLocationInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") handleSearch();
-    });
+  if (navInput) navInput.addEventListener("keydown", (e) => { if (e.key === "Enter") handleNavSearch(); });
+  if (heroServiceInput) heroServiceInput.addEventListener("keydown", (e) => { if (e.key === "Enter") handleSearch(); });
+  if (heroLocationInput) heroLocationInput.addEventListener("keydown", (e) => { if (e.key === "Enter") handleSearch(); });
 
   // Show provider banner for logged in customers
   const storedUser = localStorage.getItem("user");
