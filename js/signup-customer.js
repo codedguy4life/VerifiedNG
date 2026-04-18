@@ -22,11 +22,22 @@ function togglePassword() {
 // ─── PHOTO UPLOAD PREVIEW ───
 function handlePhotoUpload(input) {
   if (input.files && input.files[0]) {
-    document.getElementById("uploadIcon").textContent = "✅";
-    document.getElementById("uploadText").textContent = input.files[0].name;
+    const file = input.files[0];
+    
+    // Show filename
+    document.getElementById('uploadText').textContent = file.name;
+    
+    // Convert to base64 to send to backend
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      // Store base64 string temporarily
+      window.profilePhotoBase64 = e.target.result;
+      document.getElementById('uploadText').textContent = 
+        'Photo ready: ' + file.name;
+    };
+    reader.readAsDataURL(file);
   }
 }
-
 // ─── VALIDATION HELPERS ───
 function showError(inputId, errorId, message) {
   const input = document.getElementById(inputId);
@@ -198,6 +209,7 @@ function handleSignup(e) {
       password: password,
       phone: phone,
       role: "customer",
+       profilePhoto: window.profilePhotoBase64 || ""
     }),
   })
     .then((response) => response.json())

@@ -229,6 +229,21 @@
           Edit Profile
         </h3>
 
+        <!-- Add inside edit modal before Full Name -->
+<div style="margin-bottom:16px;text-align:center;">
+  <div id="editAvatarPreview" style="width:80px;height:80px;border-radius:50%;
+    background:#1a1a2e;color:white;display:flex;align-items:center;
+    justify-content:center;font-family:Syne,sans-serif;font-size:1.5rem;
+    font-weight:800;margin:0 auto 12px;cursor:pointer;overflow:hidden;"
+    onclick="document.getElementById('editPhotoInput').click()">
+  </div>
+  <label style="font-size:0.82rem;color:#1a1a2e;cursor:pointer;"
+    onclick="document.getElementById('editPhotoInput').click()">
+    <i class="bi bi-camera"></i> Change photo
+  </label>
+  <input type="file" id="editPhotoInput" accept="image/*" 
+    style="display:none" onchange="handleEditPhotoUpload(this)" />
+</div>
         <div style="margin-bottom: 16px">
           <label
             style="

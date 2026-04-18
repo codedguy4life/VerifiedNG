@@ -12,10 +12,20 @@ if (user) {
   document.getElementById("userRole").textContent =
     user.role === "customer" ? "Customer" : "Service Provider";
 
-  // ─── INITIALS AVATAR ───
-  const parts = user.fullName.split(" ");
-  const initials = parts[0][0] + (parts[1] ? parts[1][0] : "");
-  document.getElementById("userAvatar").textContent = initials.toUpperCase();
+  // ─── AVATAR ───
+const avatarEl = document.getElementById('userAvatar');
+if (user.profilePhoto && user.profilePhoto.startsWith('data:')) {
+  // Show real photo
+  avatarEl.style.backgroundImage = `url(${user.profilePhoto})`;
+  avatarEl.style.backgroundSize = 'cover';
+  avatarEl.style.backgroundPosition = 'center';
+  avatarEl.textContent = '';
+} else {
+  // Show initials
+  const parts = user.fullName.split(' ');
+  const initials = parts[0][0] + (parts[1] ? parts[1][0] : '');
+  avatarEl.textContent = initials.toUpperCase();
+}
 
   // ─── STATS ───
   document.getElementById("loginCount").textContent = user.loginCount || 1;
@@ -70,6 +80,21 @@ if (user) {
 }
 
 // ─── EDIT PROFILE ───
+
+function handleEditPhotoUpload(input) {
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      window.newProfilePhoto = e.target.result;
+      const preview = document.getElementById('editAvatarPreview');
+      preview.style.backgroundImage = `url(${e.target.result})`;
+      preview.style.backgroundSize = 'cover';
+      preview.style.backgroundPosition = 'center';
+      preview.textContent = '';
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
 function openEditProfile() {
   const user = getCurrentUser();
   document.getElementById("editModal").style.display = "flex";
@@ -78,6 +103,17 @@ function openEditProfile() {
   document.getElementById("editState").value = user.state || "";
   document.getElementById("editCity").value = user.city || "";
   document.getElementById("editBio").value = user.bio || "";
+
+  // Show current avatar in edit modal
+  const preview = document.getElementById('editAvatarPreview');
+  if (user.profilePhoto && user.profilePhoto.startsWith('data:')) {
+    preview.style.backgroundImage = `url(${user.profilePhoto})`;
+    preview.style.backgroundSize = 'cover';
+    preview.textContent = '';
+  } else {
+    const parts = user.fullName.split(' ');
+    preview.textContent = (parts[0][0] + (parts[1] ? parts[1][0] : '')).toUpperCase();
+  }
 }
 
 function closeEditProfile() {
@@ -101,6 +137,7 @@ function saveProfile() {
       state: document.getElementById("editState").value,
       city: document.getElementById("editCity").value,
       bio: document.getElementById("editBio").value,
+      profilePhoto: window.newProfilePhoto || undefined,
     }),
   })
     .then((res) => res.json())
