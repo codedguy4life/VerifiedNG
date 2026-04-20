@@ -1,0 +1,56 @@
+      .about-hero {
+        background: #1a1a2e;
+        color: white;
+        padding: 80px 40px;
+        text-align: center;
+      }
+      .about-hero h1 {
+        font-family: Syne, sans-serif;
+        font-size: 2.8rem;
+        margin-bottom: 16px;
+      }
+      .about-hero h1 em { color: #00c853; font-style: normal; }
+      .about-hero p { opacity: 0.7; max-width: 600px; margin: 0 auto; font-size: 1.1rem; }
+      .about-content {
+        max-width: 900px;
+        margin: 60px auto;
+        padding: 0 24px;
+      }
+      .about-section { margin-bottom: 48px; }
+      .about-section h2 {
+        font-family: Syne, sans-serif;
+        font-size: 1.8rem;
+        color: #1a1a2e;
+        margin-bottom: 16px;
+      }
+      .about-section p {
+        color: #555;
+        line-height: 1.8;
+        margin-bottom: 12px;
+        font-size: 1rem;
+      }
+      .values-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 24px;
+        margin-top: 24px;
+      }
+      .value-card {
+        background: #f8f9ff;
+        border-radius: 12px;
+        padding: 24px;
+        text-align: center;
+      }
+      .value-card i { font-size: 2rem; color: #1a1a2e; margin-bottom: 12px; display: block; }
+      .value-card h4 { font-family: Syne, sans-serif; margin-bottom: 8px; }
+      .value-card p { font-size: 0.88rem; color: #666; }
+      .team-note {
+        background: #1a1a2e;
+        color: white;
+        border-radius: 16px;
+        padding: 40px;
+        text-align: center;
+        margin-top: 48px;
+      }
+      .team-note h3 { font-family: Syne, sans-serif; margin-bottom: 12px; }
+      .team-note p { opacity: 0.7; margin-bottom: 20px; }
