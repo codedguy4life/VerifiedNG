@@ -329,8 +329,3 @@ window.onload = async function () {
     });
 };
 
-if (locationInput) {
-  locationInput.addEventListener("keydown", function (e) {
-    if (e.key === "Enter") handleSearch();
-  });
-}

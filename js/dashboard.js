@@ -149,15 +149,17 @@ function saveProfile() {
           closeEditProfile();
           window.location.reload();
         }, 1000);
-      } else {
-        btn.textContent = "Save Changes";
-        alert(data.message);
-      }
-    })
-    .catch(() => {
-      btn.textContent = "Save Changes";
-      alert("Something went wrong. Try again.");
-    });
+     } else {
+  btn.textContent = "Save Changes";
+  const errEl = document.getElementById("saveError");
+  if (errEl) { errEl.textContent = data.message; errEl.style.display = "block"; }
+}
+})
+.catch(() => {
+  btn.textContent = "Save Changes";
+  const errEl = document.getElementById("saveError");
+  if (errEl) { errEl.textContent = "Connection failed. Try again."; errEl.style.display = "block"; }
+});
 }
 
 // ─── DELETE PROFILE ───
@@ -208,6 +210,7 @@ function confirmDeleteAccount() {
         errorEl.style.display = "block";
         btn.textContent = "Yes, Delete My Account";
         btn.style.opacity = "1";
+        btn.style.pointerEvents = "auto";
       }
     })
     .catch(() => {
@@ -215,5 +218,6 @@ function confirmDeleteAccount() {
       errorEl.style.display = "block";
       btn.textContent = "Yes, Delete My Account";
       btn.style.opacity = "1";
+      btn.style.pointerEvents = "auto";
     });
 }

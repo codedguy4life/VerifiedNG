@@ -42,34 +42,22 @@
     <!-- DASHBOARD -->
     <div class="dashboard-wrapper">
       <!-- WELCOME BANNER -->
-      <div class="welcome-banner">
-        <div>
-          <h1>
-            Welcome back, <em id="firstName">...</em>
-            <i class="bi bi-hand-thumbs-up"></i>
-          </h1>
-          <p>Here is your VerifiedNG account overview</p>
-        </div>
-        <div class="active-badge">✓ Active Account</div>
-      </div>
-      <div
-        style="
-          width: 70px;
-          height: 70px;
-          border-radius: 50%;
-          background: #00c853;
-          color: white;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-family: Syne, sans-serif;
-          font-size: 1.5rem;
-          font-weight: 800;
-          margin-bottom: 16px;
-        "
-        id="userAvatar">
-        ?
-      </div>
+    <div class="welcome-banner">
+  <div style="display:flex;align-items:center;gap:20px;">
+    <div id="userAvatar" style="width:70px;height:70px;border-radius:50%;
+      background:#00c853;color:white;display:flex;align-items:center;
+      justify-content:center;font-family:Syne,sans-serif;font-size:1.5rem;
+      font-weight:800;flex-shrink:0;overflow:hidden;">?</div>
+    <div>
+      <h1 style="margin:0 0 4px;">
+        Welcome back, <em id="firstName">...</em>
+        <i class="bi bi-hand-thumbs-up"></i>
+      </h1>
+      <p style="margin:0;">Here is your VerifiedNG account overview</p>
+    </div>
+  </div>
+  <div class="active-badge">✓ Active Account</div>
+</div>
 
       <!-- STATS -->
       <div class="stats-row">
@@ -142,16 +130,10 @@
               <div class="a-icon"><i class="bi bi-search"></i></div>
               <div class="a-label">Find a Service</div>
             </a>
-            <a
-              href="#"
-              onclick="
-                goToProviderSignup();
-                return false;
-              "
-              class="action-btn">
-              <div class="a-icon"><i class="bi bi-search"></i></div>
-              <div class="a-label">Become a Provider</div>
-            </a>
+           <a href="#" onclick="goToProviderSignup(); return false;" class="action-btn">
+  <div class="a-icon"><i class="bi bi-tools"></i></div>
+  <div class="a-label">Become a Provider</div>
+</a>
             <a href="index.html" class="action-btn">
               <div class="a-icon"><i class="bi bi-house"></i></div>
               <div class="a-label">Go Home</div>
@@ -362,6 +344,7 @@
         </div>
 
         <div style="display: flex; gap: 12px; margin-top: 8px">
+          <p id="saveError" style="color:red;font-size:0.85rem;display:none;margin-bottom:8px;"></p>
           <button
             onclick="saveProfile()"
             id="saveProfileBtn"

@@ -109,10 +109,10 @@ function handleLogin(e) {
         showError("loginIdentifier", "identifierError", data.message);
       }
     })
-    .catch((error) => {
-  btn.textContent = "Create My Account";
+    .catch(() => {
+  btn.textContent = "Log In";
   btn.classList.remove("loading");
-  showError("emailInput", "emailError", "Connection failed. Please try again.");
+  showError("loginIdentifier", "identifierError", "Connection failed. Please try again.");
 });
 }
 
