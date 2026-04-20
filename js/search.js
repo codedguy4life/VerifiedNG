@@ -1,4 +1,3 @@
-
 // Fetch real providers from backend and merge with static data
 
 async function loadRealProviders() {
@@ -323,5 +322,4 @@ window.onload = async function () {
     serviceInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter") handleSearch();
     });
-
-
+};

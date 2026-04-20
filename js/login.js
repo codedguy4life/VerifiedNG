@@ -87,13 +87,8 @@ function handleLogin(e) {
   // Send to real backend
   fetch(`${API_URL}/api/auth/login`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      email: identifier,
-      password: password,
-    }),
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: identifier, password: password }),
   })
     .then((response) => response.json())
     .then((data) => {
@@ -109,85 +104,90 @@ function handleLogin(e) {
         showError("loginIdentifier", "identifierError", data.message);
       }
     })
-   .catch(() => {
-  btn.textContent = "Log In";
-  btn.classList.remove("loading");
-  showError("loginIdentifier", "identifierError", "Connection failed. Please try again.");
-});
+    .catch(() => {
+      btn.textContent = "Log In";
+      btn.classList.remove("loading");
+      showError(
+        "loginIdentifier",
+        "identifierError",
+        "Connection failed. Please try again.",
+      );
+    });
 
-// ─── REAL TIME VALIDATION ───
-// Clears error as soon as user starts typing
-document.addEventListener("DOMContentLoaded", function () {
-  const fields = ["loginIdentifier", "passwordInput"];
-  fields.forEach((id) => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.addEventListener("input", () => clearError(id, id + "Error"));
-    }
+  // ─── REAL TIME VALIDATION ───
+  // Clears error as soon as user starts typing
+  document.addEventListener("DOMContentLoaded", function () {
+    const fields = ["loginIdentifier", "passwordInput"];
+    fields.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener("input", () => clearError(id, id + "Error"));
+      }
+    });
   });
-});
 
-// ─── TOGGLE PASSWORD VISIBILITY ───
-function togglePassword() {
-  const input = document.getElementById("passwordInput");
-  input.type = input.type === "password" ? "text" : "password";
-}
-
-// ─── ACCOUNT TYPE TOGGLE ───
-let accountType = "customer";
-
-function selectType(btn, type) {
-  accountType = type;
-  document
-    .querySelectorAll(".type-btn")
-    .forEach((b) => b.classList.remove("active"));
-  btn.classList.add("active");
-}
-
-// ─── FORGOT PASSWORD MODAL ───
-function showForgotPassword() {
-  document.getElementById("forgotModal").style.display = "flex";
-}
-
-function hideForgotPassword() {
-  document.getElementById("forgotModal").style.display = "none";
-  document.getElementById("forgotEmail").value = "";
-  document.getElementById("forgotSuccess").style.display = "none";
-  document.getElementById("forgotError").style.display = "none";
-}
-
-function sendResetLink() {
-  const email = document.getElementById("forgotEmail").value.trim();
-  const btn = document.getElementById("sendResetBtn");
-
-  document.getElementById("forgotSuccess").style.display = "none";
-  document.getElementById("forgotError").style.display = "none";
-
-  if (!email) {
-    document.getElementById("forgotErrorText").textContent =
-      "Please enter your email address";
-    document.getElementById("forgotError").style.display = "block";
-    return;
+  // ─── TOGGLE PASSWORD VISIBILITY ───
+  function togglePassword() {
+    const input = document.getElementById("passwordInput");
+    input.type = input.type === "password" ? "text" : "password";
   }
 
-  btn.textContent = "Sending...";
-  btn.style.opacity = "0.7";
+  // ─── ACCOUNT TYPE TOGGLE ───
+  let accountType = "customer";
 
-  fetch(`${API_URL}/api/auth/forgot-password`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email }),
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      document.getElementById("forgotSuccess").style.display = "block";
-      btn.textContent = "Sent!";
-    })
-    .catch(() => {
+  function selectType(btn, type) {
+    accountType = type;
+    document
+      .querySelectorAll(".type-btn")
+      .forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+  }
+
+  // ─── FORGOT PASSWORD MODAL ───
+  function showForgotPassword() {
+    document.getElementById("forgotModal").style.display = "flex";
+  }
+
+  function hideForgotPassword() {
+    document.getElementById("forgotModal").style.display = "none";
+    document.getElementById("forgotEmail").value = "";
+    document.getElementById("forgotSuccess").style.display = "none";
+    document.getElementById("forgotError").style.display = "none";
+  }
+
+  function sendResetLink() {
+    const email = document.getElementById("forgotEmail").value.trim();
+    const btn = document.getElementById("sendResetBtn");
+
+    document.getElementById("forgotSuccess").style.display = "none";
+    document.getElementById("forgotError").style.display = "none";
+
+    if (!email) {
       document.getElementById("forgotErrorText").textContent =
-        "Something went wrong. Try again.";
+        "Please enter your email address";
       document.getElementById("forgotError").style.display = "block";
-      btn.textContent = "Send Reset Link";
-      btn.style.opacity = "1";
-    });
+      return;
+    }
+
+    btn.textContent = "Sending...";
+    btn.style.opacity = "0.7";
+
+    fetch(`${API_URL}/api/auth/forgot-password`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        document.getElementById("forgotSuccess").style.display = "block";
+        btn.textContent = "Sent!";
+      })
+      .catch(() => {
+        document.getElementById("forgotErrorText").textContent =
+          "Something went wrong. Try again.";
+        document.getElementById("forgotError").style.display = "block";
+        btn.textContent = "Send Reset Link";
+        btn.style.opacity = "1";
+      });
+  }
 }
