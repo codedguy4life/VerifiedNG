@@ -41,8 +41,8 @@
 
     <!-- DASHBOARD -->
     <div class="dashboard-wrapper">
-      <!-- WELCOME BANNER -->
-    <div class="welcome-banner">
+  <!-- WELCOME BANNER -->
+<div class="welcome-banner">
   <div style="display:flex;align-items:center;gap:20px;">
     <div id="userAvatar" style="width:70px;height:70px;border-radius:50%;
       background:#00c853;color:white;display:flex;align-items:center;
@@ -53,10 +53,10 @@
         Welcome back, <em id="firstName">...</em>
         <i class="bi bi-hand-thumbs-up"></i>
       </h1>
-      <p style="margin:0;">Here is your VerifiedNG account overview</p>
+      <p style="margin:0;opacity:0.8;">Here is your VerifiedNG account overview</p>
     </div>
   </div>
-  <div class="active-badge">✓ Active Account</div>
+  <div class="active-badge" id="roleBadge">✓ Active Account</div>
 </div>
 
       <!-- STATS -->
@@ -130,10 +130,16 @@
               <div class="a-icon"><i class="bi bi-search"></i></div>
               <div class="a-label">Find a Service</div>
             </a>
-           <a href="#" onclick="goToProviderSignup(); return false;" class="action-btn">
-  <div class="a-icon"><i class="bi bi-tools"></i></div>
-  <div class="a-label">Become a Provider</div>
-</a>
+            <a
+              href="#"
+              onclick="
+                goToProviderSignup();
+                return false;
+              "
+              class="action-btn">
+              <div class="a-icon"><i class="bi bi-tools"></i></div>
+              <div class="a-label">Become a Provider</div>
+            </a>
             <a href="index.html" class="action-btn">
               <div class="a-icon"><i class="bi bi-house"></i></div>
               <div class="a-label">Go Home</div>
@@ -180,6 +186,19 @@
             </div>
           </div>
         </div>
+        <!-- PROVIDER INBOX — only shows for providers -->
+<div class="dash-card" style="grid-column: 1 / -1;" id="providerInbox" style="display:none;">
+  <h3><i class="bi bi-inbox"></i> Hire Requests Inbox</h3>
+  <p style="color:#888;font-size:0.88rem;margin-bottom:16px;">
+    People who want to hire you. Contact them directly to discuss the job.
+  </p>
+  <div id="hireRequestsList">
+    <div style="text-align:center;padding:32px;color:#888;">
+      <i class="bi bi-inbox" style="font-size:2rem;margin-bottom:8px;display:block;"></i>
+      No hire requests yet. Once customers send you requests they appear here.
+    </div>
+  </div>
+</div>
       </div>
     </div>
     <!-- EDIT PROFILE MODAL -->
@@ -212,20 +231,38 @@
         </h3>
 
         <!-- Add inside edit modal before Full Name -->
-<div style="margin-bottom:16px;text-align:center;">
-  <div id="editAvatarPreview" style="width:80px;height:80px;border-radius:50%;
-    background:#1a1a2e;color:white;display:flex;align-items:center;
-    justify-content:center;font-family:Syne,sans-serif;font-size:1.5rem;
-    font-weight:800;margin:0 auto 12px;cursor:pointer;overflow:hidden;"
-    onclick="document.getElementById('editPhotoInput').click()">
-  </div>
-  <label style="font-size:0.82rem;color:#1a1a2e;cursor:pointer;"
-    onclick="document.getElementById('editPhotoInput').click()">
-    <i class="bi bi-camera"></i> Change photo
-  </label>
-  <input type="file" id="editPhotoInput" accept="image/*" 
-    style="display:none" onchange="handleEditPhotoUpload(this)" />
-</div>
+        <div style="margin-bottom: 16px; text-align: center">
+          <div
+            id="editAvatarPreview"
+            style="
+              width: 80px;
+              height: 80px;
+              border-radius: 50%;
+              background: #1a1a2e;
+              color: white;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-family: Syne, sans-serif;
+              font-size: 1.5rem;
+              font-weight: 800;
+              margin: 0 auto 12px;
+              cursor: pointer;
+              overflow: hidden;
+            "
+            onclick="document.getElementById('editPhotoInput').click()"></div>
+          <label
+            style="font-size: 0.82rem; color: #1a1a2e; cursor: pointer"
+            onclick="document.getElementById('editPhotoInput').click()">
+            <i class="bi bi-camera"></i> Change photo
+          </label>
+          <input
+            type="file"
+            id="editPhotoInput"
+            accept="image/*"
+            style="display: none"
+            onchange="handleEditPhotoUpload(this)" />
+        </div>
         <div style="margin-bottom: 16px">
           <label
             style="
@@ -344,7 +381,14 @@
         </div>
 
         <div style="display: flex; gap: 12px; margin-top: 8px">
-          <p id="saveError" style="color:red;font-size:0.85rem;display:none;margin-bottom:8px;"></p>
+          <p
+            id="saveError"
+            style="
+              color: red;
+              font-size: 0.85rem;
+              display: none;
+              margin-bottom: 8px;
+            "></p>
           <button
             onclick="saveProfile()"
             id="saveProfileBtn"

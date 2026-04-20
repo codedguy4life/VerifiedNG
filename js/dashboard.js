@@ -63,6 +63,83 @@ if (user.profilePhoto && user.profilePhoto.startsWith('data:')) {
       });
   }
 
+  // ─── PROVIDER INBOX ───
+  if (user.role === 'provider') {
+    const inboxCard = document.getElementById('providerInbox');
+    if (inboxCard) inboxCard.style.display = 'block';
+
+    const token = localStorage.getItem('token');
+    fetch(`${API_URL}/api/hire/provider/${user.id}`, {
+      headers: { authorization: `Bearer ${token}` }
+    })
+    .then(res => res.json())
+    .then(data => {
+      const list = document.getElementById('hireRequestsList');
+      if (!data.requests || data.requests.length === 0) {
+        list.innerHTML = `
+          <div style="text-align:center;padding:32px;color:#888;">
+            <i class="bi bi-inbox" style="font-size:2rem;margin-bottom:8px;display:block;"></i>
+            No hire requests yet. Share your profile to start getting jobs!
+          </div>
+        `;
+        return;
+      }
+
+      list.innerHTML = data.requests.map(r => `
+        <div style="border:1px solid #eee;border-radius:12px;padding:20px;
+          margin-bottom:12px;background:#fafafa;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;
+            margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+            <div>
+              <div style="font-weight:700;font-family:Syne,sans-serif;font-size:1rem;">
+                ${r.customerName}
+              </div>
+              <div style="font-size:0.82rem;color:#888;margin-top:2px;">
+                <i class="bi bi-phone"></i> ${r.customerPhone}
+              </div>
+            </div>
+            <span style="background:${r.status === 'pending' ? '#fff8e1' : r.status === 'accepted' ? '#e6f9ee' : '#fff0f0'};
+              color:${r.status === 'pending' ? '#b8860b' : r.status === 'accepted' ? '#007a33' : '#c62828'};
+              padding:4px 12px;border-radius:20px;font-size:0.8rem;font-weight:600;">
+              ${r.status.charAt(0).toUpperCase() + r.status.slice(1)}
+            </span>
+          </div>
+          <div style="font-size:0.88rem;margin-bottom:8px;">
+            <strong>Service:</strong> ${r.serviceNeeded}
+          </div>
+          <div style="font-size:0.88rem;color:#555;margin-bottom:12px;
+            background:white;padding:12px;border-radius:8px;border:1px solid #eee;">
+            ${r.description}
+          </div>
+          <div style="font-size:0.78rem;color:#aaa;margin-bottom:12px;">
+            <i class="bi bi-clock"></i> 
+            ${new Date(r.createdAt).toLocaleDateString('en-NG', {
+              day: 'numeric', month: 'short', year: 'numeric',
+              hour: '2-digit', minute: '2-digit'
+            })}
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <a href="https://wa.me/234${r.customerPhone.replace(/^0/, '')}"
+              target="_blank"
+              style="background:#25D366;color:white;padding:8px 16px;
+              border-radius:8px;text-decoration:none;font-size:0.85rem;font-weight:600;">
+              <i class="bi bi-whatsapp"></i> WhatsApp
+            </a>
+            <a href="tel:${r.customerPhone}"
+              style="background:#1a1a2e;color:white;padding:8px 16px;
+              border-radius:8px;text-decoration:none;font-size:0.85rem;font-weight:600;">
+              <i class="bi bi-telephone"></i> Call
+            </a>
+          </div>
+        </div>
+      `).join('');
+    })
+    .catch(() => {
+      document.getElementById('hireRequestsList').innerHTML =
+        "<p style='color:#888;font-size:0.9rem;'>Could not load requests. Try refreshing.</p>";
+    });
+  }
+
   if (user.lastLogin) {
     const last = new Date(user.lastLogin);
     document.getElementById("lastLoginActivity").textContent =
@@ -123,7 +200,9 @@ function closeEditProfile() {
 function saveProfile() {
   const token = localStorage.getItem("token");
   const btn = document.getElementById("saveProfileBtn");
+  const errEl = document.getElementById("saveError");
   btn.textContent = "Saving...";
+  if (errEl) errEl.style.display = "none";
 
   fetch(`${API_URL}/api/user/profile`, {
     method: "PUT",
@@ -143,23 +222,30 @@ function saveProfile() {
     .then((res) => res.json())
     .then((data) => {
       if (data.user) {
-        localStorage.setItem("user", JSON.stringify(data.user));
+        // Merge so nothing is lost
+        const existing = getCurrentUser();
+        const merged = { ...existing, ...data.user };
+        localStorage.setItem("user", JSON.stringify(merged));
         btn.textContent = "Saved!";
         setTimeout(() => {
           closeEditProfile();
           window.location.reload();
         }, 1000);
-     } else {
-  btn.textContent = "Save Changes";
-  const errEl = document.getElementById("saveError");
-  if (errEl) { errEl.textContent = data.message; errEl.style.display = "block"; }
-}
-})
-.catch(() => {
-  btn.textContent = "Save Changes";
-  const errEl = document.getElementById("saveError");
-  if (errEl) { errEl.textContent = "Connection failed. Try again."; errEl.style.display = "block"; }
-});
+      } else {
+        btn.textContent = "Save Changes";
+        if (errEl) {
+          errEl.textContent = data.message || "Something went wrong";
+          errEl.style.display = "block";
+        }
+      }
+    })
+    .catch(() => {
+      btn.textContent = "Save Changes";
+      if (errEl) {
+        errEl.textContent = "Connection failed. Try again.";
+        errEl.style.display = "block";
+      }
+    });
 }
 
 // ─── DELETE PROFILE ───

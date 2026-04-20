@@ -109,12 +109,11 @@ function handleLogin(e) {
         showError("loginIdentifier", "identifierError", data.message);
       }
     })
-    .catch(() => {
+   .catch(() => {
   btn.textContent = "Log In";
   btn.classList.remove("loading");
   showError("loginIdentifier", "identifierError", "Connection failed. Please try again.");
 });
-}
 
 // ─── REAL TIME VALIDATION ───
 // Clears error as soon as user starts typing

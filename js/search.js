@@ -323,9 +323,5 @@ window.onload = async function () {
     serviceInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter") handleSearch();
     });
-  if (locationInput)
-    locationInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") handleSearch();
-    });
-};
+
 

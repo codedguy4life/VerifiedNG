@@ -1,30 +1,166 @@
-// ─── PROFILE PAGE JS ───
-
-window.onload = function () {
-  const id = new URLSearchParams(window.location.search).get("id");
-  const provider = providers.find((p) => p.id == id);
-
-  if (!provider) {
-    document.querySelector(".profile-hero").innerHTML = `
-      <div class="not-found">
-        <h2>Provider Not Found</h2>
-        <p>This provider may no longer be available.</p>
-        <button class="back-btn" onclick="window.location.href='search.html'">Back to Search</button>
+// ─── CONTENT GATE ───
+(function() {
+  const user = localStorage.getItem('user');
+  const token = localStorage.getItem('token');
+  if (!user || !token) {
+    document.body.innerHTML = `
+      <div style="min-height:100vh;display:flex;align-items:center;
+        justify-content:center;font-family:'DM Sans',sans-serif;
+        background:#f8f9ff;">
+        <div style="text-align:center;max-width:420px;padding:40px;
+          background:white;border-radius:20px;
+          box-shadow:0 8px 40px rgba(0,0,0,0.1);">
+          <div style="font-size:3rem;margin-bottom:16px;">🔒</div>
+          <h2 style="font-family:Syne,sans-serif;color:#1a1a2e;margin-bottom:8px;">
+            Sign In to View This Profile
+          </h2>
+          <p style="color:#666;margin-bottom:24px;font-size:0.95rem;line-height:1.6;">
+            Create a free account to view verified provider profiles 
+            and hire trusted service providers across Nigeria.
+          </p>
+          <a href="signup-customer.html" style="display:block;background:#1a1a2e;
+            color:white;padding:14px;border-radius:10px;text-decoration:none;
+            font-weight:600;margin-bottom:12px;font-size:0.95rem;">
+            Create Free Account
+          </a>
+          <a href="login.html" style="display:block;background:#f5f5f5;
+            color:#1a1a2e;padding:14px;border-radius:10px;
+            text-decoration:none;font-weight:600;font-size:0.95rem;">
+            Log In
+          </a>
+          <p style="color:#aaa;font-size:0.8rem;margin-top:16px;">
+            <a href="index.html" style="color:#1a1a2e;">← Back to Homepage</a>
+          </p>
+        </div>
       </div>
     `;
     return;
   }
+})();
 
-  // Page title and breadcrumb
+// ─── PROFILE PAGE JS ───
+
+window.onload = async function () {
+  const id = new URLSearchParams(window.location.search).get("id");
+
+  // Check if this is a database provider (id starts with "db_")
+  if (id && id.startsWith("db_")) {
+    await loadDbProvider(id.replace("db_", ""));
+  } else {
+    // Static provider
+    const provider = providers.find((p) => p.id == id);
+    if (!provider) {
+      showNotFound();
+      return;
+    }
+    renderProvider(provider);
+  }
+};
+
+// Load provider from database
+async function loadDbProvider(mongoId) {
+  try {
+    const response = await fetch(`${API_URL}/api/providers/${mongoId}`);
+    const data = await response.json();
+
+    if (!data.provider) {
+      showNotFound();
+      return;
+    }
+
+    const p = data.provider;
+
+    // Convert DB provider to display format
+    const provider = {
+      id: "db_" + p._id,
+      name: p.fullName,
+      role: p.category || "Service Provider",
+      category: p.category || "Other",
+      icon: getCategoryIconProfile(p.category),
+      avatarBg: getAvatarBgProfile(p.category),
+      rating: 4.5,
+      reviewCount: 0,
+      jobs: 0,
+      experienceYears: "New",
+      location: p.city && p.state ? `${p.city}, ${p.state}` : p.state || "Nigeria",
+      availability: "online",
+      availText: "Available Now",
+      tags: p.skills ? p.skills.slice(0, 3) : [p.category || "Service"],
+      bio: p.bio || "Verified service provider on VerifiedNG.",
+      price: "₦Talk-Price",
+      per: "/job",
+      verified: p.isVerified || false,
+      reviews: [],
+      gallery: [],
+      experience: [],
+      skills: p.skills || [],
+    };
+
+    renderProvider(provider);
+  } catch (error) {
+    console.log("Could not load provider:", error);
+    showNotFound();
+  }
+}
+
+function getCategoryIconProfile(category) {
+  const icons = {
+    Plumbing: "bi bi-tools",
+    Electrical: "bi bi-lightning-charge",
+    "Auto Mechanic": "bi bi-car-front",
+    Tutoring: "bi bi-book",
+    Cleaning: "bi bi-stars",
+    Photography: "bi bi-camera",
+    Tailoring: "bi bi-scissors",
+    Catering: "bi bi-cup-hot",
+    Programming: "bi bi-laptop",
+    ContentCreator: "bi bi-camera-video",
+    "Graphic Designer": "bi bi-palette",
+    Carpenter: "bi bi-hammer",
+    Painter: "bi bi-brush",
+    Driver: "bi bi-truck"
+  };
+  return icons[category] || "bi bi-person-workspace";
+}
+
+function getAvatarBgProfile(category) {
+  const bgs = {
+    Plumbing: "#e6f9ee",
+    Electrical: "#fffbec",
+    "Auto Mechanic": "#eef3ff",
+    Tutoring: "#fff8ec",
+    Cleaning: "#f0f0ff",
+    Photography: "#ffeef3",
+    Tailoring: "#ffeef3",
+    Catering: "#e6f9ee",
+    Programming: "#eef3ff"
+  };
+  return bgs[category] || "#f5f5f5";
+}
+
+function showNotFound() {
+  document.querySelector(".profile-hero").innerHTML = `
+    <div style="text-align:center;padding:60px 20px;">
+      <div style="font-size:3rem;margin-bottom:16px;"><i class="bi bi-person-x"></i></div>
+      <h2 style="font-family:Syne,sans-serif;">Provider Not Found</h2>
+      <p style="color:#666;">This provider may no longer be available.</p>
+      <a href="search.html" style="display:inline-block;margin-top:20px;
+        background:#1a1a2e;color:white;padding:12px 24px;border-radius:8px;
+        text-decoration:none;font-weight:600;">Back to Search</a>
+    </div>
+  `;
+}
+
+// Extract render logic into separate function
+function renderProvider(provider) {
   document.title = provider.name + " — VerifiedNG";
   document.getElementById("breadcrumbName").textContent = provider.name;
 
-  // Avatar — render Bootstrap icon
   const avatar = document.getElementById("providerAvatar");
   avatar.style.background = provider.avatarBg || "#e6f9ee";
-  avatar.innerHTML = `<i class="${provider.icon}"></i><div class="online-dot ${provider.availability}" id="onlineDot"></div>`;
+  avatar.innerHTML = `<i class="${provider.icon}" style="font-size:2rem;"></i>
+    <div class="online-dot ${provider.availability}" id="onlineDot"></div>`;
 
-  // Hero info
   document.getElementById("providerName").textContent = provider.name;
   document.getElementById("providerRole").textContent =
     provider.role + " · " + provider.location;
@@ -34,48 +170,34 @@ window.onload = function () {
   document.getElementById("providerLocation").textContent = provider.location;
   document.getElementById("providerAvailText").textContent = provider.availText;
 
-  // Hire panel
   document.getElementById("panelAvailText").textContent = provider.availText;
   document.getElementById("panelPrice").textContent = provider.price;
   document.getElementById("panelPer").textContent = provider.per;
 
-  // Stats
-  document.getElementById("statJobs").innerHTML =
-    provider.jobs + "<span>+</span>";
-  document.getElementById("statExperience").innerHTML =
-    provider.experienceYears;
-  document.getElementById("statRating").innerHTML =
-    provider.rating + "<span>★</span>";
+  document.getElementById("statJobs").innerHTML = provider.jobs + "<span>+</span>";
+  document.getElementById("statExperience").innerHTML = provider.experienceYears;
+  document.getElementById("statRating").innerHTML = provider.rating + "<span>★</span>";
 
-  // Bio
   document.getElementById("providerBio").textContent = provider.bio;
 
-  // Skills
   document.getElementById("providerSkills").innerHTML = provider.skills
     .map((tag) => `<span class="skill-tag">${tag}</span>`)
-    .join("");
+    .join("") || "<p style='color:#888;font-size:0.9rem;'>Skills not listed yet.</p>";
 
-  // Gallery — render Bootstrap icons properly
-  document.getElementById("providerGallery").innerHTML = provider.gallery
-    .map(
-      (icon) => `
-      <div class="gallery-item">
-        <i class="${icon}"></i>
-        <div class="overlay">View</div>
-      </div>
-    `,
-    )
-    .join("");
+  document.getElementById("providerGallery").innerHTML = provider.gallery.length
+    ? provider.gallery.map((icon) => `
+        <div class="gallery-item">
+          <i class="${icon}"></i>
+          <div class="overlay">View</div>
+        </div>`).join("")
+    : "<p style='color:#888;font-size:0.9rem;'>No gallery photos yet.</p>";
 
-  // Reviews
   document.getElementById("reviewRating").textContent = provider.rating;
-  document.getElementById("reviewCount").textContent =
-    provider.reviewCount + " reviews";
+  document.getElementById("reviewCount").textContent = provider.reviewCount + " reviews";
 
   if (provider.reviews && provider.reviews.length) {
     document.getElementById("reviewList").innerHTML = provider.reviews
-      .map(
-        (r) => `
+      .map((r) => `
         <div class="review-card">
           <div class="review-top">
             <div class="reviewer">
@@ -89,33 +211,23 @@ window.onload = function () {
           </div>
           <p class="review-text">${r.text}</p>
           <span class="review-tag">${r.tag}</span>
-        </div>
-      `,
-      )
-      .join("");
+        </div>`).join("");
   }
 
-  // Modal
   document.getElementById("modalTitle").textContent = "Hire " + provider.name;
   document.getElementById("modalServices").innerHTML =
     provider.tags.map((tag) => `<option>${tag}</option>`).join("") +
     "<option>Other</option>";
 
-  // Sidebar
   document.getElementById("sidebarLocation").textContent = provider.location;
-  document.getElementById("sidebarAvailability").textContent =
-    provider.availText;
+  document.getElementById("sidebarAvailability").textContent = provider.availText;
   document.getElementById("sidebarJobs").textContent = provider.jobs + "+";
-  document.getElementById("sidebarExperience").textContent =
-    provider.experienceYears;
+  document.getElementById("sidebarExperience").textContent = provider.experienceYears;
   document.getElementById("sidebarRating").textContent = provider.rating + " ★";
 
-  // Experience
   if (provider.experience && provider.experience.length > 0) {
     document.getElementById("providerExperience").innerHTML =
-      provider.experience
-        .map(
-          (e) => `
+      provider.experience.map((e) => `
         <div class="exp-item">
           <div class="exp-icon"><i class="${e.icon}"></i></div>
           <div class="exp-info">
@@ -123,10 +235,10 @@ window.onload = function () {
             <p>${e.desc}</p>
             <div class="exp-date">${e.date}</div>
           </div>
-        </div>
-      `,
-        )
-        .join("");
+        </div>`).join("");
+  } else {
+    document.getElementById("providerExperience").innerHTML =
+      "<p style='color:#888;font-size:0.9rem;'>No experience listed yet.</p>";
   }
 
   // Similar providers
@@ -134,27 +246,22 @@ window.onload = function () {
     .filter((p) => p.category === provider.category && p.id !== provider.id)
     .slice(0, 3);
 
-  if (similar.length > 0) {
-    document.getElementById("similarList").innerHTML = similar
-      .map(
-        (p) => `
-        <div class="similar-item" onclick="window.location.href='all-providers-profile.html?id=${p.id}'" style="cursor:pointer;display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f0f0f0">
-          <div style="width:36px;height:36px;border-radius:50%;background:${p.avatarBg};display:flex;align-items:center;justify-content:center;font-size:1rem">
+  document.getElementById("similarList").innerHTML = similar.length
+    ? similar.map((p) => `
+        <div onclick="window.location.href='all-providers-profile.html?id=${p.id}'"
+          style="cursor:pointer;display:flex;align-items:center;gap:10px;
+          padding:8px 0;border-bottom:1px solid #f0f0f0;">
+          <div style="width:36px;height:36px;border-radius:50%;background:${p.avatarBg};
+            display:flex;align-items:center;justify-content:center;font-size:1rem;">
             <i class="${p.icon}"></i>
           </div>
           <div>
-            <div style="font-weight:600;font-size:0.85rem">${p.name}</div>
-            <div style="font-size:0.75rem;color:#888">${p.rating} ★ · ${p.jobs}+ jobs</div>
+            <div style="font-weight:600;font-size:0.85rem;">${p.name}</div>
+            <div style="font-size:0.75rem;color:#888;">${p.rating} ★ · ${p.jobs}+ jobs</div>
           </div>
-        </div>
-      `,
-      )
-      .join("");
-  } else {
-    document.getElementById("similarList").innerHTML =
-      '<p style="font-size:13px;color:#888">No similar providers found yet.</p>';
-  }
-};
+        </div>`).join("")
+    : "<p style='font-size:13px;color:#888;'>No similar providers found yet.</p>";
+}
 
 // ─── MODAL ───
 function openModal() {
