@@ -1,18 +1,33 @@
+// ─── SEARCH HELPERS ───
+function goToSearch(service = "", location = "") {
+  const params = new URLSearchParams();
+  if (service.trim()) params.set("service", service.trim());
+  if (location.trim()) params.set("location", location.trim());
+
+  window.location.href = `search.html${params.toString() ? "?" + params.toString() : ""}`;
+}
+
 // ─── NAV SEARCH ───
 function handleNavSearch() {
-  const service = document.getElementById("navServiceInput").value.trim();
-  if (service) {
-    window.location.href = `search.html?service=${encodeURIComponent(service)}&location=Nigeria`;
-  }
+  const input = document.getElementById("navServiceInput");
+  const service = input ? input.value.trim() : "";
+  if (service) goToSearch(service, "");
 }
 
 // ─── HERO SEARCH ───
 function handleSearch() {
-  const service = document.getElementById("serviceInput").value.trim();
-  const location = document.getElementById("locationInput").value.trim();
-  if (service || location) {
-    window.location.href = `search.html?service=${encodeURIComponent(service)}&location=${encodeURIComponent(location)}`;
+  const serviceInput = document.getElementById("serviceInput");
+  const locationInput = document.getElementById("locationInput");
+
+  const service = serviceInput ? serviceInput.value.trim() : "";
+  const location = locationInput ? locationInput.value.trim() : "";
+
+  if (!service && !location) {
+    if (serviceInput) serviceInput.focus();
+    return;
   }
+
+  goToSearch(service, location);
 }
 
 // ─── CATEGORY COUNTS FROM DATABASE ───
@@ -33,9 +48,10 @@ function loadCategoryCounts() {
         Tailoring: "countTailoring",
         Catering: "countCatering",
       };
+
       Object.keys(categoryMap).forEach((cat) => {
         const el = document.getElementById(categoryMap[cat]);
-        if (el && counts[cat]) {
+        if (el && counts[cat] !== undefined) {
           el.textContent = counts[cat] + " providers";
         }
       });
@@ -53,7 +69,7 @@ function showProviderBanner(userData) {
       font-size: 0.9rem;
     `;
     banner.innerHTML = `
-      <i class="bi bi-tools"></i> Are you a skilled provider? 
+      <i class="bi bi-tools"></i> Are you a skilled provider?
       <a href="#" onclick="goToProviderSignup(); return false;"
         style="color:#00c853;font-weight:600;margin-left:8px;text-decoration:none;">
         Set up your provider profile →
@@ -65,22 +81,36 @@ function showProviderBanner(userData) {
 
 // ─── ON PAGE LOAD ───
 document.addEventListener("DOMContentLoaded", function () {
-  // Load real category counts
   loadCategoryCounts();
 
-  // Enter key on search inputs
   const navInput = document.getElementById("navServiceInput");
   const heroServiceInput = document.getElementById("serviceInput");
   const heroLocationInput = document.getElementById("locationInput");
 
-  if (navInput) navInput.addEventListener("keydown", (e) => { if (e.key === "Enter") handleNavSearch(); });
-  if (heroServiceInput) heroServiceInput.addEventListener("keydown", (e) => { if (e.key === "Enter") handleSearch(); });
-  if (heroLocationInput) heroLocationInput.addEventListener("keydown", (e) => { if (e.key === "Enter") handleSearch(); });
+  if (navInput) {
+    navInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") handleNavSearch();
+    });
+  }
 
-  // Show provider banner for logged in customers
+  if (heroServiceInput) {
+    heroServiceInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") handleSearch();
+    });
+  }
+
+  if (heroLocationInput) {
+    heroLocationInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") handleSearch();
+    });
+  }
+
   const storedUser = localStorage.getItem("user");
   if (storedUser) {
-    const userData = JSON.parse(storedUser);
-    showProviderBanner(userData);
+    try {
+      showProviderBanner(JSON.parse(storedUser));
+    } catch (error) {
+      console.log("Could not read saved user:", error);
+    }
   }
 });
