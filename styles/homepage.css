@@ -221,6 +221,29 @@ nav {
   box-shadow: 0 6px 20px rgba(0, 184, 94, 0.35);
 }
 
+/* ─── DARK MODE TOGGLE ─── */
+.theme-toggle {
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--white);
+  color: var(--dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.25s ease;
+}
+
+.theme-toggle:hover {
+  background: var(--green);
+  color: white;
+  border-color: var(--green);
+  transform: rotate(15deg);
+}
+
 /* ─── HERO ─── */
 .hero {
   position: relative;
@@ -1576,6 +1599,11 @@ footer {
     font-size: 15px;
     max-width: 100%;
   }
+.theme-toggle {
+  width: 34px;
+  height: 34px;
+  font-size: 14px;
+}
   .hero {
     padding: 20px;
     overflow: visible;
