@@ -26,6 +26,20 @@
   --shadow-sm: 0 2px 12px rgba(0, 0, 0, 0.07);
 }
 
+/* ─── DARK MODE ─── */
+body.dark-mode {
+  --light: #121212;
+  --white: #1e1e1e;
+  --dark: #f5f5f5;
+  --dark2: #0b0b0b;
+  --mid: #b5b5b5;
+  --card-bg: #1e1e1e;
+  --border: rgba(255, 255, 255, 0.1);
+  --shadow: 0 8px 40px rgba(0, 0, 0, 0.4);
+  --shadow-sm: 0 2px 12px rgba(0, 0, 0, 0.3);
+  --green-light: rgba(0, 184, 94, 0.15);
+}
+
 html {
   scroll-behavior: smooth;
 }
