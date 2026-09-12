@@ -36,7 +36,9 @@ function loadCategoryCounts() {
     .then((res) => res.json())
     .then((data) => {
       if (!data.counts) return;
+
       const counts = data.counts;
+
       const categoryMap = {
         Electrical: "countElectrical",
         Plumbing: "countPlumbing",
@@ -44,19 +46,33 @@ function loadCategoryCounts() {
         "Auto Mechanic": "countMechanic",
         Cleaning: "countCleaning",
         Photography: "countPhotography",
-        ContentCreator: "countPhotography",
         Tailoring: "countTailoring",
         Catering: "countCatering",
       };
 
       Object.keys(categoryMap).forEach((cat) => {
         const el = document.getElementById(categoryMap[cat]);
-        if (el && counts[cat] !== undefined) {
-          el.textContent = counts[cat] + " providers";
+
+        if (!el) return;
+
+        if (counts[cat] && counts[cat] > 0) {
+          // Real count from database
+          el.textContent =
+            counts[cat] +
+            (counts[cat] === 1 ? " provider" : " providers");
+
+          el.style.color = "#00c853";
+        } else {
+          // No real providers yet — show "coming soon"
+          el.textContent = "Coming soon";
+          el.style.color = "#aaa";
         }
       });
     })
-    .catch((err) => console.log("Could not load counts:", err));
+    .catch((err) => {
+      console.log("Could not load counts:", err);
+      // Static numbers remain as fallback
+    });
 }
 
 // ─── PROVIDER BANNER FOR LOGGED IN CUSTOMERS ───
