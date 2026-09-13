@@ -250,7 +250,8 @@ const forgotPassword = async (req, res) => {
       resetTokenExpiry,
     });
 
-    const resetLink = `https://codedguy4life.github.io/VerifiedNG/reset-password.html?token=${resetToken}&email=${encodeURIComponent(cleanEmail)}`;
+    const frontendUrl = process.env.FRONTEND_URL.replace(/\/$/, "");
+    const resetLink = `${frontendUrl}/reset-password.html?token=${resetToken}&email=${encodeURIComponent(cleanEmail)}`;
 
     await transporter.sendMail({
       from: `"VerifiedNG" <${process.env.EMAIL_USER}>`,
