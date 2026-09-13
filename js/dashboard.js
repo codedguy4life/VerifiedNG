@@ -13,19 +13,19 @@ if (user) {
     user.role === "customer" ? "Customer" : "Service Provider";
 
   // ─── AVATAR ───
-const avatarEl = document.getElementById('userAvatar');
-if (user.profilePhoto && user.profilePhoto.startsWith('data:')) {
-  // Show real photo
-  avatarEl.style.backgroundImage = `url(${user.profilePhoto})`;
-  avatarEl.style.backgroundSize = 'cover';
-  avatarEl.style.backgroundPosition = 'center';
-  avatarEl.textContent = '';
-} else {
-  // Show initials
-  const parts = user.fullName.split(' ');
-  const initials = parts[0][0] + (parts[1] ? parts[1][0] : '');
-  avatarEl.textContent = initials.toUpperCase();
-}
+  const avatarEl = document.getElementById("userAvatar");
+  if (user.profilePhoto && user.profilePhoto.startsWith("data:")) {
+    // Show real photo
+    avatarEl.style.backgroundImage = `url(${user.profilePhoto})`;
+    avatarEl.style.backgroundSize = "cover";
+    avatarEl.style.backgroundPosition = "center";
+    avatarEl.textContent = "";
+  } else {
+    // Show initials
+    const parts = user.fullName.split(" ");
+    const initials = parts[0][0] + (parts[1] ? parts[1][0] : "");
+    avatarEl.textContent = initials.toUpperCase();
+  }
 
   // ─── STATS ───
   document.getElementById("loginCount").textContent = user.loginCount || 1;
@@ -64,80 +64,49 @@ if (user.profilePhoto && user.profilePhoto.startsWith('data:')) {
   }
 
   // ─── PROVIDER INBOX ───
-  if (user.role === 'provider') {
-    const inboxCard = document.getElementById('providerInbox');
-    if (inboxCard) inboxCard.style.display = 'block';
+  if (user.role === "provider") {
+    const inboxCard = document.getElementById("providerInbox");
+    if (inboxCard) inboxCard.style.display = "block";
 
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     fetch(`${API_URL}/api/hire/provider/${user.id}`, {
-      headers: { authorization: `Bearer ${token}` }
+      headers: { authorization: `Bearer ${token}` },
     })
-    .then(res => res.json())
-    .then(data => {
-      const list = document.getElementById('hireRequestsList');
-      if (!data.requests || data.requests.length === 0) {
-        list.innerHTML = `
-          <div style="text-align:center;padding:32px;color:#888;">
-            <i class="bi bi-inbox" style="font-size:2rem;margin-bottom:8px;display:block;"></i>
-            No hire requests yet. Share your profile to start getting jobs!
-          </div>
-        `;
-        return;
-      }
+      .then((res) => res.json())
+      .then((data) => {
+        const list = document.getElementById("hireRequestsList");
 
-      list.innerHTML = data.requests.map(r => `
-        <div style="border:1px solid #eee;border-radius:12px;padding:20px;
-          margin-bottom:12px;background:#fafafa;">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;
-            margin-bottom:12px;flex-wrap:wrap;gap:8px;">
-            <div>
-              <div style="font-weight:700;font-family:Syne,sans-serif;font-size:1rem;">
-                ${r.customerName}
-              </div>
-              <div style="font-size:0.82rem;color:#888;margin-top:2px;">
-                <i class="bi bi-phone"></i> ${r.customerPhone}
-              </div>
-            </div>
-            <span style="background:${r.status === 'pending' ? '#fff8e1' : r.status === 'accepted' ? '#e6f9ee' : '#fff0f0'};
-              color:${r.status === 'pending' ? '#b8860b' : r.status === 'accepted' ? '#007a33' : '#c62828'};
-              padding:4px 12px;border-radius:20px;font-size:0.8rem;font-weight:600;">
-              ${r.status.charAt(0).toUpperCase() + r.status.slice(1)}
-            </span>
-          </div>
-          <div style="font-size:0.88rem;margin-bottom:8px;">
-            <strong>Service:</strong> ${r.serviceNeeded}
-          </div>
-          <div style="font-size:0.88rem;color:#555;margin-bottom:12px;
-            background:white;padding:12px;border-radius:8px;border:1px solid #eee;">
-            ${r.description}
-          </div>
-          <div style="font-size:0.78rem;color:#aaa;margin-bottom:12px;">
-            <i class="bi bi-clock"></i> 
-            ${new Date(r.createdAt).toLocaleDateString('en-NG', {
-              day: 'numeric', month: 'short', year: 'numeric',
-              hour: '2-digit', minute: '2-digit'
-            })}
-          </div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <a href="https://wa.me/234${r.customerPhone.replace(/^0/, '')}"
-              target="_blank"
-              style="background:#25D366;color:white;padding:8px 16px;
-              border-radius:8px;text-decoration:none;font-size:0.85rem;font-weight:600;">
-              <i class="bi bi-whatsapp"></i> WhatsApp
-            </a>
-            <a href="tel:${r.customerPhone}"
-              style="background:#1a1a2e;color:white;padding:8px 16px;
-              border-radius:8px;text-decoration:none;font-size:0.85rem;font-weight:600;">
-              <i class="bi bi-telephone"></i> Call
-            </a>
-          </div>
-        </div>
-      `).join('');
-    })
-    .catch(() => {
-      document.getElementById('hireRequestsList').innerHTML =
-        "<p style='color:#888;font-size:0.9rem;'>Could not load requests. Try refreshing.</p>";
-    });
+        if (!data.requests || data.requests.length === 0) {
+          list.replaceChildren();
+
+          const empty = document.createElement("div");
+          empty.style.cssText =
+            "text-align:center;padding:32px;color:#888;";
+
+          const icon = document.createElement("i");
+          icon.className = "bi bi-inbox";
+          icon.style.cssText =
+            "font-size:2rem;margin-bottom:8px;display:block;";
+
+          const message = document.createElement("div");
+          message.textContent =
+            "No hire requests yet. Share your profile to start getting jobs!";
+
+          empty.append(icon, message);
+          list.appendChild(empty);
+          return;
+        }
+
+        list.replaceChildren(
+          ...data.requests.map((request) => createHireRequestCard(request)),
+        );
+      })
+      .catch(() => {
+        const list = document.getElementById("hireRequestsList");
+        list.textContent = "Could not load requests. Try refreshing.";
+        list.style.color = "#888";
+        list.style.fontSize = "0.9rem";
+      });
   }
 
   if (user.lastLogin) {
@@ -156,18 +125,115 @@ if (user.profilePhoto && user.profilePhoto.startsWith('data:')) {
     `Total logins: ${user.loginCount || 1}`;
 }
 
+function createHireRequestCard(request) {
+  const card = document.createElement("div");
+  card.style.cssText =
+    "border:1px solid #eee;border-radius:12px;padding:20px;margin-bottom:12px;background:#fafafa;";
+
+  const top = document.createElement("div");
+  top.style.cssText =
+    "display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;flex-wrap:wrap;gap:8px;";
+
+  const customerBlock = document.createElement("div");
+
+  const customerName = document.createElement("div");
+  customerName.style.cssText =
+    "font-weight:700;font-family:Syne,sans-serif;font-size:1rem;";
+  customerName.textContent = request.customerName || "Customer";
+
+  const phoneRow = document.createElement("div");
+  phoneRow.style.cssText =
+    "font-size:0.82rem;color:#888;margin-top:2px;";
+
+  const phoneIcon = document.createElement("i");
+  phoneIcon.className = "bi bi-phone";
+  phoneRow.append(phoneIcon, document.createTextNode(` ${request.customerPhone || ""}`));
+
+  customerBlock.append(customerName, phoneRow);
+
+  const status = document.createElement("span");
+  const statusValue = String(request.status || "pending");
+  status.textContent =
+    statusValue.charAt(0).toUpperCase() + statusValue.slice(1);
+  status.style.cssText =
+    `background:${statusValue === "pending" ? "#fff8e1" : statusValue === "accepted" ? "#e6f9ee" : "#fff0f0"};` +
+    `color:${statusValue === "pending" ? "#b8860b" : statusValue === "accepted" ? "#007a33" : "#c62828"};` +
+    "padding:4px 12px;border-radius:20px;font-size:0.8rem;font-weight:600;";
+
+  top.append(customerBlock, status);
+
+  const serviceRow = document.createElement("div");
+  serviceRow.style.cssText = "font-size:0.88rem;margin-bottom:8px;";
+  const serviceLabel = document.createElement("strong");
+  serviceLabel.textContent = "Service:";
+  serviceRow.append(
+    serviceLabel,
+    document.createTextNode(` ${request.serviceNeeded || ""}`),
+  );
+
+  const description = document.createElement("div");
+  description.style.cssText =
+    "font-size:0.88rem;color:#555;margin-bottom:12px;background:white;padding:12px;border-radius:8px;border:1px solid #eee;";
+  description.textContent = request.description || "";
+
+  const created = document.createElement("div");
+  created.style.cssText =
+    "font-size:0.78rem;color:#aaa;margin-bottom:12px;";
+  const clockIcon = document.createElement("i");
+  clockIcon.className = "bi bi-clock";
+  const createdDate = request.createdAt
+    ? new Date(request.createdAt).toLocaleDateString("en-NG", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    : "";
+  created.append(clockIcon, document.createTextNode(` ${createdDate}`));
+
+  const actions = document.createElement("div");
+  actions.style.cssText = "display:flex;gap:8px;flex-wrap:wrap;";
+
+  const phone = String(request.customerPhone || "");
+  const digits = phone.replace(/\D/g, "");
+  const waPhone = digits.startsWith("0") ? `234${digits.slice(1)}` : digits;
+
+  const whatsapp = document.createElement("a");
+  whatsapp.href = `https://wa.me/${waPhone}`;
+  whatsapp.target = "_blank";
+  whatsapp.rel = "noopener noreferrer";
+  whatsapp.style.cssText =
+    "background:#25D366;color:white;padding:8px 16px;border-radius:8px;text-decoration:none;font-size:0.85rem;font-weight:600;";
+  const whatsappIcon = document.createElement("i");
+  whatsappIcon.className = "bi bi-whatsapp";
+  whatsapp.append(whatsappIcon, document.createTextNode(" WhatsApp"));
+
+  const call = document.createElement("a");
+  call.href = `tel:${phone}`;
+  call.style.cssText =
+    "background:#1a1a2e;color:white;padding:8px 16px;border-radius:8px;text-decoration:none;font-size:0.85rem;font-weight:600;";
+  const callIcon = document.createElement("i");
+  callIcon.className = "bi bi-telephone";
+  call.append(callIcon, document.createTextNode(" Call"));
+
+  actions.append(whatsapp, call);
+  card.append(top, serviceRow, description, created, actions);
+  return card;
+}
+
 // ─── EDIT PROFILE ───
 
 function handleEditPhotoUpload(input) {
   if (input.files && input.files[0]) {
     const reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = function (e) {
       window.newProfilePhoto = e.target.result;
-      const preview = document.getElementById('editAvatarPreview');
+      const preview = document.getElementById("editAvatarPreview");
       preview.style.backgroundImage = `url(${e.target.result})`;
-      preview.style.backgroundSize = 'cover';
-      preview.style.backgroundPosition = 'center';
-      preview.textContent = '';
+      preview.style.backgroundSize = "cover";
+      preview.style.backgroundPosition = "center";
+      preview.textContent = "";
     };
     reader.readAsDataURL(input.files[0]);
   }
@@ -182,14 +248,16 @@ function openEditProfile() {
   document.getElementById("editBio").value = user.bio || "";
 
   // Show current avatar in edit modal
-  const preview = document.getElementById('editAvatarPreview');
-  if (user.profilePhoto && user.profilePhoto.startsWith('data:')) {
+  const preview = document.getElementById("editAvatarPreview");
+  if (user.profilePhoto && user.profilePhoto.startsWith("data:")) {
     preview.style.backgroundImage = `url(${user.profilePhoto})`;
-    preview.style.backgroundSize = 'cover';
-    preview.textContent = '';
+    preview.style.backgroundSize = "cover";
+    preview.textContent = "";
   } else {
-    const parts = user.fullName.split(' ');
-    preview.textContent = (parts[0][0] + (parts[1] ? parts[1][0] : '')).toUpperCase();
+    const parts = user.fullName.split(" ");
+    preview.textContent = (
+      parts[0][0] + (parts[1] ? parts[1][0] : "")
+    ).toUpperCase();
   }
 }
 
