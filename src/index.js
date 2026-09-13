@@ -1,4 +1,5 @@
 const dns = require("dns");
+const path = require("path");
 dns.setServers(["8.8.8.8", "8.8.4.4"]);
 
 const express = require("express");
@@ -23,12 +24,14 @@ app.use(
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ limit: "10mb", extended: true }));
 
+app.use(express.static(path.join(__dirname, "..")));
+
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const providerRoutes = require("./routes/providerRoutes");
 const hireRoutes = require("./routes/hireRoutes");
 
-app.get("/", (req, res) => {
+app.get("/api/health", (req, res) => {
   res.json({ message: "VerifiedNG Backend is running!" });
 });
 

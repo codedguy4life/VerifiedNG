@@ -1,2 +1,7 @@
-// BACKEND URL — change this one line when URL changes
-const API_URL = "https://verifiedng-backend.onrender.com";
+const isLocal =
+  window.location.hostname === "localhost" ||
+  window.location.hostname === "127.0.0.1";
+
+const API_URL = isLocal
+  ? window.location.origin
+  : "https://verifiedng-backend.onrender.com";

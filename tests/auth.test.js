@@ -3,7 +3,7 @@ const app = require("../src/index");
 
 describe("Authentication", () => {
   test("backend is running", async () => {
-    const response = await request(app).get("/");
+    const response = await request(app).get("/api/health");
 
     expect(response.statusCode).toBe(200);
     expect(response.body.message).toBe("VerifiedNG Backend is running!");
