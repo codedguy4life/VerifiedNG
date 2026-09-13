@@ -48,11 +48,16 @@ PORT=5000
 EMAIL_USER=your_email_address
 EMAIL_PASS=your_email_app_password
 PROVIDER_INVITE_CODE=your_private_provider_invite_code
+FRONTEND_URL=https://codedguy4life.github.io/VerifiedNG
 ```
 
 `MONGO_TEST_URI` should point to a dedicated test database. The tests create temporary users and must not use a production database.
 
 `PROVIDER_INVITE_CODE` is a server-side gate for provider account creation. Do not commit the real code. The normal registration endpoint always creates customers; the provider registration endpoint assigns the provider role only after the server validates this configured code.
+
+`FRONTEND_URL` is used to build password-reset links. It must point to the frontend that serves `reset-password.html`.
+
+The application validates required runtime environment variables before starting. Empty values or obvious `your_...` placeholder values cause startup to fail with a clear error instead of allowing the server to start and fail on the first request.
 
 To provision a provider on a fresh clone, use the server-controlled provider endpoint with that configured code. Example PowerShell request after `npm start`:
 
@@ -119,11 +124,11 @@ npm run dev
 
 ## Local frontend/API behaviour
 
-When the pages are served by `npm start` on `localhost:5000`, the frontend uses that same local server for API requests.
+When the pages are served by `npm start` on `localhost:5000`, the frontend uses the local backend on port 5000.
 
-When the site is served from GitHub Pages or another frontend host, the frontend uses the deployed Render backend.
+When the pages are served with VS Code Live Server on `localhost:5500` or `127.0.0.1:5500`, the frontend also uses the local backend on port 5000. It never silently switches local development requests to production.
 
-Using VS Code Live Server on port 5500 is not the supported full-application startup path for this ticket. Use `npm start` so the pages and API come from the same checkout.
+When the site is served from GitHub Pages or another non-local frontend host, the frontend uses the deployed Render backend.
 
 ## Trust boundary
 
@@ -134,6 +139,8 @@ Hire requests require an authenticated customer. The server takes the customer's
 Provider inbox access is checked against the signed-in user's server-side role and user ID. A provider cannot read another provider's inbox.
 
 Customer-controlled hire-request text is rendered by the dashboard with safe DOM APIs rather than inserted into the DOM as HTML.
+
+Public provider endpoints exclude password, login history, password-reset token, and password-reset expiry fields from their responses.
 
 ## Environment files
 
