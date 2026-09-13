@@ -1,5 +1,14 @@
+const mongoose = require("mongoose");
 const HireRequest = require("../models/HireRequest");
 const User = require("../models/user");
+
+const escapeHtml = (value) =>
+  String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 
 const createHireRequest = async (req, res) => {
   try {
@@ -7,6 +16,10 @@ const createHireRequest = async (req, res) => {
 
     if (!providerId || !serviceNeeded || !description) {
       return res.status(400).json({ message: "Please fill in all fields" });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(providerId)) {
+      return res.status(404).json({ message: "Provider not found" });
     }
 
     if (description.length < 20) {
@@ -29,13 +42,13 @@ const createHireRequest = async (req, res) => {
     }
 
     const hireRequest = await HireRequest.create({
-      providerName: provider.fullName,
+      providerName: escapeHtml(provider.fullName),
       providerId: provider._id.toString(),
       customerId: customer._id.toString(),
-      customerName: customer.fullName,
-      customerPhone: customer.phone,
-      serviceNeeded,
-      description,
+      customerName: escapeHtml(customer.fullName),
+      customerPhone: escapeHtml(customer.phone),
+      serviceNeeded: escapeHtml(serviceNeeded),
+      description: escapeHtml(description),
     });
 
     res.status(201).json({
@@ -43,7 +56,11 @@ const createHireRequest = async (req, res) => {
       request: hireRequest,
     });
   } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
+    if (error?.name === "CastError") {
+      return res.status(404).json({ message: "Provider not found" });
+    }
+
+    res.status(500).json({ message: "Server error" });
   }
 };
 
