@@ -15,8 +15,7 @@ const buildAuthToken = (user) =>
     { expiresIn: "7d" },
   );
 
-// ─── REGISTER ───
-const register = async (req, res) => {
+const createAccount = async (req, res, role) => {
   try {
     const {
       fullName,
@@ -61,14 +60,12 @@ const register = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Registration always creates a customer. Provider access is granted by
-    // a server-side verification flow rather than a client-supplied role.
     const newUser = await User.create({
       fullName,
       email: cleanEmail,
       password: hashedPassword,
       phone: cleanPhone,
-      role: "customer",
+      role,
       category: category || "",
       bio: bio || "",
       skills: skills || [],
@@ -126,6 +123,15 @@ const register = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+// ─── CUSTOMER REGISTER ───
+const register = async (req, res) => createAccount(req, res, "customer");
+
+// ─── PROVIDER REGISTER ───
+// The server chooses the role from the endpoint. The browser cannot set it
+// through a request-body role field.
+const registerProvider = async (req, res) =>
+  createAccount(req, res, "provider");
 
 // ─── LOGIN ───
 const login = async (req, res) => {
@@ -198,9 +204,7 @@ const login = async (req, res) => {
     });
   } catch (error) {
     console.error("Login error:", error);
-    res.status(500).json({
-      message: "Server error",
-    });
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -320,4 +324,10 @@ const resetPassword = async (req, res) => {
   }
 };
 
-module.exports = { register, login, forgotPassword, resetPassword };
+module.exports = {
+  register,
+  registerProvider,
+  login,
+  forgotPassword,
+  resetPassword,
+};
