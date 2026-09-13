@@ -5,6 +5,17 @@ const User = require("../src/models/user");
 const HireRequest = require("../src/models/HireRequest");
 
 describe("Trust boundary", () => {
+  test("local server serves the homepage but not repository source files", async () => {
+    const homepage = await request(app).get("/");
+    const packageFile = await request(app).get("/package.json");
+    const sourceFile = await request(app).get("/src/index.js");
+
+    expect(homepage.statusCode).toBe(200);
+    expect(homepage.headers["content-type"]).toMatch(/html/);
+    expect(packageFile.statusCode).toBe(404);
+    expect(sourceFile.statusCode).toBe(404);
+  });
+
   test("signed-out caller cannot create a hire request", async () => {
     const response = await request(app).post("/api/hire").send({
       providerId: "507f1f77bcf86cd799439011",
@@ -38,6 +49,7 @@ describe("Trust boundary", () => {
       .send({ category: "Electrical" });
 
     expect(response.statusCode).toBe(403);
+    await User.findByIdAndDelete(signup.body.user.id);
   });
 
   test("hire request identity comes from the authenticated user", async () => {
