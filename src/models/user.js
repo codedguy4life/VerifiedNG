@@ -25,6 +25,8 @@ const userSchema = new mongoose.Schema(
     phone: {
       type: String,
       required: true,
+      unique: true,
+      trim: true,
     },
 
     profilePhoto: {
@@ -42,10 +44,6 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-
-    // ==========================================
-    // PROVIDER SPECIFIC FIELDS
-    // ==========================================
 
     category: {
       type: String,
@@ -72,12 +70,6 @@ const userSchema = new mongoose.Schema(
       default: "",
     },
 
-    // ==========================================
-    // PROVIDER SEARCH / PROFILE INFORMATION
-    // ==========================================
-
-    // Average provider rating.
-    // This will later be calculated from actual reviews.
     rating: {
       type: Number,
       default: 0,
@@ -85,53 +77,39 @@ const userSchema = new mongoose.Schema(
       max: 5,
     },
 
-    // Number of reviews the provider has received.
     reviewCount: {
       type: Number,
       default: 0,
       min: 0,
     },
 
-    // Number of completed jobs.
-    // We start at 0 and will increase this when jobs are completed.
     jobs: {
       type: Number,
       default: 0,
       min: 0,
     },
 
-    // Provider availability.
-    // These values match the search filter we created.
     availability: {
       type: String,
       enum: ["available", "weekend", "24hr", "offline"],
       default: "offline",
     },
 
-    // Number of years the provider has been doing the work.
     experienceYears: {
       type: Number,
       default: 0,
       min: 0,
     },
 
-    // Provider's starting price.
-    // Example: "₦15,000"
     price: {
       type: String,
       default: "",
     },
 
-    // What the price is charged per.
-    // Example: "/job", "/hour", "/day"
     per: {
       type: String,
       default: "/job",
     },
-
-    // ==========================================
-    // VOUCHER / EMERGENCY CONTACT INFORMATION
-    // ==========================================
 
     voucherName: {
       type: String,
@@ -142,10 +120,6 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
-
-    // ==========================================
-    // LOGIN INFORMATION
-    // ==========================================
 
     loginCount: {
       type: Number,
@@ -161,10 +135,6 @@ const userSchema = new mongoose.Schema(
       type: [Date],
       default: [],
     },
-
-    // ==========================================
-    // PASSWORD RESET INFORMATION
-    // ==========================================
 
     resetToken: {
       type: String,
