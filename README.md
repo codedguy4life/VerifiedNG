@@ -97,6 +97,14 @@ When the site is served from GitHub Pages or another frontend host, the frontend
 
 Using VS Code Live Server on port 5500 is not the supported full-application startup path for this ticket. Use `npm start` so the pages and API come from the same checkout.
 
+## Trust boundary
+
+Registration cannot self-assign the provider role. New accounts are customers until a future server-side verification/admin workflow grants provider access.
+
+Hire requests require an authenticated customer. The server takes the customer's name, phone number, and user ID from the authenticated account instead of trusting those identity fields from the browser.
+
+Provider inbox access is checked against the signed-in user's server-side role and user ID.
+
 ## Environment files
 
 The repository contains `.env.example` only as a template. Real secrets belong in `.env`, which is ignored by Git.
