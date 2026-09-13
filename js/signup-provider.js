@@ -39,7 +39,7 @@ function submitForm() {
     skills.push(skill.textContent.trim());
   });
 
-  fetch(`${API_URL}/api/auth/register`, {
+  fetch(`${API_URL}/api/auth/register-provider`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -47,7 +47,6 @@ function submitForm() {
       email,
       password,
       phone,
-      role: "provider",
       category,
       bio,
       skills,
@@ -68,10 +67,10 @@ function submitForm() {
         document.getElementById("step5").classList.add("active");
         window.scrollTo({ top: 0, behavior: "smooth" });
       } else {
-        if (data.message.includes("Email")) {
+        if (data.message.includes("email") || data.message.includes("Email")) {
           goToStep(1);
           setTimeout(() => showFieldError("emailInput", data.message), 300);
-        } else if (data.message.includes("Phone")) {
+        } else if (data.message.includes("phone") || data.message.includes("Phone")) {
           goToStep(1);
           setTimeout(() => showFieldError("phoneInput", data.message), 300);
         } else {
