@@ -54,6 +54,31 @@ PROVIDER_INVITE_CODE=your_private_provider_invite_code
 
 `PROVIDER_INVITE_CODE` is a server-side gate for provider account creation. Do not commit the real code. The normal registration endpoint always creates customers; the provider registration endpoint assigns the provider role only after the server validates this configured code.
 
+To provision a provider on a fresh clone, use the server-controlled provider endpoint with that configured code. Example PowerShell request after `npm start`:
+
+```powershell
+$body = @{
+  fullName = "Example Provider"
+  email = "provider@example.com"
+  password = "StrongPass123!"
+  phone = "08012345678"
+  providerInviteCode = "your_private_provider_invite_code"
+  category = "Electrical"
+  bio = "Example verified service provider."
+  skills = @("Diagnostics")
+  state = "Lagos"
+  city = "Lagos"
+} | ConvertTo-Json
+
+Invoke-RestMethod `
+  -Uri "http://localhost:5000/api/auth/register-provider" `
+  -Method POST `
+  -ContentType "application/json" `
+  -Body $body
+```
+
+The server, not the request body, establishes the `provider` role. The normal `/api/auth/register` endpoint always creates a customer.
+
 `.env` is local-only. Never commit it.
 
 ## Run the automated tests
