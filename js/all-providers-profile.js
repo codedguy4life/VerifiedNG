@@ -1,7 +1,7 @@
 // ─── CONTENT GATE ───
-(function() {
-  const user = localStorage.getItem('user');
-  const token = localStorage.getItem('token');
+(function () {
+  const user = localStorage.getItem("user");
+  const token = localStorage.getItem("token");
   if (!user || !token) {
     document.body.innerHTML = `
       <div style="min-height:100vh;display:flex;align-items:center;
@@ -82,7 +82,8 @@ async function loadDbProvider(mongoId) {
       reviewCount: 0,
       jobs: 0,
       experienceYears: "New",
-      location: p.city && p.state ? `${p.city}, ${p.state}` : p.state || "Nigeria",
+      location:
+        p.city && p.state ? `${p.city}, ${p.state}` : p.state || "Nigeria",
       availability: "online",
       availText: "Available Now",
       tags: p.skills ? p.skills.slice(0, 3) : [p.category || "Service"],
@@ -118,7 +119,7 @@ function getCategoryIconProfile(category) {
     "Graphic Designer": "bi bi-palette",
     Carpenter: "bi bi-hammer",
     Painter: "bi bi-brush",
-    Driver: "bi bi-truck"
+    Driver: "bi bi-truck",
   };
   return icons[category] || "bi bi-person-workspace";
 }
@@ -133,7 +134,7 @@ function getAvatarBgProfile(category) {
     Photography: "#ffeef3",
     Tailoring: "#ffeef3",
     Catering: "#e6f9ee",
-    Programming: "#eef3ff"
+    Programming: "#eef3ff",
   };
   return bgs[category] || "#f5f5f5";
 }
@@ -174,30 +175,53 @@ function renderProvider(provider) {
   document.getElementById("panelPrice").textContent = provider.price;
   document.getElementById("panelPer").textContent = provider.per;
 
-  document.getElementById("statJobs").innerHTML = provider.jobs + "<span>+</span>";
-  document.getElementById("statExperience").innerHTML = provider.experienceYears;
-  document.getElementById("statRating").innerHTML = provider.rating + "<span>★</span>";
+  document.getElementById("statJobs").innerHTML =
+    provider.jobs + "<span>+</span>";
+  document.getElementById("statExperience").innerHTML =
+    provider.experienceYears;
+  document.getElementById("statRating").innerHTML =
+    provider.rating + "<span>★</span>";
 
   document.getElementById("providerBio").textContent = provider.bio;
 
-  document.getElementById("providerSkills").innerHTML = provider.skills
-    .map((tag) => `<span class="skill-tag">${tag}</span>`)
-    .join("") || "<p style='color:#888;font-size:0.9rem;'>Skills not listed yet.</p>";
+  const skillsContainer = document.getElementById("providerSkills");
+  skillsContainer.replaceChildren();
+
+  if (provider.skills && provider.skills.length) {
+    provider.skills.forEach((tag) => {
+      const skill = document.createElement("span");
+      skill.className = "skill-tag";
+      skill.textContent = tag;
+      skillsContainer.appendChild(skill);
+    });
+  } else {
+    const emptyMessage = document.createElement("p");
+    emptyMessage.style.color = "#888";
+    emptyMessage.style.fontSize = "0.9rem";
+    emptyMessage.textContent = "Skills not listed yet.";
+    skillsContainer.appendChild(emptyMessage);
+  }
 
   document.getElementById("providerGallery").innerHTML = provider.gallery.length
-    ? provider.gallery.map((icon) => `
+    ? provider.gallery
+        .map(
+          (icon) => `
         <div class="gallery-item">
           <i class="${icon}"></i>
           <div class="overlay">View</div>
-        </div>`).join("")
+        </div>`,
+        )
+        .join("")
     : "<p style='color:#888;font-size:0.9rem;'>No gallery photos yet.</p>";
 
   document.getElementById("reviewRating").textContent = provider.rating;
-  document.getElementById("reviewCount").textContent = provider.reviewCount + " reviews";
+  document.getElementById("reviewCount").textContent =
+    provider.reviewCount + " reviews";
 
   if (provider.reviews && provider.reviews.length) {
     document.getElementById("reviewList").innerHTML = provider.reviews
-      .map((r) => `
+      .map(
+        (r) => `
         <div class="review-card">
           <div class="review-top">
             <div class="reviewer">
@@ -211,7 +235,9 @@ function renderProvider(provider) {
           </div>
           <p class="review-text">${r.text}</p>
           <span class="review-tag">${r.tag}</span>
-        </div>`).join("");
+        </div>`,
+      )
+      .join("");
   }
 
   document.getElementById("modalTitle").textContent = "Hire " + provider.name;
@@ -220,14 +246,18 @@ function renderProvider(provider) {
     "<option>Other</option>";
 
   document.getElementById("sidebarLocation").textContent = provider.location;
-  document.getElementById("sidebarAvailability").textContent = provider.availText;
+  document.getElementById("sidebarAvailability").textContent =
+    provider.availText;
   document.getElementById("sidebarJobs").textContent = provider.jobs + "+";
-  document.getElementById("sidebarExperience").textContent = provider.experienceYears;
+  document.getElementById("sidebarExperience").textContent =
+    provider.experienceYears;
   document.getElementById("sidebarRating").textContent = provider.rating + " ★";
 
   if (provider.experience && provider.experience.length > 0) {
     document.getElementById("providerExperience").innerHTML =
-      provider.experience.map((e) => `
+      provider.experience
+        .map(
+          (e) => `
         <div class="exp-item">
           <div class="exp-icon"><i class="${e.icon}"></i></div>
           <div class="exp-info">
@@ -235,7 +265,9 @@ function renderProvider(provider) {
             <p>${e.desc}</p>
             <div class="exp-date">${e.date}</div>
           </div>
-        </div>`).join("");
+        </div>`,
+        )
+        .join("");
   } else {
     document.getElementById("providerExperience").innerHTML =
       "<p style='color:#888;font-size:0.9rem;'>No experience listed yet.</p>";
@@ -247,7 +279,9 @@ function renderProvider(provider) {
     .slice(0, 3);
 
   document.getElementById("similarList").innerHTML = similar.length
-    ? similar.map((p) => `
+    ? similar
+        .map(
+          (p) => `
         <div onclick="window.location.href='all-providers-profile.html?id=${p.id}'"
           style="cursor:pointer;display:flex;align-items:center;gap:10px;
           padding:8px 0;border-bottom:1px solid #f0f0f0;">
@@ -259,7 +293,9 @@ function renderProvider(provider) {
             <div style="font-weight:600;font-size:0.85rem;">${p.name}</div>
             <div style="font-size:0.75rem;color:#888;">${p.rating} ★ · ${p.jobs}+ jobs</div>
           </div>
-        </div>`).join("")
+        </div>`,
+        )
+        .join("")
     : "<p style='font-size:13px;color:#888;'>No similar providers found yet.</p>";
 }
 
