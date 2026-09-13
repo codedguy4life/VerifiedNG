@@ -1,7 +1,10 @@
 const User = require("../models/user");
 
 const publicProviderFields =
-  "-password -loginHistory -resetToken -resetTokenExpiry -voucherName -voucherPhone";
+  "_id fullName category rating reviewCount jobs experienceYears city state availability skills bio price per isVerified createdAt";
+
+const escapeRegex = (value) =>
+  String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 const getProviders = async (req, res) => {
   try {
@@ -10,19 +13,20 @@ const getProviders = async (req, res) => {
     let query = { role: "provider" };
 
     if (category) {
-      query.category = { $regex: category, $options: "i" };
+      query.category = { $regex: escapeRegex(category), $options: "i" };
     }
 
     if (state) {
-      query.state = { $regex: state, $options: "i" };
+      query.state = { $regex: escapeRegex(state), $options: "i" };
     }
 
     if (search) {
+      const safeSearch = escapeRegex(search);
       query.$or = [
-        { fullName: { $regex: search, $options: "i" } },
-        { category: { $regex: search, $options: "i" } },
-        { bio: { $regex: search, $options: "i" } },
-        { skills: { $regex: search, $options: "i" } },
+        { fullName: { $regex: safeSearch, $options: "i" } },
+        { category: { $regex: safeSearch, $options: "i" } },
+        { bio: { $regex: safeSearch, $options: "i" } },
+        { skills: { $regex: safeSearch, $options: "i" } },
       ];
     }
 
