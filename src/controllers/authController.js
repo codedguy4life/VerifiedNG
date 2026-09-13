@@ -125,13 +125,25 @@ const createAccount = async (req, res, role) => {
 };
 
 // ─── CUSTOMER REGISTER ───
+// The public register endpoint never accepts a role from the browser.
 const register = async (req, res) => createAccount(req, res, "customer");
 
 // ─── PROVIDER REGISTER ───
-// The server chooses the role from the endpoint. The browser cannot set it
-// through a request-body role field.
-const registerProvider = async (req, res) =>
-  createAccount(req, res, "provider");
+// Provider accounts require a server-configured invite code. The client can
+// request this route, but the server decides whether provider access is allowed
+// and establishes the role itself.
+const registerProvider = async (req, res) => {
+  const inviteCode = String(req.body.providerInviteCode || "");
+  const configuredCode = process.env.PROVIDER_INVITE_CODE;
+
+  if (!configuredCode || inviteCode !== configuredCode) {
+    return res.status(403).json({
+      message: "A valid provider invite code is required",
+    });
+  }
+
+  return createAccount(req, res, "provider");
+};
 
 // ─── LOGIN ───
 const login = async (req, res) => {
