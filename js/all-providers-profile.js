@@ -331,12 +331,25 @@ document.addEventListener("DOMContentLoaded", function () {
   const user = getCurrentUser();
   const navActions = document.querySelector(".nav-actions");
   if (navActions && user) {
-    navActions.innerHTML = `
-      <a href="dashboard.html" class="btn-ghost" style="text-decoration:none">
-        Hi, ${user.fullName.split(" ")[0]} <i class="bi bi-person-circle"></i>
-      </a>
-      <button class="btn-ghost" onclick="signOut()">Sign Out</button>
-    `;
+    navActions.replaceChildren();
+
+    const dashboardLink = document.createElement("a");
+    dashboardLink.href = "dashboard.html";
+    dashboardLink.className = "btn-ghost";
+    dashboardLink.style.textDecoration = "none";
+    dashboardLink.textContent = `Hi, ${user.fullName.split(" ")[0]} `;
+
+    const icon = document.createElement("i");
+    icon.className = "bi bi-person-circle";
+    dashboardLink.appendChild(icon);
+
+    const signOutButton = document.createElement("button");
+    signOutButton.className = "btn-ghost";
+    signOutButton.textContent = "Sign Out";
+    signOutButton.addEventListener("click", signOut);
+
+    navActions.appendChild(dashboardLink);
+    navActions.appendChild(signOutButton);
   }
 });
 
