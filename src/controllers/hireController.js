@@ -2,14 +2,6 @@ const mongoose = require("mongoose");
 const HireRequest = require("../models/HireRequest");
 const User = require("../models/user");
 
-const escapeHtml = (value) =>
-  String(value ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-
 const createHireRequest = async (req, res) => {
   try {
     const { providerId, serviceNeeded, description } = req.body;
@@ -42,13 +34,13 @@ const createHireRequest = async (req, res) => {
     }
 
     const hireRequest = await HireRequest.create({
-      providerName: escapeHtml(provider.fullName),
+      providerName: provider.fullName,
       providerId: provider._id.toString(),
       customerId: customer._id.toString(),
-      customerName: escapeHtml(customer.fullName),
-      customerPhone: escapeHtml(customer.phone),
-      serviceNeeded: escapeHtml(serviceNeeded),
-      description: escapeHtml(description),
+      customerName: customer.fullName,
+      customerPhone: customer.phone,
+      serviceNeeded,
+      description,
     });
 
     res.status(201).json({
