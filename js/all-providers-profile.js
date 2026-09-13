@@ -241,9 +241,18 @@ function renderProvider(provider) {
   }
 
   document.getElementById("modalTitle").textContent = "Hire " + provider.name;
-  document.getElementById("modalServices").innerHTML =
-    provider.tags.map((tag) => `<option>${tag}</option>`).join("") +
-    "<option>Other</option>";
+  const servicesSelect = document.getElementById("modalServices");
+  servicesSelect.replaceChildren();
+
+  provider.tags.forEach((tag) => {
+    const option = document.createElement("option");
+    option.textContent = tag;
+    servicesSelect.appendChild(option);
+  });
+
+  const otherOption = document.createElement("option");
+  otherOption.textContent = "Other";
+  servicesSelect.appendChild(otherOption);
 
   document.getElementById("sidebarLocation").textContent = provider.location;
   document.getElementById("sidebarAvailability").textContent =

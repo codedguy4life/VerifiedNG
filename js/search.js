@@ -1,3 +1,4 @@
+```javascript
 // ─────────────────────────────────────────────
 // SEARCH NORMALIZATION
 // ─────────────────────────────────────────────
@@ -178,7 +179,6 @@ function canonicalCategory(value) {
 
   if (!text) return "";
 
-  // Exact database category matches first.
   const databaseCategories = [
     "Electrical",
     "Plumbing",
@@ -203,7 +203,8 @@ function canonicalCategory(value) {
   }
 
   for (const [category, aliases] of Object.entries(serviceAliases)) {
-    const normalizedCategory = normalizeSearchText(category);
+    const normalizedCategory =
+      normalizeSearchText(category);
 
     if (normalizedCategory === text) {
       return normalizedCategory;
@@ -410,10 +411,6 @@ async function loadRealProviders() {
       avatarBg:
         getAvatarBg(p.category),
 
-      /*
-        These are only real if the backend
-        eventually provides them.
-      */
       rating:
         Number(p.rating) || 0,
 
@@ -444,11 +441,6 @@ async function loadRealProviders() {
       state:
         p.state || "",
 
-      /*
-        IMPORTANT:
-        Do NOT pretend every provider is
-        available now.
-      */
       availability:
         p.availability || "unknown",
 
@@ -683,7 +675,7 @@ function buildCategoryFilter() {
       (categoryCounts[category] || 0) + 1;
   });
 
-  container.innerHTML = "";
+  container.replaceChildren();
 
   Object.entries(categoryCounts)
     .sort((a, b) => b[1] - a[1])
@@ -697,19 +689,37 @@ function buildCategoryFilter() {
         label.className =
           "filter-option";
 
-        label.innerHTML = `
-          <input
-            type="checkbox"
-            value="${category}"
-            onchange="applyFilters()"
-          />
+        const input =
+          document.createElement(
+            "input"
+          );
 
-          ${getCategoryDisplayName(category)}
+        input.type = "checkbox";
+        input.value = category;
+        input.addEventListener(
+          "change",
+          applyFilters
+        );
 
-          <span class="filter-count">
-            ${count}
-          </span>
-        `;
+        const categoryText =
+          document.createTextNode(
+            getCategoryDisplayName(category)
+          );
+
+        const countElement =
+          document.createElement(
+            "span"
+          );
+
+        countElement.className =
+          "filter-count";
+
+        countElement.textContent =
+          String(count);
+
+        label.appendChild(input);
+        label.appendChild(categoryText);
+        label.appendChild(countElement);
 
         container.appendChild(label);
       }
@@ -749,7 +759,7 @@ function buildLocationFilter() {
       ] || 0) + 1;
   });
 
-  container.innerHTML = "";
+  container.replaceChildren();
 
   Object.entries(locationCounts)
     .sort((a, b) => b[1] - a[1])
@@ -763,19 +773,37 @@ function buildLocationFilter() {
         label.className =
           "filter-option";
 
-        label.innerHTML = `
-          <input
-            type="checkbox"
-            value="${location}"
-            onchange="applyFilters()"
-          />
+        const input =
+          document.createElement(
+            "input"
+          );
 
-          ${location}
+        input.type = "checkbox";
+        input.value = location;
+        input.addEventListener(
+          "change",
+          applyFilters
+        );
 
-          <span class="filter-count">
-            ${count}
-          </span>
-        `;
+        const locationText =
+          document.createTextNode(
+            location
+          );
+
+        const countElement =
+          document.createElement(
+            "span"
+          );
+
+        countElement.className =
+          "filter-count";
+
+        countElement.textContent =
+          String(count);
+
+        label.appendChild(input);
+        label.appendChild(locationText);
+        label.appendChild(countElement);
 
         container.appendChild(label);
       }
@@ -965,12 +993,6 @@ function matchesAvailability(
     return true;
   }
 
-  /*
-    A provider with no availability
-    information should NOT be falsely
-    considered available.
-  */
-
   return (
     provider.availability ===
       requested ||
@@ -980,6 +1002,32 @@ function matchesAvailability(
         "online"
     )
   );
+}
+
+
+// ─────────────────────────────────────────────
+// CREATE TEXT ELEMENT
+// ─────────────────────────────────────────────
+
+function createTextElement(
+  tagName,
+  className,
+  text
+) {
+  const element =
+    document.createElement(
+      tagName
+    );
+
+  if (className) {
+    element.className =
+      className;
+  }
+
+  element.textContent =
+    String(text ?? "");
+
+  return element;
 }
 
 
@@ -995,265 +1043,765 @@ function renderCards(list) {
 
   if (!grid) return;
 
-  document.getElementById(
-    "resultCount"
-  ).textContent =
-    list.length;
+  const resultCount =
+    document.getElementById(
+      "resultCount"
+    );
+
+  if (resultCount) {
+    resultCount.textContent =
+      String(list.length);
+  }
+
+  grid.replaceChildren();
 
   if (list.length === 0) {
-    grid.innerHTML = `
-      <div class="no-results">
+    const noResults =
+      document.createElement(
+        "div"
+      );
 
-        <div class="nr-icon">
-          <i class="bi bi-search"></i>
-        </div>
+    noResults.className =
+      "no-results";
 
-        <h3>No providers found</h3>
+    const iconWrapper =
+      document.createElement(
+        "div"
+      );
 
-        <p>
-          Try a broader service name,
-          another location,
-          or remove a filter.
-        </p>
+    iconWrapper.className =
+      "nr-icon";
 
-      </div>
-    `;
+    const icon =
+      document.createElement(
+        "i"
+      );
+
+    icon.className =
+      "bi bi-search";
+
+    iconWrapper.appendChild(
+      icon
+    );
+
+    const heading =
+      createTextElement(
+        "h3",
+        null,
+        "No providers found"
+      );
+
+    const paragraph =
+      createTextElement(
+        "p",
+        null,
+        "Try a broader service name, another location, or remove a filter."
+      );
+
+    noResults.appendChild(
+      iconWrapper
+    );
+
+    noResults.appendChild(
+      heading
+    );
+
+    noResults.appendChild(
+      paragraph
+    );
+
+    grid.appendChild(
+      noResults
+    );
 
     return;
   }
 
-  grid.innerHTML =
-    list
-      .map(
-        (p, i) => `
-          <div
-            class="provider-card"
-            style="animation-delay:${i * 0.07}s"
-            onclick="
-              window.location.href=
-              'all-providers-profile.html?id=${p.id}'
-            "
-          >
+  list.forEach(
+    (p, i) => {
+      const card =
+        document.createElement(
+          "div"
+        );
 
-            <div class="card-top">
+      card.className =
+        "provider-card";
 
-              <div
-                class="card-avatar"
-                style="background:${p.avatarBg}"
-              >
-                <i class="${p.icon}"></i>
-              </div>
+      card.style.animationDelay =
+        `${i * 0.07}s`;
 
-              <div class="card-info">
+      card.addEventListener(
+        "click",
+        () => {
+          window.location.href =
+            `all-providers-profile.html?id=${encodeURIComponent(p.id)}`;
+        }
+      );
 
-                <div class="card-name-row">
 
-                  <span class="card-name">
-                    ${p.name}
-                  </span>
+      // ───────── CARD TOP ─────────
 
-                  ${
-                    p.verified
-                      ? `
-                        <span class="verified-pill">
-                          <i class="bi bi-patch-check"></i>
-                          Verified
-                        </span>
-                      `
-                      : ""
-                  }
+      const cardTop =
+        document.createElement(
+          "div"
+        );
 
-                </div>
+      cardTop.className =
+        "card-top";
 
-                <div class="card-role">
-                  ${p.role}
-                </div>
 
-                <div class="card-rating">
+      const avatar =
+        document.createElement(
+          "div"
+        );
 
-                  <span class="stars">
-                    ★★★★★
-                  </span>
+      avatar.className =
+        "card-avatar";
 
-                  <span class="score">
-                    ${
-                      p.rating > 0
-                        ? p.rating
-                        : "New"
-                    }
-                  </span>
+      avatar.style.background =
+        p.avatarBg;
 
-                  ${
-                    p.reviewCount > 0
-                      ? `
-                        <span class="reviews">
-                          (${p.reviewCount} reviews)
-                        </span>
-                      `
-                      : ""
-                  }
+      const avatarIcon =
+        document.createElement(
+          "i"
+        );
 
-                </div>
+      avatarIcon.className =
+        p.icon;
 
-                <div class="card-location">
+      avatar.appendChild(
+        avatarIcon
+      );
 
-                  <i class="bi bi-geo-alt-fill"></i>
 
-                  ${p.location}
+      const cardInfo =
+        document.createElement(
+          "div"
+        );
 
-                </div>
+      cardInfo.className =
+        "card-info";
 
-              </div>
 
-            </div>
+      // Name row
 
-            <div class="card-body">
+      const nameRow =
+        document.createElement(
+          "div"
+        );
 
-              <div class="card-tags">
+      nameRow.className =
+        "card-name-row";
 
-                ${(p.tags || [])
-                  .map(
-                    (t) =>
-                      `<span class="tag">${t}</span>`
-                  )
-                  .join("")}
+      const name =
+        createTextElement(
+          "span",
+          "card-name",
+          p.name
+        );
 
-              </div>
+      nameRow.appendChild(
+        name
+      );
 
-              <p class="card-bio">
+      if (p.verified) {
+        const verified =
+          document.createElement(
+            "span"
+          );
 
-                ${(p.bio || "").substring(
-                  0,
-                  120
-                )}
+        verified.className =
+          "verified-pill";
 
-                ${
-                  (p.bio || "")
-                    .length > 120
-                    ? "..."
-                    : ""
-                }
+        const verifiedIcon =
+          document.createElement(
+            "i"
+          );
 
-              </p>
+        verifiedIcon.className =
+          "bi bi-patch-check";
 
-              <div class="card-stats">
+        verified.appendChild(
+          verifiedIcon
+        );
 
-                <div class="cs-box">
+        verified.appendChild(
+          document.createTextNode(
+            " Verified"
+          )
+        );
 
-                  <div class="cs-val">
-                    ${
-                      p.jobs > 0
-                        ? `${p.jobs}<sup>+</sup>`
-                        : "—"
-                    }
-                  </div>
+        nameRow.appendChild(
+          verified
+        );
+      }
 
-                  <div class="cs-label">
-                    Jobs Done
-                  </div>
 
-                </div>
+      // Role
 
-                <div class="cs-box">
+      const role =
+        createTextElement(
+          "div",
+          "card-role",
+          p.role
+        );
 
-                  <div class="cs-val">
-                    ${p.experienceYears}
-                  </div>
 
-                  <div class="cs-label">
-                    Experience
-                  </div>
+      // Rating
 
-                </div>
+      const rating =
+        document.createElement(
+          "div"
+        );
 
-                <div class="cs-box">
+      rating.className =
+        "card-rating";
 
-                  <div class="cs-val">
-                    ${
-                      p.rating > 0
-                        ? `${p.rating}★`
-                        : "New"
-                    }
-                  </div>
+      const stars =
+        createTextElement(
+          "span",
+          "stars",
+          "★★★★★"
+        );
 
-                  <div class="cs-label">
-                    Rating
-                  </div>
+      const score =
+        createTextElement(
+          "span",
+          "score",
+          p.rating > 0
+            ? p.rating
+            : "New"
+        );
 
-                </div>
+      rating.appendChild(
+        stars
+      );
 
-              </div>
+      rating.appendChild(
+        score
+      );
 
-            </div>
+      if (p.reviewCount > 0) {
+        const reviews =
+          createTextElement(
+            "span",
+            "reviews",
+            `(${p.reviewCount} reviews)`
+          );
 
-            <div class="card-footer">
+        rating.appendChild(
+          reviews
+        );
+      }
 
-              <div class="price-info">
 
-                <div class="from">
-                  Starting price
-                </div>
+      // Location
 
-                <span class="amount">
-                  ${p.price}
-                </span>
+      const cardLocation =
+        document.createElement(
+          "div"
+        );
 
-                <span class="per">
-                  ${p.per}
-                </span>
+      cardLocation.className =
+        "card-location";
 
-              </div>
+      const locationIcon =
+        document.createElement(
+          "i"
+        );
 
-              <div
-                style="
-                  display:flex;
-                  flex-direction:column;
-                  align-items:flex-end;
-                  gap:6px;
-                "
-              >
+      locationIcon.className =
+        "bi bi-geo-alt-fill";
 
-                <div class="avail-text">
+      cardLocation.appendChild(
+        locationIcon
+      );
 
-                  <span
-                    class="avail-dot ${p.availability}"
-                  ></span>
+      cardLocation.appendChild(
+        document.createTextNode(
+          ` ${String(p.location ?? "")}`
+        )
+      );
 
-                  ${p.availText}
 
-                </div>
+      cardInfo.appendChild(
+        nameRow
+      );
 
-                <div class="card-actions">
+      cardInfo.appendChild(
+        role
+      );
 
-                  <button
-                    class="btn-msg"
-                    onclick="event.stopPropagation()"
-                  >
-                    <i class="bi bi-chat-dots"></i>
-                    Message
-                  </button>
+      cardInfo.appendChild(
+        rating
+      );
 
-                  <button
-                    class="btn-hire"
-                    onclick="
-                      event.stopPropagation();
-                      window.location.href=
-                      'all-providers-profile.html?id=${p.id}'
-                    "
-                  >
-                    Hire Now
-                  </button>
+      cardInfo.appendChild(
+        cardLocation
+      );
 
-                </div>
 
-              </div>
+      cardTop.appendChild(
+        avatar
+      );
 
-            </div>
+      cardTop.appendChild(
+        cardInfo
+      );
 
-          </div>
-        `
-      )
-      .join("");
+
+      // ───────── CARD BODY ─────────
+
+      const cardBody =
+        document.createElement(
+          "div"
+        );
+
+      cardBody.className =
+        "card-body";
+
+
+      // Tags
+
+      const cardTags =
+        document.createElement(
+          "div"
+        );
+
+      cardTags.className =
+        "card-tags";
+
+      (p.tags || []).forEach(
+        (tag) => {
+          const tagElement =
+            createTextElement(
+              "span",
+              "tag",
+              tag
+            );
+
+          cardTags.appendChild(
+            tagElement
+          );
+        }
+      );
+
+
+      // Bio
+
+      const cardBio =
+        document.createElement(
+          "p"
+        );
+
+      cardBio.className =
+        "card-bio";
+
+      const bio =
+        String(
+          p.bio || ""
+        );
+
+      cardBio.textContent =
+        bio.length > 120
+          ? `${bio.substring(0, 120)}...`
+          : bio;
+
+
+      // Stats
+
+      const cardStats =
+        document.createElement(
+          "div"
+        );
+
+      cardStats.className =
+        "card-stats";
+
+
+      // Jobs
+
+      const jobsBox =
+        document.createElement(
+          "div"
+        );
+
+      jobsBox.className =
+        "cs-box";
+
+      const jobsValue =
+        document.createElement(
+          "div"
+        );
+
+      jobsValue.className =
+        "cs-val";
+
+      if (p.jobs > 0) {
+        jobsValue.appendChild(
+          document.createTextNode(
+            String(p.jobs)
+          )
+        );
+
+        const sup =
+          document.createElement(
+            "sup"
+          );
+
+        sup.textContent =
+          "+";
+
+        jobsValue.appendChild(
+          sup
+        );
+      } else {
+        jobsValue.textContent =
+          "—";
+      }
+
+      const jobsLabel =
+        createTextElement(
+          "div",
+          "cs-label",
+          "Jobs Done"
+        );
+
+      jobsBox.appendChild(
+        jobsValue
+      );
+
+      jobsBox.appendChild(
+        jobsLabel
+      );
+
+
+      // Experience
+
+      const experienceBox =
+        document.createElement(
+          "div"
+        );
+
+      experienceBox.className =
+        "cs-box";
+
+      const experienceValue =
+        createTextElement(
+          "div",
+          "cs-val",
+          p.experienceYears
+        );
+
+      const experienceLabel =
+        createTextElement(
+          "div",
+          "cs-label",
+          "Experience"
+        );
+
+      experienceBox.appendChild(
+        experienceValue
+      );
+
+      experienceBox.appendChild(
+        experienceLabel
+      );
+
+
+      // Rating
+
+      const ratingBox =
+        document.createElement(
+          "div"
+        );
+
+      ratingBox.className =
+        "cs-box";
+
+      const ratingValue =
+        createTextElement(
+          "div",
+          "cs-val",
+          p.rating > 0
+            ? `${p.rating}★`
+            : "New"
+        );
+
+      const ratingLabel =
+        createTextElement(
+          "div",
+          "cs-label",
+          "Rating"
+        );
+
+      ratingBox.appendChild(
+        ratingValue
+      );
+
+      ratingBox.appendChild(
+        ratingLabel
+      );
+
+
+      cardStats.appendChild(
+        jobsBox
+      );
+
+      cardStats.appendChild(
+        experienceBox
+      );
+
+      cardStats.appendChild(
+        ratingBox
+      );
+
+
+      cardBody.appendChild(
+        cardTags
+      );
+
+      cardBody.appendChild(
+        cardBio
+      );
+
+      cardBody.appendChild(
+        cardStats
+      );
+
+
+      // ───────── CARD FOOTER ─────────
+
+      const cardFooter =
+        document.createElement(
+          "div"
+        );
+
+      cardFooter.className =
+        "card-footer";
+
+
+      // Price
+
+      const priceInfo =
+        document.createElement(
+          "div"
+        );
+
+      priceInfo.className =
+        "price-info";
+
+      const from =
+        createTextElement(
+          "div",
+          "from",
+          "Starting price"
+        );
+
+      const amount =
+        createTextElement(
+          "span",
+          "amount",
+          p.price
+        );
+
+      const per =
+        createTextElement(
+          "span",
+          "per",
+          p.per
+        );
+
+      priceInfo.appendChild(
+        from
+      );
+
+      priceInfo.appendChild(
+        amount
+      );
+
+      priceInfo.appendChild(
+        per
+      );
+
+
+      // Footer actions area
+
+      const footerRight =
+        document.createElement(
+          "div"
+        );
+
+      footerRight.style.display =
+        "flex";
+
+      footerRight.style.flexDirection =
+        "column";
+
+      footerRight.style.alignItems =
+        "flex-end";
+
+      footerRight.style.gap =
+        "6px";
+
+
+      // Availability
+
+      const availabilityText =
+        document.createElement(
+          "div"
+        );
+
+      availabilityText.className =
+        "avail-text";
+
+      const availabilityDot =
+        document.createElement(
+          "span"
+        );
+
+      availabilityDot.className =
+        `avail-dot ${p.availability}`;
+
+      const availabilityLabel =
+        createTextElement(
+          "span",
+          null,
+          p.availText
+        );
+
+      availabilityText.appendChild(
+        availabilityDot
+      );
+
+      availabilityText.appendChild(
+        availabilityLabel
+      );
+
+
+      // Card actions
+
+      const cardActions =
+        document.createElement(
+          "div"
+        );
+
+      cardActions.className =
+        "card-actions";
+
+
+      // Message button
+
+      const messageButton =
+        document.createElement(
+          "button"
+        );
+
+      messageButton.className =
+        "btn-msg";
+
+      messageButton.type =
+        "button";
+
+      messageButton.addEventListener(
+        "click",
+        (event) => {
+          event.stopPropagation();
+        }
+      );
+
+      const messageIcon =
+        document.createElement(
+          "i"
+        );
+
+      messageIcon.className =
+        "bi bi-chat-dots";
+
+      messageButton.appendChild(
+        messageIcon
+      );
+
+      messageButton.appendChild(
+        document.createTextNode(
+          " Message"
+        )
+      );
+
+
+      // Hire button
+
+      const hireButton =
+        document.createElement(
+          "button"
+        );
+
+      hireButton.className =
+        "btn-hire";
+
+      hireButton.type =
+        "button";
+
+      hireButton.addEventListener(
+        "click",
+        (event) => {
+          event.stopPropagation();
+
+          window.location.href =
+            `all-providers-profile.html?id=${encodeURIComponent(p.id)}`;
+        }
+      );
+
+      hireButton.textContent =
+        "Hire Now";
+
+
+      cardActions.appendChild(
+        messageButton
+      );
+
+      cardActions.appendChild(
+        hireButton
+      );
+
+
+      footerRight.appendChild(
+        availabilityText
+      );
+
+      footerRight.appendChild(
+        cardActions
+      );
+
+
+      cardFooter.appendChild(
+        priceInfo
+      );
+
+      cardFooter.appendChild(
+        footerRight
+      );
+
+
+      // ───────── FINISH CARD ─────────
+
+      card.appendChild(
+        cardTop
+      );
+
+      card.appendChild(
+        cardBody
+      );
+
+      card.appendChild(
+        cardFooter
+      );
+
+      grid.appendChild(
+        card
+      );
+    }
+  );
 }
 
 
@@ -1482,11 +2030,13 @@ function applyFilters() {
 
 
   // Update sidebar numbers
+
   updateFilterCounts(
     filtered
   );
 
   // Display providers
+
   renderCards(
     filtered
   );
@@ -1667,10 +2217,20 @@ function openFilters() {
       "drawerContent"
     );
 
-  content.innerHTML =
+  const sidebar =
     document.getElementById(
       "sidebarFilters"
-    ).innerHTML;
+    );
+
+  if (
+    !content ||
+    !sidebar
+  ) {
+    return;
+  }
+
+  content.innerHTML =
+    sidebar.innerHTML;
 
   document
     .getElementById(
@@ -1718,12 +2278,17 @@ window.addEventListener(
   async function () {
 
     // 1. Load real providers
+
     await loadRealProviders();
 
+
     // 2. Build filters from real data
+
     buildDynamicFilters();
 
+
     // 3. Get URL search values
+
     const {
       service,
       location
@@ -1751,11 +2316,25 @@ window.addEventListener(
       );
 
     if (locationDisplay) {
-      locationDisplay.innerHTML =
-        `
-          <i class="bi bi-geo-alt-fill"></i>
-          ${location}
-        `;
+      locationDisplay.replaceChildren();
+
+      const icon =
+        document.createElement(
+          "i"
+        );
+
+      icon.className =
+        "bi bi-geo-alt-fill";
+
+      locationDisplay.appendChild(
+        icon
+      );
+
+      locationDisplay.appendChild(
+        document.createTextNode(
+          ` ${location}`
+        )
+      );
     }
 
 
@@ -1767,17 +2346,48 @@ window.addEventListener(
       );
 
     if (serviceTag) {
-      serviceTag.innerHTML =
-        `
-          <i class="bi bi-tools"></i>
-          ${service}
+      serviceTag.replaceChildren();
 
-          <button
-            onclick="removeServiceFilter()"
-          >
-            ✕
-          </button>
-        `;
+      const icon =
+        document.createElement(
+          "i"
+        );
+
+      icon.className =
+        "bi bi-tools";
+
+      const serviceText =
+        document.createTextNode(
+          ` ${service}`
+        );
+
+      const removeButton =
+        document.createElement(
+          "button"
+        );
+
+      removeButton.type =
+        "button";
+
+      removeButton.textContent =
+        "✕";
+
+      removeButton.addEventListener(
+        "click",
+        removeServiceFilter
+      );
+
+      serviceTag.appendChild(
+        icon
+      );
+
+      serviceTag.appendChild(
+        serviceText
+      );
+
+      serviceTag.appendChild(
+        removeButton
+      );
 
       serviceTag.style.display =
         service !==
@@ -1795,17 +2405,48 @@ window.addEventListener(
       );
 
     if (locTag) {
-      locTag.innerHTML =
-        `
-          <i class="bi bi-geo-alt"></i>
-          ${location}
+      locTag.replaceChildren();
 
-          <button
-            onclick="removeLocationFilter()"
-          >
-            ✕
-          </button>
-        `;
+      const icon =
+        document.createElement(
+          "i"
+        );
+
+      icon.className =
+        "bi bi-geo-alt";
+
+      const locationText =
+        document.createTextNode(
+          ` ${location}`
+        );
+
+      const removeButton =
+        document.createElement(
+          "button"
+        );
+
+      removeButton.type =
+        "button";
+
+      removeButton.textContent =
+        "✕";
+
+      removeButton.addEventListener(
+        "click",
+        removeLocationFilter
+      );
+
+      locTag.appendChild(
+        icon
+      );
+
+      locTag.appendChild(
+        locationText
+      );
+
+      locTag.appendChild(
+        removeButton
+      );
 
       locTag.style.display =
         location !== "Nigeria"
@@ -1844,6 +2485,7 @@ window.addEventListener(
 
 
     // 4. Apply filters ONCE
+
     applyFilters();
 
 
@@ -1864,28 +2506,78 @@ window.addEventListener(
       navActions &&
       user
     ) {
-      navActions.innerHTML =
-        `
-          <a
-            href="dashboard.html"
-            class="btn-ghost"
-            style="text-decoration:none"
-          >
-            Hi,
-            ${
-              user.fullName
-                .split(" ")[0]
-            }
-            <i class="bi bi-person-circle"></i>
-          </a>
+      navActions.replaceChildren();
 
-          <button
-            class="btn-ghost"
-            onclick="signOut()"
-          >
-            Sign Out
-          </button>
-        `;
+      const dashboardLink =
+        document.createElement(
+          "a"
+        );
+
+      dashboardLink.href =
+        "dashboard.html";
+
+      dashboardLink.className =
+        "btn-ghost";
+
+      dashboardLink.style.textDecoration =
+        "none";
+
+      const firstName =
+        String(
+          user.fullName || ""
+        )
+          .trim()
+          .split(/\s+/)[0] ||
+        "User";
+
+      dashboardLink.appendChild(
+        document.createTextNode(
+          `Hi, ${firstName} `
+        )
+      );
+
+      const personIcon =
+        document.createElement(
+          "i"
+        );
+
+      personIcon.className =
+        "bi bi-person-circle";
+
+      dashboardLink.appendChild(
+        personIcon
+      );
+
+
+      const signOutButton =
+        document.createElement(
+          "button"
+        );
+
+      signOutButton.className =
+        "btn-ghost";
+
+      signOutButton.type =
+        "button";
+
+      signOutButton.textContent =
+        "Sign Out";
+
+      signOutButton.addEventListener(
+        "click",
+        () => {
+          signOut();
+        }
+      );
+
+
+      navActions.appendChild(
+        dashboardLink
+      );
+
+      navActions.appendChild(
+        signOutButton
+      );
     }
 
 
@@ -1920,3 +2612,4 @@ window.addEventListener(
     }
   }
 );
+```
