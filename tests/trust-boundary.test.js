@@ -16,6 +16,43 @@ describe("Trust boundary", () => {
     expect(sourceFile.statusCode).toBe(404);
   });
 
+  test("public provider endpoints never expose password-reset material", async () => {
+    const timestamp = Date.now();
+    const provider = await User.create({
+      fullName: "Reset Token Provider",
+      email: `resettokenprovider${timestamp}@example.com`,
+      password: await bcrypt.hash("TestPass123!", 10),
+      phone: `097${timestamp.toString().slice(-8)}`,
+      role: "provider",
+      category: "Electrical",
+      resetToken: "stored-reset-token-hash",
+      resetTokenExpiry: new Date(Date.now() + 60 * 60 * 1000),
+    });
+
+    const listResponse = await request(app).get("/api/providers");
+    expect(listResponse.statusCode).toBe(200);
+
+    const listedProvider = listResponse.body.providers.find(
+      (item) => item._id === provider._id.toString(),
+    );
+
+    expect(listedProvider).toBeDefined();
+    expect(listedProvider.password).toBeUndefined();
+    expect(listedProvider.resetToken).toBeUndefined();
+    expect(listedProvider.resetTokenExpiry).toBeUndefined();
+
+    const detailResponse = await request(app).get(
+      `/api/providers/${provider._id}`,
+    );
+
+    expect(detailResponse.statusCode).toBe(200);
+    expect(detailResponse.body.provider.password).toBeUndefined();
+    expect(detailResponse.body.provider.resetToken).toBeUndefined();
+    expect(detailResponse.body.provider.resetTokenExpiry).toBeUndefined();
+
+    await User.findByIdAndDelete(provider._id);
+  });
+
   test("signed-out caller cannot create a hire request", async () => {
     const response = await request(app).post("/api/hire").send({
       providerId: "507f1f77bcf86cd799439011",
