@@ -4,9 +4,14 @@ const {
   createHireRequest,
   getRequestsForProvider,
 } = require("../controllers/hireController");
-const { protect } = require("../middleware/authMiddleware");
+const { protect, requireRole } = require("../middleware/authMiddleware");
 
-router.post("/", createHireRequest);
-router.get("/provider/:providerId", protect, getRequestsForProvider);
+router.post("/", protect, requireRole("customer"), createHireRequest);
+router.get(
+  "/provider/:providerId",
+  protect,
+  requireRole("provider"),
+  getRequestsForProvider,
+);
 
 module.exports = router;
