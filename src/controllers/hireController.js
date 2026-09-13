@@ -1,24 +1,11 @@
 const HireRequest = require("../models/HireRequest");
+const User = require("../models/user");
 
 const createHireRequest = async (req, res) => {
   try {
-    const {
-      providerName,
-      providerId,
-      customerName,
-      customerPhone,
-      serviceNeeded,
-      description,
-    } = req.body;
+    const { providerId, serviceNeeded, description } = req.body;
 
-    if (
-      !providerName ||
-      !providerId ||
-      !customerName ||
-      !customerPhone ||
-      !serviceNeeded ||
-      !description
-    ) {
+    if (!providerId || !serviceNeeded || !description) {
       return res.status(400).json({ message: "Please fill in all fields" });
     }
 
@@ -28,11 +15,25 @@ const createHireRequest = async (req, res) => {
         .json({ message: "Please give more detail — at least 20 characters" });
     }
 
+    const [customer, provider] = await Promise.all([
+      User.findById(req.user.id).select("fullName phone role"),
+      User.findOne({ _id: providerId, role: "provider" }).select("fullName"),
+    ]);
+
+    if (!customer) {
+      return res.status(401).json({ message: "User not found" });
+    }
+
+    if (!provider) {
+      return res.status(404).json({ message: "Provider not found" });
+    }
+
     const hireRequest = await HireRequest.create({
-      providerName,
-      providerId,
-      customerName,
-      customerPhone,
+      providerName: provider.fullName,
+      providerId: provider._id.toString(),
+      customerId: customer._id.toString(),
+      customerName: customer.fullName,
+      customerPhone: customer.phone,
       serviceNeeded,
       description,
     });
@@ -48,8 +49,6 @@ const createHireRequest = async (req, res) => {
 
 const getRequestsForProvider = async (req, res) => {
   try {
-    // The provider ID from the URL must match
-    // the ID of the logged-in user.
     if (req.user.id !== req.params.providerId) {
       return res.status(403).json({
         message: "You are not allowed to view these requests",
