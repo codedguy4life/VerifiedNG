@@ -1,5 +1,8 @@
 const User = require("../models/user");
 
+const publicProviderFields =
+  "-password -loginHistory -resetToken -resetTokenExpiry -voucherName -voucherPhone";
+
 const getProviders = async (req, res) => {
   try {
     const { category, state, search } = req.query;
@@ -19,12 +22,12 @@ const getProviders = async (req, res) => {
         { fullName: { $regex: search, $options: "i" } },
         { category: { $regex: search, $options: "i" } },
         { bio: { $regex: search, $options: "i" } },
-  { skills: { $regex: search, $options: "i" } },
+        { skills: { $regex: search, $options: "i" } },
       ];
     }
 
     const providers = await User.find(query)
-      .select("-password -loginHistory -voucherName -voucherPhone")
+      .select(publicProviderFields)
       .sort({ createdAt: -1 });
 
     res.status(200).json({ providers });
@@ -36,7 +39,7 @@ const getProviders = async (req, res) => {
 const getProviderById = async (req, res) => {
   try {
     const provider = await User.findById(req.params.id).select(
-      "-password -loginHistory -voucherName -voucherPhone",
+      publicProviderFields,
     );
 
     if (!provider || provider.role !== "provider") {
@@ -52,18 +55,18 @@ const getProviderById = async (req, res) => {
 const getCategoryCounts = async (req, res) => {
   try {
     const counts = await User.aggregate([
-      { $match: { role: 'provider' } },
-      { $group: { _id: '$category', count: { $sum: 1 } } }
+      { $match: { role: "provider" } },
+      { $group: { _id: "$category", count: { $sum: 1 } } },
     ]);
 
     const result = {};
-    counts.forEach(c => {
+    counts.forEach((c) => {
       if (c._id) result[c._id] = c.count;
     });
 
     res.status(200).json({ counts: result });
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
