@@ -4,6 +4,7 @@ const hireRequestSchema = new mongoose.Schema(
   {
     providerName: { type: String, required: true },
     providerId: { type: String, required: true },
+    customerId: { type: String, required: true },
     customerName: { type: String, required: true },
     customerPhone: { type: String, required: true },
     serviceNeeded: { type: String, required: true },
