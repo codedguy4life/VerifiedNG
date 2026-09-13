@@ -6,10 +6,12 @@
     <title>Register as Provider — VerifiedNG</title>
     <link
       href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap"
-      rel="stylesheet" />
+      rel="stylesheet"
+    />
     <link
       rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+    />
     <link rel="stylesheet" href="styles/signup-provider.css" />
   </head>
   <body>
@@ -97,14 +99,16 @@
               <input
                 type="tel"
                 id="phoneInput"
-                placeholder="e.g. 08012345678" />
+                placeholder="e.g. 08012345678"
+              />
             </div>
             <div class="form-group">
               <label>Email Address</label>
               <input
                 type="email"
                 id="emailInput"
-                placeholder="e.g. obago@email.com" />
+                placeholder="e.g. obago@email.com"
+              />
             </div>
             <div class="form-row">
               <div class="form-group">
@@ -154,7 +158,8 @@
                 <input
                   id="cityInput"
                   type="text"
-                  placeholder="e.g. Agege, Lagos" />
+                  placeholder="e.g. Agege, Lagos"
+                />
               </div>
             </div>
             <div class="form-group">
@@ -173,9 +178,8 @@
                   type="file"
                   id="profilePhoto"
                   accept="image/*"
-                  onchange="
-                    handleUpload(this, 'profileIcon', 'profileTitle')
-                  " />
+                  onchange="handleUpload(this, 'profileIcon', 'profileTitle')"
+                />
               </label>
             </div>
           </div>
@@ -286,7 +290,8 @@
               <label>Tell Customers About Yourself</label>
               <textarea
                 id="bioInput"
-                placeholder="Describe your experience, what makes you different, and why customers should choose you. Be honest and specific..."></textarea>
+                placeholder="Describe your experience, what makes you different, and why customers should choose you. Be honest and specific..."
+              ></textarea>
             </div>
             <div class="form-group">
               <label>Work Gallery (optional)</label>
@@ -303,7 +308,8 @@
                   type="file"
                   id="galleryUpload"
                   accept="image/*"
-                  multiple />
+                  multiple
+                />
               </label>
             </div>
           </div>
@@ -342,7 +348,8 @@
                   type="file"
                   id="idUpload"
                   accept="image/*"
-                  onchange="handleUpload(this, 'idIcon', 'idTitle')" />
+                  onchange="handleUpload(this, 'idIcon', 'idTitle')"
+                />
               </label>
             </div>
             <div class="form-group">
@@ -352,21 +359,24 @@
               ></label>
               <input
                 type="text"
-                placeholder="Parmanent Address may be needed for quick verification" />
+                placeholder="Parmanent Address may be needed for quick verification"
+              />
             </div>
             <div class="form-group">
               <label>Community Voucher Name</label>
               <input
                 type="text"
                 id="voucherName"
-                placeholder="Name of someone who can vouch for you (e.g. pastor, employer, neighbour)" />
+                placeholder="Name of someone who can vouch for you (e.g. pastor, employer, neighbour)"
+              />
             </div>
             <div class="form-group">
               <label>Voucher's Phone Number</label>
               <input
                 type="tel"
                 id="voucherPhone"
-                placeholder="We may contact them to confirm your identity" />
+                placeholder="We may contact them to confirm your identity"
+              />
             </div>
             <div class="form-group">
               <label>Relationship to Voucher</label>
@@ -401,16 +411,30 @@
           </p>
           <div class="form-fields">
             <div class="form-group">
+              <label for="providerInviteCode">Provider Invite Code</label>
+              <input
+                type="password"
+                id="providerInviteCode"
+                placeholder="Enter your provider invite code"
+                autocomplete="off"
+              />
+              <small>
+                This code is provided by VerifiedNG to approved providers.
+              </small>
+            </div>
+            <div class="form-group">
               <label>Password</label>
               <div class="password-wrap">
                 <input
                   type="password"
                   id="providerPass"
-                  placeholder="Minimum 8 characters" />
+                  placeholder="Minimum 8 characters"
+                />
                 <button
                   type="button"
                   class="toggle-pass"
-                  onclick="togglePass('providerPass')">
+                  onclick="togglePass('providerPass')"
+                >
                   <i class="bi bi-eye"></i>
                 </button>
               </div>
@@ -421,11 +445,13 @@
                 <input
                   type="password"
                   id="providerPass2"
-                  placeholder="Repeat your password" />
+                  placeholder="Repeat your password"
+                />
                 <button
                   type="button"
                   class="toggle-pass"
-                  onclick="togglePass('providerPass2')">
+                  onclick="togglePass('providerPass2')"
+                >
                   <i class="bi bi-eye"></i>
                 </button>
               </div>
@@ -492,7 +518,8 @@
 
           <button
             class="btn-home"
-            onclick="window.location.href = 'index.html'">
+            onclick="window.location.href = 'index.html'"
+          >
             Go to Homepage
           </button>
         </div>
