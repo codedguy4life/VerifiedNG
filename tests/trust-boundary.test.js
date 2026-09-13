@@ -29,6 +29,46 @@ describe("Trust boundary", () => {
     expect(response.statusCode).toBe(401);
   });
 
+  test("registration cannot self-assign the provider role", async () => {
+    const email = `role${Date.now()}@example.com`;
+    const phone = `088${Date.now().toString().slice(-8)}`;
+
+    const response = await request(app)
+      .post("/api/auth/register")
+      .send({
+        fullName: "Role Test Customer",
+        email,
+        password: "TestPass123!",
+        phone,
+        role: "provider",
+      });
+
+    expect(response.statusCode).toBe(201);
+    expect(response.body.user.role).toBe("customer");
+
+    await User.findByIdAndDelete(response.body.user.id);
+  });
+
+  test("provider registration uses a server-defined provider route", async () => {
+    const email = `providerroute${Date.now()}@example.com`;
+    const phone = `087${Date.now().toString().slice(-8)}`;
+
+    const response = await request(app)
+      .post("/api/auth/register-provider")
+      .send({
+        fullName: "Provider Route User",
+        email,
+        password: "TestPass123!",
+        phone,
+        category: "Electrical",
+      });
+
+    expect(response.statusCode).toBe(201);
+    expect(response.body.user.role).toBe("provider");
+
+    await User.findByIdAndDelete(response.body.user.id);
+  });
+
   test("customer cannot self-upgrade to provider", async () => {
     const email = `upgrade${Date.now()}@example.com`;
     const phone = `089${Date.now().toString().slice(-8)}`;
@@ -52,7 +92,31 @@ describe("Trust boundary", () => {
     await User.findByIdAndDelete(signup.body.user.id);
   });
 
-  test("hire request identity comes from the authenticated user", async () => {
+  test("invalid provider IDs return 404 instead of crashing the hire endpoint", async () => {
+    const timestamp = Date.now();
+    const customer = await request(app)
+      .post("/api/auth/register")
+      .send({
+        fullName: "Invalid Provider Customer",
+        email: `invalidprovider${timestamp}@example.com`,
+        password: "TestPass123!",
+        phone: `086${timestamp.toString().slice(-8)}`,
+      });
+
+    const response = await request(app)
+      .post("/api/hire")
+      .set("Authorization", `Bearer ${customer.body.token}`)
+      .send({
+        providerId: "static",
+        serviceNeeded: "Electrical diagnostics",
+        description: "Trying a static frontend provider id safely.",
+      });
+
+    expect(response.statusCode).toBe(404);
+    await User.findByIdAndDelete(customer.body.user.id);
+  });
+
+  test("hire request identity comes from the authenticated user and stored text is safe", async () => {
     const timestamp = Date.now();
     const customerEmail = `hirecustomer${timestamp}@example.com`;
     const customerPhone = `090${timestamp.toString().slice(-8)}`;
@@ -88,7 +152,7 @@ describe("Trust boundary", () => {
         customerName: "Forged Customer Name",
         customerPhone: "09999999999",
         serviceNeeded: "Electrical diagnostics",
-        description: "This request contains deliberately forged identity fields.",
+        description: "<img src=x onerror=alert(1)>",
       });
 
     expect(response.statusCode).toBe(201);
@@ -98,6 +162,7 @@ describe("Trust boundary", () => {
     expect(response.body.request.customerId).toBe(
       customerSignup.body.user.id.toString(),
     );
+    expect(response.body.request.description).toContain("&lt;img");
 
     await HireRequest.findByIdAndDelete(response.body.request._id);
     await User.findByIdAndDelete(provider._id);
@@ -132,5 +197,42 @@ describe("Trust boundary", () => {
 
     await User.findByIdAndDelete(provider._id);
     await User.findByIdAndDelete(customer.body.user.id);
+  });
+
+  test("provider cannot read another provider's inbox", async () => {
+    const timestamp = Date.now();
+    const providerA = await User.create({
+      fullName: "Provider A",
+      email: `providera${timestamp}@example.com`,
+      password: await bcrypt.hash("TestPass123!", 10),
+      phone: `094${timestamp.toString().slice(-8)}`,
+      role: "provider",
+      isVerified: true,
+    });
+
+    const providerB = await User.create({
+      fullName: "Provider B",
+      email: `providerb${timestamp}@example.com`,
+      password: await bcrypt.hash("TestPass123!", 10),
+      phone: `095${timestamp.toString().slice(-8)}`,
+      role: "provider",
+      isVerified: true,
+    });
+
+    const providerALogin = await request(app)
+      .post("/api/auth/login")
+      .send({
+        identifier: providerA.email,
+        password: "TestPass123!",
+      });
+
+    const response = await request(app)
+      .get(`/api/hire/provider/${providerB._id}`)
+      .set("Authorization", `Bearer ${providerALogin.body.token}`);
+
+    expect(response.statusCode).toBe(403);
+
+    await User.findByIdAndDelete(providerA._id);
+    await User.findByIdAndDelete(providerB._id);
   });
 });
