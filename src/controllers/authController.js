@@ -1,8 +1,19 @@
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
-const crypto = require("crypto");
+const crypto = require("node:crypto");
 const nodemailer = require("nodemailer");
+
+const buildAuthToken = (user) =>
+  jwt.sign(
+    {
+      id: user._id,
+      email: user.email,
+      role: user.role,
+    },
+    process.env.JWT_SECRET,
+    { expiresIn: "7d" },
+  );
 
 // ─── REGISTER ───
 const register = async (req, res) => {
@@ -12,7 +23,6 @@ const register = async (req, res) => {
       email,
       password,
       phone,
-      role,
       category,
       bio,
       skills,
@@ -21,8 +31,6 @@ const register = async (req, res) => {
       voucherName,
       voucherPhone,
       profilePhoto,
-
-      // Provider information
       availability,
       experienceYears,
       price,
@@ -33,20 +41,17 @@ const register = async (req, res) => {
       return res.status(400).json({ message: "Please fill in all fields" });
     }
 
-    const existingUser = await User.findOne({
-      email: email.trim().toLowerCase(),
-    });
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanPhone = phone.trim();
 
+    const existingUser = await User.findOne({ email: cleanEmail });
     if (existingUser) {
       return res.status(400).json({
         message: "That email is already in use",
       });
     }
 
-    const existingPhone = await User.findOne({
-      phone: phone.trim(),
-    });
-
+    const existingPhone = await User.findOne({ phone: cleanPhone });
     if (existingPhone) {
       return res.status(400).json({
         message: "That phone number is already in use",
@@ -56,12 +61,14 @@ const register = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
+    // Registration always creates a customer. Provider access is granted by
+    // a server-side verification flow rather than a client-supplied role.
     const newUser = await User.create({
       fullName,
-      email: email.trim().toLowerCase(),
+      email: cleanEmail,
       password: hashedPassword,
-      phone: phone.trim(),
-      role: role || "customer",
+      phone: cleanPhone,
+      role: "customer",
       category: category || "",
       bio: bio || "",
       skills: skills || [],
@@ -70,19 +77,13 @@ const register = async (req, res) => {
       voucherName: voucherName || "",
       voucherPhone: voucherPhone || "",
       profilePhoto: profilePhoto || "",
-
-      // Provider information
       availability: availability || "offline",
       experienceYears: Number(experienceYears) || 0,
       price: price || "",
       per: per || "/job",
     });
 
-    const token = jwt.sign(
-      { id: newUser._id, email: newUser.email, role: newUser.role },
-      process.env.JWT_SECRET,
-      { expiresIn: "7d" },
-    );
+    const token = buildAuthToken(newUser);
 
     res.status(201).json({
       message: "Account created successfully!",
@@ -97,23 +98,32 @@ const register = async (req, res) => {
         phone: newUser.phone,
         state: newUser.state,
         city: newUser.city,
-
-        // Provider information
         availability: newUser.availability,
         experienceYears: newUser.experienceYears,
         price: newUser.price,
         per: newUser.per,
-
-        // System-managed information
         rating: newUser.rating,
         reviewCount: newUser.reviewCount,
         jobs: newUser.jobs,
-
         createdAt: newUser.createdAt,
       },
     });
   } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
+    if (error?.code === 11000) {
+      if (error.keyPattern?.email) {
+        return res.status(400).json({
+          message: "That email is already in use",
+        });
+      }
+
+      if (error.keyPattern?.phone) {
+        return res.status(400).json({
+          message: "That phone number is already in use",
+        });
+      }
+    }
+
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -129,16 +139,12 @@ const login = async (req, res) => {
     }
 
     const cleanIdentifier = identifier.trim();
-
-    // Check whether the identifier is an email or phone number
     const query = cleanIdentifier.includes("@")
       ? { email: cleanIdentifier.toLowerCase() }
       : { phone: cleanIdentifier };
 
     const user = await User.findOne(query);
 
-    // Keep the same message for both cases:
-    // account not found OR wrong password
     if (!user) {
       return res.status(400).json({
         message: "Invalid email/phone or password",
@@ -157,9 +163,7 @@ const login = async (req, res) => {
 
     await User.findByIdAndUpdate(user._id, {
       $inc: { loginCount: 1 },
-
       lastLogin: now,
-
       $push: {
         loginHistory: {
           $each: [now],
@@ -168,23 +172,11 @@ const login = async (req, res) => {
       },
     });
 
-    const token = jwt.sign(
-      {
-        id: user._id,
-        email: user.email,
-        role: user.role,
-      },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: "7d",
-      },
-    );
+    const token = buildAuthToken(user);
 
     res.status(200).json({
       message: "Login successful!",
-
       token,
-
       user: {
         id: user._id,
         fullName: user.fullName,
@@ -196,11 +188,9 @@ const login = async (req, res) => {
         city: user.city,
         phone: user.phone,
         profilePhoto: user.profilePhoto,
-
         rating: user.rating || 0,
         reviewCount: user.reviewCount || 0,
         jobs: user.jobs || 0,
-
         loginCount: (user.loginCount || 0) + 1,
         lastLogin: now,
         createdAt: user.createdAt,
@@ -208,10 +198,8 @@ const login = async (req, res) => {
     });
   } catch (error) {
     console.error("Login error:", error);
-
     res.status(500).json({
       message: "Server error",
-      error: error.message,
     });
   }
 };
@@ -225,7 +213,8 @@ const forgotPassword = async (req, res) => {
       return res.status(400).json({ message: "Please provide your email" });
     }
 
-    const user = await User.findOne({ email });
+    const cleanEmail = email.trim().toLowerCase();
+    const user = await User.findOne({ email: cleanEmail });
 
     if (!user) {
       return res.status(200).json({
@@ -234,18 +223,22 @@ const forgotPassword = async (req, res) => {
     }
 
     const resetToken = crypto.randomBytes(32).toString("hex");
+    const resetTokenHash = crypto
+      .createHash("sha256")
+      .update(resetToken)
+      .digest("hex");
     const resetTokenExpiry = new Date(Date.now() + 60 * 60 * 1000);
 
     await User.findByIdAndUpdate(user._id, {
-      resetToken,
+      resetToken: resetTokenHash,
       resetTokenExpiry,
     });
 
-    const resetLink = `https://codedguy4life.github.io/VerifiedNG/reset-password.html?token=${resetToken}&email=${encodeURIComponent(email)}`;
+    const resetLink = `https://codedguy4life.github.io/VerifiedNG/reset-password.html?token=${resetToken}&email=${encodeURIComponent(cleanEmail)}`;
 
     await transporter.sendMail({
       from: `"VerifiedNG" <${process.env.EMAIL_USER}>`,
-      to: email,
+      to: cleanEmail,
       subject: "Reset Your VerifiedNG Password",
       html: `
         <div style="font-family:Arial,sans-serif;max-width:500px;margin:0 auto;padding:20px;">
@@ -265,7 +258,7 @@ const forgotPassword = async (req, res) => {
     });
   } catch (error) {
     console.log("Forgot password error:", error.message);
-    res.status(500).json({ message: "Server error", error: error.message });
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -292,9 +285,14 @@ const resetPassword = async (req, res) => {
       });
     }
 
+    const tokenHash = crypto
+      .createHash("sha256")
+      .update(token)
+      .digest("hex");
+
     const user = await User.findOne({
-      email: decodeURIComponent(email),
-      resetToken: token,
+      email: decodeURIComponent(email).trim().toLowerCase(),
+      resetToken: tokenHash,
       resetTokenExpiry: { $gt: new Date() },
     });
 
@@ -318,7 +316,7 @@ const resetPassword = async (req, res) => {
       message: "Password reset successfully! You can now log in.",
     });
   } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
+    res.status(500).json({ message: "Server error" });
   }
 };
 
