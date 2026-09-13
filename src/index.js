@@ -14,6 +14,7 @@ app.use(
       "https://codedguy4life.github.io",
       "http://localhost:5000",
       "http://127.0.0.1:5000",
+      "http://localhost:5500",
       "http://127.0.0.1:5500",
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
@@ -74,17 +75,38 @@ app.get("/:page", (req, res, next) => {
 
 const PORT = process.env.PORT || 5000;
 
+const requiredEnvironment = [
+  "MONGO_URI",
+  "JWT_SECRET",
+  "EMAIL_USER",
+  "EMAIL_PASS",
+  "PROVIDER_INVITE_CODE",
+  "FRONTEND_URL",
+];
+
+const getMissingEnvironmentVariables = () =>
+  requiredEnvironment.filter((name) => {
+    const value = process.env[name]?.trim();
+    return !value || /^your[_-]/i.test(value);
+  });
+
 if (require.main === module) {
-  if (!process.env.MONGO_URI || !process.env.JWT_SECRET) {
+  const missingEnvironment = getMissingEnvironmentVariables();
+
+  if (missingEnvironment.length > 0) {
     console.error(
-      "Missing required environment variables. Set MONGO_URI and JWT_SECRET in .env.",
+      `Missing required environment variables: ${missingEnvironment.join(", ")}`,
     );
+    process.exit(1);
   }
 
   mongoose
     .connect(process.env.MONGO_URI, { family: 4 })
     .then(() => console.log("MongoDB connected"))
-    .catch((err) => console.log("MongoDB offline: " + err.message));
+    .catch((err) => {
+      console.error("MongoDB connection failed: " + err.message);
+      process.exit(1);
+    });
 
   app.listen(PORT, () => {
     console.log("Server running on port " + PORT);
