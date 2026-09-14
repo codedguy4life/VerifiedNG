@@ -88,7 +88,7 @@ function handleLogin(e) {
   fetch(`${API_URL}/api/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email: identifier, password: password }),
+    body: JSON.stringify({ identifier: identifier, password: password }),
   })
     .then((response) => response.json())
     .then((data) => {
