@@ -31,9 +31,6 @@ function submitForm() {
   const category = document.getElementById("categoryInput").value;
   const bio = document.getElementById("bioInput").value.trim();
   const password = document.getElementById("providerPass").value;
-  const providerInviteCode = document
-    .getElementById("providerInviteCode")
-    .value.trim();
   const voucherName = document.getElementById("voucherName").value.trim();
   const voucherPhone = document.getElementById("voucherPhone").value.trim();
 
@@ -57,19 +54,22 @@ function submitForm() {
       city,
       voucherName,
       voucherPhone,
-      providerInviteCode,
     }),
   })
     .then((response) => response.json())
     .then((data) => {
       if (data.message === "Account created successfully!") {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+
         document.getElementById("step4").classList.remove("active");
         document.getElementById("circle4").classList.remove("active");
         document.getElementById("circle4").classList.add("done");
         document.getElementById("circle4").textContent = "✓";
         document.getElementById("line3")?.classList.add("done");
         document.getElementById("step5").classList.add("active");
-        window.scrollTo({ top: 0, behavior: "smooth" });
+
+        window.location.href = "index.html";
       } else {
         if (data.message.includes("email") || data.message.includes("Email")) {
           goToStep(1);
@@ -80,15 +80,6 @@ function submitForm() {
         ) {
           goToStep(1);
           setTimeout(() => showFieldError("phoneInput", data.message), 300);
-        } else if (
-          data.message.includes("invite") ||
-          data.message.includes("Invite")
-        ) {
-          goToStep(4);
-          setTimeout(
-            () => showFieldError("providerInviteCode", data.message),
-            300,
-          );
         } else {
           showFieldError("providerPass", data.message);
         }
@@ -213,9 +204,6 @@ function validateStep(step) {
     const pass = document.getElementById("providerPass").value;
     const pass2 = document.getElementById("providerPass2").value;
     const terms = document.getElementById("providerTerms").checked;
-    const providerInviteCode = document
-      .getElementById("providerInviteCode")
-      .value.trim();
     if (!pass || pass.length < 8) {
       showFieldError("providerPass", "Password must be at least 8 characters");
       isValid = false;
@@ -234,13 +222,6 @@ function validateStep(step) {
         "color:#e53935;font-size:12px;margin-top:4px;display:block";
       err.textContent = "You must agree to the terms";
       termsEl.parentNode.appendChild(err);
-      isValid = false;
-    }
-    if (!providerInviteCode) {
-      showFieldError(
-        "providerInviteCode",
-        "Please enter your provider invite code",
-      );
       isValid = false;
     }
   }

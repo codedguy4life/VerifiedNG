@@ -75,14 +75,7 @@ app.get("/:page", (req, res, next) => {
 
 const PORT = process.env.PORT || 5000;
 
-const requiredEnvironment = [
-  "MONGO_URI",
-  "JWT_SECRET",
-  "EMAIL_USER",
-  "EMAIL_PASS",
-  "PROVIDER_INVITE_CODE",
-  "FRONTEND_URL",
-];
+const requiredEnvironment = ["MONGO_URI", "JWT_SECRET", "FRONTEND_URL"];
 
 const getMissingEnvironmentVariables = () =>
   requiredEnvironment.filter((name) => {

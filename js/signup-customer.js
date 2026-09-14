@@ -23,17 +23,17 @@ function togglePassword() {
 function handlePhotoUpload(input) {
   if (input.files && input.files[0]) {
     const file = input.files[0];
-    
+
     // Show filename
-    document.getElementById('uploadText').textContent = file.name;
-    
+    document.getElementById("uploadText").textContent = file.name;
+
     // Convert to base64 to send to backend
     const reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = function (e) {
       // Store base64 string temporarily
       window.profilePhotoBase64 = e.target.result;
-      document.getElementById('uploadText').textContent = 
-        'Photo ready: ' + file.name;
+      document.getElementById("uploadText").textContent =
+        "Photo ready: " + file.name;
     };
     reader.readAsDataURL(file);
   }
@@ -209,7 +209,7 @@ function handleSignup(e) {
       password: password,
       phone: phone,
       role: "customer",
-       profilePhoto: window.profilePhotoBase64 || ""
+      profilePhoto: window.profilePhotoBase64 || "",
     }),
   })
     .then((response) => response.json())
@@ -225,13 +225,13 @@ function handleSignup(e) {
         btn.classList.remove("loading");
 
         // Show error on correct field instead of alert
-        if (data.message.includes("Email")) {
+        if (data.message.toLowerCase().includes("email")) {
           showError("emailInput", "emailError", data.message);
           document.getElementById("emailInput").scrollIntoView({
             behavior: "smooth",
             block: "center",
           });
-        } else if (data.message.includes("Phone")) {
+        } else if (data.message.toLowerCase().includes("phone")) {
           showError("phoneInput", "phoneError", data.message);
           document.getElementById("phoneInput").scrollIntoView({
             behavior: "smooth",

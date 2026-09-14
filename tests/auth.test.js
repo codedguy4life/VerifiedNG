@@ -27,6 +27,28 @@ describe("Authentication", () => {
     expect(response.body.user.role).toBe("customer");
   });
 
+  test("provider can sign up successfully", async () => {
+    const response = await request(app)
+      .post("/api/auth/register-provider")
+      .send({
+        fullName: "Jest Test Provider",
+        email: `jestprovider${Date.now()}@example.com`,
+        password: "TestPass123!",
+        phone: `081${Date.now().toString().slice(-8)}`,
+        category: "Electrical",
+        bio: "Professional electrical service provider with experience.",
+        skills: ["Wiring", "Installation"],
+        state: "Lagos",
+        city: "Ikeja",
+      });
+
+    expect(response.statusCode).toBe(201);
+    expect(response.body.message).toBe("Account created successfully!");
+    expect(response.body.token).toBeDefined();
+    expect(response.body.user).toBeDefined();
+    expect(response.body.user.role).toBe("provider");
+  });
+
   test("client cannot self-assert provider role during signup", async () => {
     const response = await request(app)
       .post("/api/auth/register")

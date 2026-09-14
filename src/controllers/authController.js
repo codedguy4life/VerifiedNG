@@ -129,19 +129,10 @@ const createAccount = async (req, res, role) => {
 const register = async (req, res) => createAccount(req, res, "customer");
 
 // ─── PROVIDER REGISTER ───
-// Provider accounts require a server-configured invite code. The client can
-// request this route, but the server decides whether provider access is allowed
-// and establishes the role itself.
+
+// The server assigns the provider role; the browser cannot choose it.
+
 const registerProvider = async (req, res) => {
-  const inviteCode = String(req.body.providerInviteCode || "");
-  const configuredCode = process.env.PROVIDER_INVITE_CODE;
-
-  if (!configuredCode || inviteCode !== configuredCode) {
-    return res.status(403).json({
-      message: "A valid provider invite code is required",
-    });
-  }
-
   return createAccount(req, res, "provider");
 };
 
