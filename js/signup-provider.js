@@ -63,13 +63,17 @@ function submitForm() {
     .then((response) => response.json())
     .then((data) => {
       if (data.message === "Account created successfully!") {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+
         document.getElementById("step4").classList.remove("active");
         document.getElementById("circle4").classList.remove("active");
         document.getElementById("circle4").classList.add("done");
         document.getElementById("circle4").textContent = "✓";
         document.getElementById("line3")?.classList.add("done");
         document.getElementById("step5").classList.add("active");
-        window.scrollTo({ top: 0, behavior: "smooth" });
+
+        window.location.href = "index.html";
       } else {
         if (data.message.includes("email") || data.message.includes("Email")) {
           goToStep(1);
