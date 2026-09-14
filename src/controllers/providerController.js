@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const User = require("../models/user");
 
 const publicProviderFields =
@@ -42,11 +43,16 @@ const getProviders = async (req, res) => {
 
 const getProviderById = async (req, res) => {
   try {
-    const provider = await User.findById(req.params.id).select(
-      publicProviderFields,
-    );
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(404).json({ message: "Provider not found" });
+    }
 
-    if (!provider || provider.role !== "provider") {
+    const provider = await User.findOne({
+      _id: req.params.id,
+      role: "provider",
+    }).select(publicProviderFields);
+
+    if (!provider) {
       return res.status(404).json({ message: "Provider not found" });
     }
 
