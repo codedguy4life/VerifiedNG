@@ -1,3 +1,4 @@
+jest.setTimeout(15000);
 const mongoose = require("mongoose");
 
 beforeAll(async () => {
