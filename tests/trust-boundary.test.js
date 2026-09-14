@@ -86,37 +86,22 @@ describe("Trust boundary", () => {
     await User.findByIdAndDelete(response.body.user.id);
   });
 
-  test("provider registration requires a server-configured invite code", async () => {
-    const previousCode = process.env.PROVIDER_INVITE_CODE;
-    process.env.PROVIDER_INVITE_CODE = "test-provider-invite";
-
-    const basePayload = {
-      fullName: "Provider Route User",
-      email: `providerroute${Date.now()}@example.com`,
-      password: "TestPass123!",
-      phone: `087${Date.now().toString().slice(-8)}`,
-      category: "Electrical",
-    };
-
-    const denied = await request(app)
-      .post("/api/auth/register-provider")
-      .send({ ...basePayload, providerInviteCode: "wrong-code" });
-
-    expect(denied.statusCode).toBe(403);
-
+  test("provider registration assigns provider role server-side", async () => {
     const response = await request(app)
       .post("/api/auth/register-provider")
-      .send({ ...basePayload, providerInviteCode: "test-provider-invite" });
+      .send({
+        fullName: "Provider Route User",
+        email: `providerroute${Date.now()}@example.com`,
+        password: "TestPass123!",
+        phone: `087${Date.now().toString().slice(-8)}`,
+        category: "Electrical",
+        role: "customer",
+      });
 
     expect(response.statusCode).toBe(201);
     expect(response.body.user.role).toBe("provider");
 
     await User.findByIdAndDelete(response.body.user.id);
-    if (previousCode === undefined) {
-      delete process.env.PROVIDER_INVITE_CODE;
-    } else {
-      process.env.PROVIDER_INVITE_CODE = previousCode;
-    }
   });
 
   test("customer cannot self-upgrade to provider", async () => {

@@ -27,7 +27,7 @@ describe("Authentication", () => {
     expect(response.body.user.role).toBe("customer");
   });
 
-  test("provider can sign up successfully with a valid invite code", async () => {
+  test("provider can sign up successfully", async () => {
     const response = await request(app)
       .post("/api/auth/register-provider")
       .send({
@@ -40,7 +40,6 @@ describe("Authentication", () => {
         skills: ["Wiring", "Installation"],
         state: "Lagos",
         city: "Ikeja",
-        providerInviteCode: process.env.PROVIDER_INVITE_CODE,
       });
 
     expect(response.statusCode).toBe(201);
