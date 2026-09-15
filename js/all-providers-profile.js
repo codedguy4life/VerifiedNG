@@ -374,6 +374,16 @@ function shareTwitter() {
 
 // ─── HIRE REQUEST ───
 function submitHireRequest() {
+  // ─── AUTHENTICATION CHECK ───
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    document.getElementById("hireDescError").textContent =
+      "Please sign in to send a hire request";
+    document.getElementById("hireDescError").classList.add("show");
+    return;
+  }
+
   let isValid = true;
 
   const name = document.getElementById("hireName").value.trim();
@@ -429,37 +439,60 @@ function submitHireRequest() {
   btn.style.opacity = "0.7";
   btn.style.pointerEvents = "none";
 
-  // Get provider info from the page
-  const providerName = document.getElementById("providerName").textContent;
+  // Get provider ID from the page URL.
+  // The server will verify that this ID belongs to a provider.
   const urlParams = new URLSearchParams(window.location.search);
-  const providerId = urlParams.get("id") || "static";
-
+  const providerId = (urlParams.get("id") || "").replace(/^db_/, "");
   fetch(`${API_URL}/api/hire`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
     body: JSON.stringify({
-      providerName,
       providerId,
-      customerName: name,
-      customerPhone: phone,
       serviceNeeded: service,
       description: desc,
+
+      // These are still sent by the form for compatibility,
+      // but the server MUST NOT trust them as identity.
+      customerName: name,
+      customerPhone: phone,
     }),
   })
-    .then((res) => res.json())
+    .then(async (res) => {
+      const data = await res.json();
+
+      // Missing, expired, invalid, or tampered authentication
+      if (res.status === 401) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+
+        throw new Error("AUTH_REQUIRED");
+      }
+
+      if (!res.ok) {
+        throw new Error(data.message || "Something went wrong");
+      }
+
+      return data;
+    })
     .then((data) => {
       if (data.request || data.message === "Hire request sent successfully!") {
         closeModal();
+
         // Show success message on page instead of alert
         const successBanner = document.createElement("div");
         successBanner.style.cssText = `
-        position: fixed; top: 20px; right: 20px; z-index: 9999;
-        background: #00c853; color: white; padding: 16px 24px;
-        border-radius: 10px; font-family: DM Sans, sans-serif;
-        font-size: 0.95rem; box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-        animation: slideIn 0.3s ease;
-      `;
+          position: fixed; top: 20px; right: 20px; z-index: 9999;
+          background: #00c853; color: white; padding: 16px 24px;
+          border-radius: 10px; font-family: DM Sans, sans-serif;
+          font-size: 0.95rem; box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+          animation: slideIn 0.3s ease;
+        `;
+
         successBanner.innerHTML = `<i class="bi bi-check-circle"></i> Hire request sent! The provider will contact you shortly.`;
+
         document.body.appendChild(successBanner);
         setTimeout(() => successBanner.remove(), 4000);
 
@@ -467,20 +500,19 @@ function submitHireRequest() {
         document.getElementById("hireName").value = "";
         document.getElementById("hirePhone").value = "";
         document.getElementById("hireDescription").value = "";
+      }
+    })
+    .catch((error) => {
+      if (error.message === "AUTH_REQUIRED") {
+        document.getElementById("hireDescError").textContent =
+          "Please sign in to send a hire request";
       } else {
         document.getElementById("hireDescError").textContent =
-          data.message || "Something went wrong";
-        document.getElementById("hireDescError").classList.add("show");
+          error.message || "Something went wrong. Try again.";
       }
 
-      btn.textContent = "Send Hire Request";
-      btn.style.opacity = "1";
-      btn.style.pointerEvents = "auto";
-    })
-    .catch(() => {
-      document.getElementById("hireDescError").textContent =
-        "Something went wrong. Try again.";
       document.getElementById("hireDescError").classList.add("show");
+
       btn.textContent = "Send Hire Request";
       btn.style.opacity = "1";
       btn.style.pointerEvents = "auto";
