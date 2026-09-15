@@ -318,7 +318,7 @@ async function loadRealProviders() {
     }
 
     const dbProviders = data.providers.map((p) => ({
-      id: p._id,
+      id: "db_" + p._id,
       dbId: p._id,
 
       name: p.fullName || "Verified Provider",
