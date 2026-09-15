@@ -384,41 +384,26 @@ function submitHireRequest() {
     return;
   }
 
-  let isValid = true;
-
   const name = document.getElementById("hireName").value.trim();
   const phone = document.getElementById("hirePhone").value.trim();
   const service = document.getElementById("modalServices").value;
   const desc = document.getElementById("hireDescription").value.trim();
-  const phoneValid = /^0[7-9][0-1]\d{8}$/.test(phone);
 
-  if (!name) {
-    document.getElementById("hireName").classList.add("error");
-    document.getElementById("hireNameError").textContent =
-      "Please enter your full name";
-    document.getElementById("hireNameError").classList.add("show");
+  let isValid = true;
+
+  if (!desc || desc.length < 20) {
+    document.getElementById("hireDescription").classList.add("error");
+    document.getElementById("hireDescError").textContent = desc
+      ? "Please give a bit more detail — at least 20 characters"
+      : "Please describe what you need done";
+    document.getElementById("hireDescError").classList.add("show");
     isValid = false;
   } else {
-    document.getElementById("hireName").classList.remove("error");
-    document.getElementById("hireNameError").classList.remove("show");
+    document.getElementById("hireDescription").classList.remove("error");
+    document.getElementById("hireDescError").classList.remove("show");
   }
 
-  if (!phone) {
-    document.getElementById("hirePhone").classList.add("error");
-    document.getElementById("hirePhoneError").textContent =
-      "Please enter your phone number";
-    document.getElementById("hirePhoneError").classList.add("show");
-    isValid = false;
-  } else if (!phoneValid) {
-    document.getElementById("hirePhone").classList.add("error");
-    document.getElementById("hirePhoneError").textContent =
-      "Enter a valid Nigerian number e.g. 08012345678";
-    document.getElementById("hirePhoneError").classList.add("show");
-    isValid = false;
-  } else {
-    document.getElementById("hirePhone").classList.remove("error");
-    document.getElementById("hirePhoneError").classList.remove("show");
-  }
+  if (!isValid) return;
 
   if (!desc || desc.length < 20) {
     document.getElementById("hireDescription").classList.add("error");
