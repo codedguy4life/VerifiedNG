@@ -66,19 +66,70 @@ describe("Trust boundary", () => {
     expect(response.statusCode).toBe(401);
   });
 
+  test("tampered authentication proof cannot create a hire request", async () => {
+    const timestamp = Date.now();
+
+    const customer = await request(app)
+      .post("/api/auth/register")
+      .send({
+        fullName: "Tamper Test Customer",
+        email: `tamper${timestamp}@example.com`,
+        password: "TestPass123!",
+        phone: `098${timestamp.toString().slice(-8)}`,
+      });
+
+    const provider = await User.create({
+      fullName: "Tamper Test Provider",
+      email: `tamperprovider${timestamp}@example.com`,
+      password: await bcrypt.hash("TestPass123!", 10),
+      phone: `099${timestamp.toString().slice(-8)}`,
+      role: "provider",
+      isVerified: true,
+    });
+
+    // Take a real valid JWT and alter it.
+    const validToken = customer.body.token;
+    const tamperedToken =
+      validToken.slice(0, -1) + (validToken.slice(-1) === "a" ? "b" : "a");
+
+    const beforeCount = await HireRequest.countDocuments({
+      customerId: customer.body.user.id.toString(),
+    });
+
+    const response = await request(app)
+      .post("/api/hire")
+      .set("Authorization", `Bearer ${tamperedToken}`)
+      .send({
+        providerId: provider._id.toString(),
+        customerName: "Forged Customer",
+        customerPhone: "08000000000",
+        serviceNeeded: "Electrical diagnostics",
+        description:
+          "This request must be rejected because the token was changed.",
+      });
+
+    const afterCount = await HireRequest.countDocuments({
+      customerId: customer.body.user.id.toString(),
+    });
+
+    expect(response.statusCode).toBe(401);
+    expect(afterCount).toBe(beforeCount);
+
+    await User.findByIdAndDelete(provider._id);
+    await User.findByIdAndDelete(customer.body.user.id);
+  });
+
   test("registration cannot self-assign the provider role", async () => {
     const email = `role${Date.now()}@example.com`;
     const phone = `088${Date.now().toString().slice(-8)}`;
 
-    const response = await request(app)
-      .post("/api/auth/register")
-      .send({
-        fullName: "Role Test Customer",
-        email,
-        password: "TestPass123!",
-        phone,
-        role: "provider",
-      });
+    const response = await request(app).post("/api/auth/register").send({
+      fullName: "Role Test Customer",
+      email,
+      password: "TestPass123!",
+      phone,
+      role: "provider",
+    });
 
     expect(response.statusCode).toBe(201);
     expect(response.body.user.role).toBe("customer");
@@ -108,15 +159,13 @@ describe("Trust boundary", () => {
     const email = `upgrade${Date.now()}@example.com`;
     const phone = `089${Date.now().toString().slice(-8)}`;
 
-    const signup = await request(app)
-      .post("/api/auth/register")
-      .send({
-        fullName: "Upgrade Test Customer",
-        email,
-        password: "TestPass123!",
-        phone,
-        role: "customer",
-      });
+    const signup = await request(app).post("/api/auth/register").send({
+      fullName: "Upgrade Test Customer",
+      email,
+      password: "TestPass123!",
+      phone,
+      role: "customer",
+    });
 
     const response = await request(app)
       .put("/api/user/upgrade-provider")
@@ -158,14 +207,12 @@ describe("Trust boundary", () => {
     const providerEmail = `hireprovider${timestamp}@example.com`;
     const providerPhone = `091${timestamp.toString().slice(-8)}`;
 
-    const customerSignup = await request(app)
-      .post("/api/auth/register")
-      .send({
-        fullName: "Real Customer",
-        email: customerEmail,
-        password: "TestPass123!",
-        phone: customerPhone,
-      });
+    const customerSignup = await request(app).post("/api/auth/register").send({
+      fullName: "Real Customer",
+      email: customerEmail,
+      password: "TestPass123!",
+      phone: customerPhone,
+    });
 
     const provider = await User.create({
       fullName: "Real Provider",
@@ -275,12 +322,10 @@ describe("Trust boundary", () => {
 
     expect(ownedRequest.providerId).toBe(providerA._id.toString());
 
-    const providerBLogin = await request(app)
-      .post("/api/auth/login")
-      .send({
-        identifier: providerB.email,
-        password: "TestPass123!",
-      });
+    const providerBLogin = await request(app).post("/api/auth/login").send({
+      identifier: providerB.email,
+      password: "TestPass123!",
+    });
 
     const response = await request(app)
       .get(`/api/hire/provider/${providerA._id}`)

@@ -58,8 +58,7 @@ function loadCategoryCounts() {
         if (counts[cat] && counts[cat] > 0) {
           // Real count from database
           el.textContent =
-            counts[cat] +
-            (counts[cat] === 1 ? " provider" : " providers");
+            counts[cat] + (counts[cat] === 1 ? " provider" : " providers");
 
           el.style.color = "#00c853";
         } else {
@@ -94,10 +93,137 @@ function showProviderBanner(userData) {
     document.body.insertBefore(banner, document.body.firstChild);
   }
 }
+// ─── FEATURED PROVIDERS FROM DATABASE ───
+function loadFeaturedProviders() {
+  const container = document.getElementById("homepageProviders");
+
+  if (!container) return;
+
+  fetch(`${API_URL}/api/providers`)
+    .then(async (res) => {
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Could not load providers");
+      }
+
+      return data;
+    })
+    .then((data) => {
+      const providers = data.providers || [];
+
+      if (!providers.length) {
+        container.innerHTML = `
+          <p style="text-align:center; width:100%; color:#888;">
+            No verified providers available yet.
+          </p>
+        `;
+        return;
+      }
+
+      // Show the first few providers as featured providers
+      container.innerHTML = providers
+        .slice(0, 4)
+        .map((provider) => {
+          const providerId = `db_${provider._id}`;
+
+          const location =
+            [provider.city, provider.state].filter(Boolean).join(", ") ||
+            "Nigeria";
+
+          const rating = provider.rating ?? "New";
+          const reviewCount = provider.reviewCount ?? 0;
+
+          const skills = Array.isArray(provider.skills)
+            ? provider.skills.slice(0, 3)
+            : [];
+
+          const price = provider.price || "Talk-Price";
+          const per = provider.per || "job";
+
+          return `
+            <div
+              class="provider-card"
+              onclick="window.location.href='all-providers-profile.html?id=${providerId}'"
+            >
+              <div class="pc-header">
+                <div class="pc-avatar">
+                  <i class="bi bi-person"></i>
+                </div>
+
+                <div class="pc-info">
+                  <h4>${provider.fullName || "Verified Provider"}</h4>
+                  <div class="pc-role">
+                    ${provider.category || "Service Provider"}
+                  </div>
+                </div>
+
+                ${
+                  provider.isVerified
+                    ? `
+                      <div class="pc-verified">
+                        <i class="bi bi-patch-check"></i> Verified
+                      </div>
+                    `
+                    : ""
+                }
+              </div>
+
+              <div class="pc-body">
+                <div class="pc-rating">
+                  <span class="score">${rating}</span>
+                  <span class="stars"><sup>★★★★★</sup></span>
+                  <span class="count">(${reviewCount} reviews)</span>
+                </div>
+
+                <div class="pc-tags">
+                  <span class="tag">${location}</span>
+
+                  ${
+                    skills.length
+                      ? skills
+                          .map((skill) => `<span class="tag">${skill}</span>`)
+                          .join("")
+                      : `<span class="tag">${provider.category || "Services"}</span>`
+                  }
+                </div>
+
+                <div class="pc-footer">
+                  <div class="pc-price">
+                    <div class="from">Starting from</div>
+                    <span class="amount">₦${price}</span>
+                    <span class="per">/${per}</span>
+                  </div>
+
+                  <button
+                    class="btn-hire-sm"
+                    type="button"
+                    onclick="event.stopPropagation(); window.location.href='all-providers-profile.html?id=${providerId}'"
+                  >
+                    Hire Now
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+        })
+        .join("");
+    })
+    .catch((error) => {
+      console.error("Could not load featured providers:", error);
+
+      container.innerHTML = `
+        <p style="text-align:center; width:100%; color:#888;">
+          Unable to load providers right now.
+        </p>
+      `;
+    });
+}
 
 // ─── ON PAGE LOAD ───
 document.addEventListener("DOMContentLoaded", function () {
   loadCategoryCounts();
+  loadFeaturedProviders();
 
   const navInput = document.getElementById("navServiceInput");
   const heroServiceInput = document.getElementById("serviceInput");
