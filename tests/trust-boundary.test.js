@@ -385,6 +385,64 @@ describe("Trust boundary", () => {
     await User.findByIdAndDelete(providerB._id);
   });
 
+  test("altered browser identity cannot change the provider inbox", async () => {
+    const timestamp = Date.now();
+
+    const customer = await User.create({
+      fullName: "Altered Identity Customer",
+      email: `alteredcustomer${timestamp}@example.com`,
+      password: await bcrypt.hash("TestPass123!", 10),
+      phone: `099${timestamp.toString().slice(-8)}`,
+      role: "customer",
+    });
+
+    const providerA = await User.create({
+      fullName: "Real Inbox Provider",
+      email: `realprovider${timestamp}@example.com`,
+      password: await bcrypt.hash("TestPass123!", 10),
+      phone: `092${timestamp.toString().slice(-8)}`,
+      role: "provider",
+      isVerified: true,
+    });
+
+    const providerB = await User.create({
+      fullName: "Other Provider",
+      email: `otherprovider${timestamp}@example.com`,
+      password: await bcrypt.hash("TestPass123!", 10),
+      phone: `093${timestamp.toString().slice(-8)}`,
+      role: "provider",
+      isVerified: true,
+    });
+
+    const hireRequest = await HireRequest.create({
+      providerName: providerA.fullName,
+      providerId: providerA._id.toString(),
+      customerId: customer._id.toString(),
+      customerName: customer.fullName,
+      customerPhone: customer.phone,
+      serviceNeeded: "Electrical diagnostics",
+      description: "This request belongs to the real provider.",
+    });
+
+    const providerALogin = await request(app).post("/api/auth/login").send({
+      identifier: providerA.email,
+      password: "TestPass123!",
+    });
+
+    const response = await request(app)
+      .get(`/api/hire/provider?providerId=${providerB._id}`)
+      .set("Authorization", `Bearer ${providerALogin.body.token}`);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.requests).toHaveLength(1);
+    expect(response.body.requests[0].providerId).toBe(providerA._id.toString());
+
+    await HireRequest.findByIdAndDelete(hireRequest._id);
+    await User.findByIdAndDelete(customer._id);
+    await User.findByIdAndDelete(providerA._id);
+    await User.findByIdAndDelete(providerB._id);
+  });
+
   test("customer cannot read a provider inbox", async () => {
     const timestamp = Date.now();
 

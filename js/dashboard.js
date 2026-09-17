@@ -72,7 +72,16 @@ if (user) {
     fetch(`${API_URL}/api/hire/provider`, {
       headers: { authorization: `Bearer ${token}` },
     })
-      .then((res) => res.json())
+      .then(async (res) => {
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.message || "Could not load requests");
+        }
+
+        return data;
+      })
+
       .then((data) => {
         const list = document.getElementById("hireRequestsList");
 
