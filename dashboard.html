@@ -6,10 +6,12 @@
     <title>Dashboard — VerifiedNG</title>
     <link
       href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap"
-      rel="stylesheet" />
+      rel="stylesheet"
+    />
     <link
       rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+    />
     <link rel="stylesheet" href="styles/homepage.css" />
     <link rel="stylesheet" href="styles/dashboard.css" />
   </head>
@@ -23,7 +25,8 @@
         <li>
           <button
             class="btn-ghost"
-            onclick="window.location.href = 'search.html'">
+            onclick="window.location.href = 'search.html'"
+          >
             Find Services
           </button>
         </li>
@@ -41,23 +44,41 @@
 
     <!-- DASHBOARD -->
     <div class="dashboard-wrapper">
-  <!-- WELCOME BANNER -->
-<div class="welcome-banner">
-  <div style="display:flex;align-items:center;gap:20px;">
-    <div id="userAvatar" style="width:70px;height:70px;border-radius:50%;
-      background:#00c853;color:white;display:flex;align-items:center;
-      justify-content:center;font-family:Syne,sans-serif;font-size:1.5rem;
-      font-weight:800;flex-shrink:0;overflow:hidden;">?</div>
-    <div>
-      <h1 style="margin:0 0 4px;">
-        Welcome back, <em id="firstName">...</em>
-        <i class="bi bi-hand-thumbs-up"></i>
-      </h1>
-      <p style="margin:0;opacity:0.8;">Here is your VerifiedNG account overview</p>
-    </div>
-  </div>
-  <div class="active-badge" id="roleBadge">✓ Active Account</div>
-</div>
+      <!-- WELCOME BANNER -->
+      <div class="welcome-banner">
+        <div style="display: flex; align-items: center; gap: 20px">
+          <div
+            id="userAvatar"
+            style="
+              width: 70px;
+              height: 70px;
+              border-radius: 50%;
+              background: #00c853;
+              color: white;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-family: Syne, sans-serif;
+              font-size: 1.5rem;
+              font-weight: 800;
+              flex-shrink: 0;
+              overflow: hidden;
+            "
+          >
+            ?
+          </div>
+          <div>
+            <h1 style="margin: 0 0 4px">
+              Welcome back, <em id="firstName">...</em>
+              <i class="bi bi-hand-thumbs-up"></i>
+            </h1>
+            <p style="margin: 0; opacity: 0.8">
+              Here is your VerifiedNG account overview
+            </p>
+          </div>
+        </div>
+        <div class="active-badge" id="roleBadge">✓ Active Account</div>
+      </div>
 
       <!-- STATS -->
       <div class="stats-row">
@@ -117,7 +138,8 @@
               font-family: &quot;DM Sans&quot;, sans-serif;
               margin-top: 8px;
               font-size: 0.9rem;
-            ">
+            "
+          >
             <i class="bi bi-trash"></i> Delete Account
           </button>
         </div>
@@ -136,7 +158,8 @@
                 goToProviderSignup();
                 return false;
               "
-              class="action-btn">
+              class="action-btn"
+            >
               <div class="a-icon"><i class="bi bi-tools"></i></div>
               <div class="a-label">Become a Provider</div>
             </a>
@@ -150,7 +173,8 @@
               onclick="
                 openEditProfile();
                 return false;
-              ">
+              "
+            >
               <div class="a-icon"><i class="bi bi-pencil"></i></div>
               <div class="a-label">Edit Profile</div>
             </a>
@@ -186,19 +210,29 @@
             </div>
           </div>
         </div>
+
         <!-- PROVIDER INBOX — only shows for providers -->
-<div class="dash-card" style="grid-column: 1 / -1;" id="providerInbox" style="display:none;">
-  <h3><i class="bi bi-inbox"></i> Hire Requests Inbox</h3>
-  <p style="color:#888;font-size:0.88rem;margin-bottom:16px;">
-    People who want to hire you. Contact them directly to discuss the job.
-  </p>
-  <div id="hireRequestsList">
-    <div style="text-align:center;padding:32px;color:#888;">
-      <i class="bi bi-inbox" style="font-size:2rem;margin-bottom:8px;display:block;"></i>
-      No hire requests yet. Once customers send you requests they appear here.
-    </div>
-  </div>
-</div>
+        <div
+          class="dash-card"
+          style="grid-column: 1 / -1; display: none"
+          id="providerInbox"
+        >
+          <h3><i class="bi bi-inbox"></i> Hire Requests Inbox</h3>
+          <p style="color: #888; font-size: 0.88rem; margin-bottom: 16px">
+            People who want to hire you. Contact them directly to discuss the
+            job.
+          </p>
+          <div id="hireRequestsList">
+            <div style="text-align: center; padding: 32px; color: #888">
+              <i
+                class="bi bi-inbox"
+                style="font-size: 2rem; margin-bottom: 8px; display: block"
+              ></i>
+              No hire requests yet. Once customers send you requests they appear
+              here.
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <!-- EDIT PROFILE MODAL -->
@@ -215,7 +249,8 @@
         z-index: 1000;
         align-items: center;
         justify-content: center;
-      ">
+      "
+    >
       <div
         style="
           background: white;
@@ -225,7 +260,8 @@
           max-width: 500px;
           max-height: 90vh;
           overflow-y: auto;
-        ">
+        "
+      >
         <h3 style="font-family: Syne, sans-serif; margin-bottom: 20px">
           Edit Profile
         </h3>
@@ -250,10 +286,12 @@
               cursor: pointer;
               overflow: hidden;
             "
-            onclick="document.getElementById('editPhotoInput').click()"></div>
+            onclick="document.getElementById('editPhotoInput').click()"
+          ></div>
           <label
             style="font-size: 0.82rem; color: #1a1a2e; cursor: pointer"
-            onclick="document.getElementById('editPhotoInput').click()">
+            onclick="document.getElementById('editPhotoInput').click()"
+          >
             <i class="bi bi-camera"></i> Change photo
           </label>
           <input
@@ -261,7 +299,8 @@
             id="editPhotoInput"
             accept="image/*"
             style="display: none"
-            onchange="handleEditPhotoUpload(this)" />
+            onchange="handleEditPhotoUpload(this)"
+          />
         </div>
         <div style="margin-bottom: 16px">
           <label
@@ -284,7 +323,8 @@
               font-family:
                 DM Sans,
                 sans-serif;
-            " />
+            "
+          />
         </div>
         <div style="margin-bottom: 16px">
           <label
@@ -307,7 +347,8 @@
               font-family:
                 DM Sans,
                 sans-serif;
-            " />
+            "
+          />
         </div>
         <div style="margin-bottom: 16px">
           <label
@@ -330,7 +371,8 @@
               font-family:
                 DM Sans,
                 sans-serif;
-            " />
+            "
+          />
         </div>
         <div style="margin-bottom: 16px">
           <label
@@ -353,7 +395,8 @@
               font-family:
                 DM Sans,
                 sans-serif;
-            " />
+            "
+          />
         </div>
         <div style="margin-bottom: 16px">
           <label
@@ -377,7 +420,8 @@
                 DM Sans,
                 sans-serif;
               resize: vertical;
-            "></textarea>
+            "
+          ></textarea>
         </div>
 
         <div style="display: flex; gap: 12px; margin-top: 8px">
@@ -388,7 +432,8 @@
               font-size: 0.85rem;
               display: none;
               margin-bottom: 8px;
-            "></p>
+            "
+          ></p>
           <button
             onclick="saveProfile()"
             id="saveProfileBtn"
@@ -403,7 +448,8 @@
               font-family:
                 DM Sans,
                 sans-serif;
-            ">
+            "
+          >
             Save Changes
           </button>
           <button
@@ -419,7 +465,8 @@
               font-family:
                 DM Sans,
                 sans-serif;
-            ">
+            "
+          >
             Cancel
           </button>
         </div>
@@ -440,7 +487,8 @@
         z-index: 1000;
         align-items: center;
         justify-content: center;
-      ">
+      "
+    >
       <div
         style="
           background: white;
@@ -448,13 +496,15 @@
           padding: 32px;
           width: 90%;
           max-width: 420px;
-        ">
+        "
+      >
         <h3
           style="
             font-family: Syne, sans-serif;
             color: #e53935;
             margin-bottom: 8px;
-          ">
+          "
+        >
           <i class="bi bi-exclamation-triangle"></i> Delete Account
         </h3>
         <p style="color: #666; font-size: 0.9rem; margin-bottom: 20px">
@@ -469,7 +519,8 @@
               margin-bottom: 6px;
               font-size: 0.85rem;
               color: #888;
-            ">
+            "
+          >
             Enter your password to confirm
           </label>
           <input
@@ -482,7 +533,8 @@
               border: 1px solid #ddd;
               border-radius: 8px;
               font-family: &quot;DM Sans&quot;, sans-serif;
-            " />
+            "
+          />
           <p
             id="deleteError"
             style="
@@ -490,7 +542,8 @@
               font-size: 0.82rem;
               margin-top: 6px;
               display: none;
-            "></p>
+            "
+          ></p>
         </div>
 
         <div style="display: flex; gap: 12px">
@@ -507,7 +560,8 @@
               cursor: pointer;
               font-family: &quot;DM Sans&quot;, sans-serif;
               font-weight: 600;
-            ">
+            "
+          >
             Yes, Delete My Account
           </button>
           <button
@@ -521,12 +575,28 @@
               border-radius: 8px;
               cursor: pointer;
               font-family: &quot;DM Sans&quot;, sans-serif;
-            ">
+            "
+          >
             Cancel
           </button>
         </div>
       </div>
     </div>
+
+    <!-- CUSTOMER SENT REQUESTS — only shows for customers -->
+    <div
+      class="dash-card"
+      style="grid-column: 1 / -1; display: none"
+      id="sentRequestsCard"
+    >
+      <h3><i class="bi bi-send"></i> Sent Requests</h3>
+      <p style="color: #888; font-size: 0.88rem; margin-bottom: 16px">
+        Hire requests you have sent to service providers.
+      </p>
+
+      <div id="sentRequestsList"></div>
+    </div>
+
     <script src="js/config.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/dashboard.js"></script>

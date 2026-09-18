@@ -38,6 +38,51 @@ if (user) {
     document.getElementById("memberDays").textContent = days || 1;
   }
 
+  // ─── CUSTOMER SENT REQUESTS ───
+  if (user.role === "customer") {
+    const sentRequestsCard = document.getElementById("sentRequestsCard");
+    const sentRequestsList = document.getElementById("sentRequestsList");
+
+    if (sentRequestsCard) sentRequestsCard.style.display = "block";
+
+    const token = localStorage.getItem("token");
+
+    fetch(`${API_URL}/api/hire/sent`, {
+      headers: { authorization: `Bearer ${token}` },
+    })
+      .then(async (res) => {
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.message || "Could not load sent requests");
+        }
+
+        return data;
+      })
+      .then((data) => {
+        if (!data.requests || data.requests.length === 0) {
+          sentRequestsList.replaceChildren();
+
+          const empty = document.createElement("div");
+          empty.style.cssText = "text-align:center;padding:32px;color:#888;";
+          empty.textContent = "You haven't sent any hire requests yet.";
+
+          sentRequestsList.appendChild(empty);
+          return;
+        }
+
+        sentRequestsList.replaceChildren(
+          ...data.requests.map((request) => createSentRequestCard(request)),
+        );
+      })
+      .catch(() => {
+        sentRequestsList.textContent =
+          "Could not load sent requests. Try refreshing.";
+        sentRequestsList.style.color = "#888";
+        sentRequestsList.style.fontSize = "0.9rem";
+      });
+  }
+
   // Last login in stats card
   if (user.lastLogin) {
     const last = new Date(user.lastLogin);
@@ -136,98 +181,181 @@ if (user) {
 function createHireRequestCard(request) {
   const card = document.createElement("div");
   card.style.cssText =
-    "border:1px solid #eee;border-radius:12px;padding:20px;margin-bottom:12px;background:#fafafa;";
+    "padding:18px;border:1px solid #eee;border-radius:12px;margin-bottom:12px;";
 
   const top = document.createElement("div");
   top.style.cssText =
-    "display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;flex-wrap:wrap;gap:8px;";
+    "display:flex;justify-content:space-between;align-items:center;gap:12px;";
 
   const customerBlock = document.createElement("div");
 
-  const customerName = document.createElement("div");
-  customerName.style.cssText =
-    "font-weight:700;font-family:Syne,sans-serif;font-size:1rem;";
-  customerName.textContent = request.customerName || "Customer";
+  const name = document.createElement("strong");
+  name.textContent = request.customerName;
 
-  const phoneRow = document.createElement("div");
-  phoneRow.style.cssText = "font-size:0.82rem;color:#888;margin-top:2px;";
+  const phone = document.createElement("div");
+  phone.textContent = request.customerPhone;
+  phone.style.cssText = "color:#777;font-size:0.85rem;margin-top:4px;";
 
-  const phoneIcon = document.createElement("i");
-  phoneIcon.className = "bi bi-phone";
-  phoneRow.append(
-    phoneIcon,
-    document.createTextNode(` ${request.customerPhone || ""}`),
-  );
-
-  customerBlock.append(customerName, phoneRow);
+  customerBlock.append(name, phone);
 
   const status = document.createElement("span");
-  const statusValue = String(request.status || "pending");
+  const statusValue = request.status || "pending";
+
   status.textContent =
     statusValue.charAt(0).toUpperCase() + statusValue.slice(1);
+
   status.style.cssText =
-    `background:${statusValue === "pending" ? "#fff8e1" : statusValue === "accepted" ? "#e6f9ee" : "#fff0f0"};` +
-    `color:${statusValue === "pending" ? "#b8860b" : statusValue === "accepted" ? "#007a33" : "#c62828"};` +
+    `background:${
+      statusValue === "pending"
+        ? "#fff8e1"
+        : statusValue === "accepted"
+          ? "#e6f9ee"
+          : "#fff0f0"
+    };` +
+    `color:${
+      statusValue === "pending"
+        ? "#b8860b"
+        : statusValue === "accepted"
+          ? "#007a33"
+          : "#c62828"
+    };` +
     "padding:4px 12px;border-radius:20px;font-size:0.8rem;font-weight:600;";
 
   top.append(customerBlock, status);
 
-  const serviceRow = document.createElement("div");
-  serviceRow.style.cssText = "font-size:0.88rem;margin-bottom:8px;";
-  const serviceLabel = document.createElement("strong");
-  serviceLabel.textContent = "Service:";
-  serviceRow.append(
-    serviceLabel,
-    document.createTextNode(` ${request.serviceNeeded || ""}`),
-  );
+  const service = document.createElement("div");
+  service.textContent = request.serviceNeeded;
+  service.style.cssText = "font-weight:600;margin-top:14px;";
 
   const description = document.createElement("div");
-  description.style.cssText =
-    "font-size:0.88rem;color:#555;margin-bottom:12px;background:white;padding:12px;border-radius:8px;border:1px solid #eee;";
-  description.textContent = request.description || "";
+  description.textContent = request.description;
+  description.style.cssText = "color:#555;font-size:0.9rem;margin-top:6px;";
 
-  const created = document.createElement("div");
-  created.style.cssText = "font-size:0.78rem;color:#aaa;margin-bottom:12px;";
-  const clockIcon = document.createElement("i");
-  clockIcon.className = "bi bi-clock";
-  const createdDate = request.createdAt
-    ? new Date(request.createdAt).toLocaleDateString("en-NG", {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      })
-    : "";
-  created.append(clockIcon, document.createTextNode(` ${createdDate}`));
+  const time = document.createElement("div");
+  time.textContent = new Date(request.createdAt).toLocaleString();
+  time.style.cssText = "color:#999;font-size:0.8rem;margin-top:8px;";
 
-  const actions = document.createElement("div");
-  actions.style.cssText = "display:flex;gap:8px;flex-wrap:wrap;";
+  card.append(top, service, description, time);
 
-  const phone = String(request.customerPhone || "");
-  const digits = phone.replace(/\D/g, "");
-  const waPhone = digits.startsWith("0") ? `234${digits.slice(1)}` : digits;
+  if (statusValue === "pending") {
+    const actions = document.createElement("div");
+    actions.style.cssText = "display:flex;gap:10px;margin-top:14px;";
 
-  const whatsapp = document.createElement("a");
-  whatsapp.href = `https://wa.me/${waPhone}`;
-  whatsapp.target = "_blank";
-  whatsapp.rel = "noopener noreferrer";
-  whatsapp.style.cssText =
-    "background:#25D366;color:white;padding:8px 16px;border-radius:8px;text-decoration:none;font-size:0.85rem;font-weight:600;";
-  const whatsappIcon = document.createElement("i");
-  whatsappIcon.className = "bi bi-whatsapp";
-  whatsapp.append(whatsappIcon, document.createTextNode(" WhatsApp"));
+    const acceptButton = document.createElement("button");
+    acceptButton.textContent = "Accept";
+    acceptButton.type = "button";
+    acceptButton.style.cssText =
+      "border:none;background:#00c853;color:white;padding:9px 18px;border-radius:8px;cursor:pointer;font-weight:600;";
 
-  const call = document.createElement("a");
-  call.href = `tel:${phone}`;
-  call.style.cssText =
-    "background:#1a1a2e;color:white;padding:8px 16px;border-radius:8px;text-decoration:none;font-size:0.85rem;font-weight:600;";
-  const callIcon = document.createElement("i");
-  callIcon.className = "bi bi-telephone";
-  call.append(callIcon, document.createTextNode(" Call"));
+    const declineButton = document.createElement("button");
+    declineButton.textContent = "Decline";
+    declineButton.type = "button";
+    declineButton.style.cssText =
+      "border:none;background:#f44336;color:white;padding:9px 18px;border-radius:8px;cursor:pointer;font-weight:600;";
 
-  actions.append(whatsapp, call);
-  card.append(top, serviceRow, description, created, actions);
+    actions.append(acceptButton, declineButton);
+    card.append(actions);
+
+    const updateStatus = async (newStatus) => {
+      const token = localStorage.getItem("token");
+
+      acceptButton.disabled = true;
+      declineButton.disabled = true;
+      acceptButton.style.opacity = "0.6";
+      declineButton.style.opacity = "0.6";
+
+      try {
+        const response = await fetch(
+          `${API_URL}/api/hire/${request._id}/status`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+              authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ status: newStatus }),
+          },
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || "Could not update request");
+        }
+
+        window.location.reload();
+      } catch (error) {
+        acceptButton.disabled = false;
+        declineButton.disabled = false;
+        acceptButton.style.opacity = "1";
+        declineButton.style.opacity = "1";
+        alert(error.message);
+      }
+    };
+
+    acceptButton.addEventListener("click", () => {
+      updateStatus("accepted");
+    });
+
+    declineButton.addEventListener("click", () => {
+      updateStatus("declined");
+    });
+  }
+
+  return card;
+}
+
+function createSentRequestCard(request) {
+  const card = document.createElement("div");
+  card.style.cssText =
+    "padding:18px;border:1px solid #eee;border-radius:12px;margin-bottom:12px;";
+
+  const top = document.createElement("div");
+  top.style.cssText =
+    "display:flex;justify-content:space-between;align-items:center;gap:12px;";
+
+  const provider = document.createElement("strong");
+  provider.textContent = request.providerName;
+
+  const status = document.createElement("span");
+  const statusValue = request.status || "pending";
+
+  status.textContent =
+    statusValue.charAt(0).toUpperCase() + statusValue.slice(1);
+
+  status.style.cssText =
+    `background:${
+      statusValue === "pending"
+        ? "#fff8e1"
+        : statusValue === "accepted"
+          ? "#e6f9ee"
+          : "#fff0f0"
+    };` +
+    `color:${
+      statusValue === "pending"
+        ? "#b8860b"
+        : statusValue === "accepted"
+          ? "#007a33"
+          : "#c62828"
+    };` +
+    "padding:4px 12px;border-radius:20px;font-size:0.8rem;font-weight:600;";
+
+  top.append(provider, status);
+
+  const service = document.createElement("div");
+  service.textContent = request.serviceNeeded;
+  service.style.cssText = "font-weight:600;margin-top:14px;";
+
+  const description = document.createElement("div");
+  description.textContent = request.description;
+  description.style.cssText = "color:#555;font-size:0.9rem;margin-top:6px;";
+
+  const time = document.createElement("div");
+  time.textContent = new Date(request.createdAt).toLocaleString();
+  time.style.cssText = "color:#999;font-size:0.8rem;margin-top:8px;";
+
+  card.append(top, service, description, time);
+
   return card;
 }
 

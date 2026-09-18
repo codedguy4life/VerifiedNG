@@ -70,4 +70,67 @@ const getRequestsForProvider = async (req, res) => {
   }
 };
 
-module.exports = { createHireRequest, getRequestsForProvider };
+const getRequestsSentByCustomer = async (req, res) => {
+  try {
+    const requests = await HireRequest.find({
+      customerId: req.user.id,
+    }).sort({ createdAt: -1 });
+
+    res.status(200).json({ requests });
+  } catch (error) {
+    res.status(500).json({
+      message: "Server error",
+    });
+  }
+};
+
+const updateHireRequestStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+
+    if (!["accepted", "declined"].includes(status)) {
+      return res.status(400).json({
+        message: "Status must be accepted or declined",
+      });
+    }
+
+    const hireRequest = await HireRequest.findById(req.params.requestId);
+
+    if (!hireRequest) {
+      return res.status(404).json({
+        message: "Hire request not found",
+      });
+    }
+
+    if (hireRequest.providerId !== req.user.id) {
+      return res.status(403).json({
+        message: "You are not allowed to update this hire request",
+      });
+    }
+
+    if (hireRequest.status !== "pending") {
+      return res.status(400).json({
+        message: "Only pending hire requests can be updated",
+      });
+    }
+
+    hireRequest.status = status;
+    await hireRequest.save();
+
+    res.status(200).json({
+      message: `Hire request ${status}`,
+      request: hireRequest,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Server error",
+    });
+  }
+};
+
+module.exports = {
+  createHireRequest,
+  getRequestsForProvider,
+  updateHireRequestStatus,
+  getRequestsSentByCustomer,
+};

@@ -473,4 +473,264 @@ describe("Trust boundary", () => {
 
     expect(response.statusCode).toBe(401);
   });
+
+  // TTB-008: Accept/decline requests and customer sent requests
+
+  test("provider can accept a pending hire request", async () => {
+    const timestamp = Date.now();
+
+    const customer = await User.create({
+      fullName: "Accept Test Customer",
+      email: `acceptcustomer${timestamp}@example.com`,
+      password: await bcrypt.hash("TestPass123!", 10),
+      phone: `080${timestamp.toString().slice(-8)}`,
+      role: "customer",
+    });
+
+    const provider = await User.create({
+      fullName: "Accept Test Provider",
+      email: `acceptprovider${timestamp}@example.com`,
+      password: await bcrypt.hash("TestPass123!", 10),
+      phone: `081${timestamp.toString().slice(-8)}`,
+      role: "provider",
+      isVerified: true,
+    });
+
+    const hireRequest = await HireRequest.create({
+      providerName: provider.fullName,
+      providerId: provider._id.toString(),
+      customerId: customer._id.toString(),
+      customerName: customer.fullName,
+      customerPhone: customer.phone,
+      serviceNeeded: "Electrical diagnostics",
+      description: "A pending request that the provider can accept.",
+    });
+
+    const providerLogin = await request(app).post("/api/auth/login").send({
+      identifier: provider.email,
+      password: "TestPass123!",
+    });
+
+    const response = await request(app)
+      .patch(`/api/hire/${hireRequest._id}/status`)
+      .set("Authorization", `Bearer ${providerLogin.body.token}`)
+      .send({ status: "accepted" });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.request.status).toBe("accepted");
+
+    const updatedRequest = await HireRequest.findById(hireRequest._id);
+    expect(updatedRequest.status).toBe("accepted");
+
+    await HireRequest.findByIdAndDelete(hireRequest._id);
+    await User.findByIdAndDelete(customer._id);
+    await User.findByIdAndDelete(provider._id);
+  });
+
+  test("provider can decline a pending hire request", async () => {
+    const timestamp = Date.now();
+
+    const customer = await User.create({
+      fullName: "Decline Test Customer",
+      email: `declinecustomer${timestamp}@example.com`,
+      password: await bcrypt.hash("TestPass123!", 10),
+      phone: `082${timestamp.toString().slice(-8)}`,
+      role: "customer",
+    });
+
+    const provider = await User.create({
+      fullName: "Decline Test Provider",
+      email: `declineprovider${timestamp}@example.com`,
+      password: await bcrypt.hash("TestPass123!", 10),
+      phone: `083${timestamp.toString().slice(-8)}`,
+      role: "provider",
+      isVerified: true,
+    });
+
+    const hireRequest = await HireRequest.create({
+      providerName: provider.fullName,
+      providerId: provider._id.toString(),
+      customerId: customer._id.toString(),
+      customerName: customer.fullName,
+      customerPhone: customer.phone,
+      serviceNeeded: "Plumbing repair",
+      description: "A pending request that the provider can decline.",
+    });
+
+    const providerLogin = await request(app).post("/api/auth/login").send({
+      identifier: provider.email,
+      password: "TestPass123!",
+    });
+
+    const response = await request(app)
+      .patch(`/api/hire/${hireRequest._id}/status`)
+      .set("Authorization", `Bearer ${providerLogin.body.token}`)
+      .send({ status: "declined" });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.request.status).toBe("declined");
+
+    const updatedRequest = await HireRequest.findById(hireRequest._id);
+    expect(updatedRequest.status).toBe("declined");
+
+    await HireRequest.findByIdAndDelete(hireRequest._id);
+    await User.findByIdAndDelete(customer._id);
+    await User.findByIdAndDelete(provider._id);
+  });
+
+  test("another provider cannot change a hire request they do not own", async () => {
+    const timestamp = Date.now();
+
+    const customer = await User.create({
+      fullName: "Ownership Customer",
+      email: `ownershipcustomer${timestamp}@example.com`,
+      password: await bcrypt.hash("TestPass123!", 10),
+      phone: `084${timestamp.toString().slice(-8)}`,
+      role: "customer",
+    });
+
+    const owner = await User.create({
+      fullName: "Request Owner",
+      email: `requestowner${timestamp}@example.com`,
+      password: await bcrypt.hash("TestPass123!", 10),
+      phone: `085${timestamp.toString().slice(-8)}`,
+      role: "provider",
+      isVerified: true,
+    });
+
+    const outsider = await User.create({
+      fullName: "Outsider Provider",
+      email: `outsiderprovider${timestamp}@example.com`,
+      password: await bcrypt.hash("TestPass123!", 10),
+      phone: `086${timestamp.toString().slice(-8)}`,
+      role: "provider",
+      isVerified: true,
+    });
+
+    const hireRequest = await HireRequest.create({
+      providerName: owner.fullName,
+      providerId: owner._id.toString(),
+      customerId: customer._id.toString(),
+      customerName: customer.fullName,
+      customerPhone: customer.phone,
+      serviceNeeded: "Electrical diagnostics",
+      description: "This request belongs only to the request owner.",
+    });
+
+    const outsiderLogin = await request(app).post("/api/auth/login").send({
+      identifier: outsider.email,
+      password: "TestPass123!",
+    });
+
+    const response = await request(app)
+      .patch(`/api/hire/${hireRequest._id}/status`)
+      .set("Authorization", `Bearer ${outsiderLogin.body.token}`)
+      .send({ status: "declined" });
+
+    expect(response.statusCode).toBe(403);
+
+    const unchangedRequest = await HireRequest.findById(hireRequest._id);
+    expect(unchangedRequest.status).toBe("pending");
+
+    await HireRequest.findByIdAndDelete(hireRequest._id);
+    await User.findByIdAndDelete(customer._id);
+    await User.findByIdAndDelete(owner._id);
+    await User.findByIdAndDelete(outsider._id);
+  });
+
+  test("customer can see only the hire requests they sent", async () => {
+    const timestamp = Date.now();
+
+    const customerA = await User.create({
+      fullName: "Sent List Customer A",
+      email: `sentcustomerA${timestamp}@example.com`,
+      password: await bcrypt.hash("TestPass123!", 10),
+      phone: `087${timestamp.toString().slice(-8)}`,
+      role: "customer",
+    });
+
+    const customerB = await User.create({
+      fullName: "Sent List Customer B",
+      email: `sentcustomerB${timestamp}@example.com`,
+      password: await bcrypt.hash("TestPass123!", 10),
+      phone: `088${timestamp.toString().slice(-8)}`,
+      role: "customer",
+    });
+
+    const provider = await User.create({
+      fullName: "Sent List Provider",
+      email: `sentprovider${timestamp}@example.com`,
+      password: await bcrypt.hash("TestPass123!", 10),
+      phone: `089${timestamp.toString().slice(-8)}`,
+      role: "provider",
+      isVerified: true,
+    });
+
+    const requestForA = await HireRequest.create({
+      providerName: provider.fullName,
+      providerId: provider._id.toString(),
+      customerId: customerA._id.toString(),
+      customerName: customerA.fullName,
+      customerPhone: customerA.phone,
+      serviceNeeded: "Electrical diagnostics",
+      description: "This request belongs to customer A.",
+      status: "accepted",
+    });
+
+    const requestForB = await HireRequest.create({
+      providerName: provider.fullName,
+      providerId: provider._id.toString(),
+      customerId: customerB._id.toString(),
+      customerName: customerB.fullName,
+      customerPhone: customerB.phone,
+      serviceNeeded: "Plumbing repair",
+      description: "This request belongs to customer B.",
+    });
+
+    const customerLogin = await request(app).post("/api/auth/login").send({
+      identifier: customerA.email,
+      password: "TestPass123!",
+    });
+
+    const response = await request(app)
+      .get("/api/hire/sent")
+      .set("Authorization", `Bearer ${customerLogin.body.token}`);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.requests).toHaveLength(1);
+    expect(response.body.requests[0]._id).toBe(requestForA._id.toString());
+    expect(response.body.requests[0].status).toBe("accepted");
+
+    await HireRequest.findByIdAndDelete(requestForA._id);
+    await HireRequest.findByIdAndDelete(requestForB._id);
+    await User.findByIdAndDelete(customerA._id);
+    await User.findByIdAndDelete(customerB._id);
+    await User.findByIdAndDelete(provider._id);
+  });
+
+  test("customer with no sent hire requests gets an empty list", async () => {
+    const timestamp = Date.now();
+
+    const customer = await User.create({
+      fullName: "Empty Sent Customer",
+      email: `emptysent${timestamp}@example.com`,
+      password: await bcrypt.hash("TestPass123!", 10),
+      phone: `090${timestamp.toString().slice(-8)}`,
+      role: "customer",
+    });
+
+    const customerLogin = await request(app).post("/api/auth/login").send({
+      identifier: customer.email,
+      password: "TestPass123!",
+    });
+
+    const response = await request(app)
+      .get("/api/hire/sent")
+      .set("Authorization", `Bearer ${customerLogin.body.token}`);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.requests).toEqual([]);
+
+    await User.findByIdAndDelete(customer._id);
+  });
 });
