@@ -733,4 +733,35 @@ describe("Trust boundary", () => {
 
     await User.findByIdAndDelete(customer._id);
   });
+
+  test("malformed hire request id returns 404", async () => {
+    const timestamp = Date.now();
+
+    const provider = await User.create({
+      fullName: `Malformed ID Provider ${timestamp}`,
+      email: `malformed-provider-${timestamp}@example.com`,
+      password: await bcrypt.hash("TestPass123!", 10),
+      phone: `091${timestamp.toString().slice(-8)}`,
+      role: "provider",
+      isVerified: true,
+    });
+
+    const providerLogin = await request(app).post("/api/auth/login").send({
+      identifier: provider.email,
+      password: "TestPass123!",
+    });
+
+    expect(providerLogin.statusCode).toBe(200);
+    expect(providerLogin.body.token).toBeDefined();
+
+    const response = await request(app)
+      .patch("/api/hire/not-an-object-id/status")
+      .set("Authorization", `Bearer ${providerLogin.body.token}`)
+      .send({ status: "accepted" });
+
+    expect(response.statusCode).toBe(404);
+    expect(response.body.message).toBe("Hire request not found");
+
+    await User.findByIdAndDelete(provider._id);
+  });
 });

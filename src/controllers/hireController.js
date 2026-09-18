@@ -94,28 +94,45 @@ const updateHireRequestStatus = async (req, res) => {
       });
     }
 
-    const hireRequest = await HireRequest.findById(req.params.requestId);
-
-    if (!hireRequest) {
+    if (!mongoose.Types.ObjectId.isValid(req.params.requestId)) {
       return res.status(404).json({
         message: "Hire request not found",
       });
     }
 
-    if (hireRequest.providerId !== req.user.id) {
-      return res.status(403).json({
-        message: "You are not allowed to update this hire request",
-      });
-    }
+    const hireRequest = await HireRequest.findOneAndUpdate(
+      {
+        _id: req.params.requestId,
+        providerId: req.user.id,
+        status: "pending",
+      },
+      {
+        $set: { status },
+      },
+      {
+        returnDocument: "after",
+      },
+    );
 
-    if (hireRequest.status !== "pending") {
+    if (!hireRequest) {
+      const existingRequest = await HireRequest.findById(req.params.requestId);
+
+      if (!existingRequest) {
+        return res.status(404).json({
+          message: "Hire request not found",
+        });
+      }
+
+      if (existingRequest.providerId !== req.user.id) {
+        return res.status(403).json({
+          message: "You are not allowed to update this hire request",
+        });
+      }
+
       return res.status(400).json({
         message: "Only pending hire requests can be updated",
       });
     }
-
-    hireRequest.status = status;
-    await hireRequest.save();
 
     res.status(200).json({
       message: `Hire request ${status}`,
