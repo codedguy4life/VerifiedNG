@@ -87,7 +87,6 @@ describe("Trust boundary", () => {
       isVerified: true,
     });
 
-    // Take a real valid JWT and alter it.
     const validToken = customer.body.token;
     const tamperedToken =
       validToken.slice(0, -1) + (validToken.slice(-1) === "a" ? "b" : "a");
@@ -252,16 +251,18 @@ describe("Trust boundary", () => {
     await User.findByIdAndDelete(customerSignup.body.user.id);
   });
 
-  test("customer cannot read a provider inbox", async () => {
+  // TTB-003: Provider inbox trust boundary
+
+  test("provider can read their own inbox", async () => {
     const timestamp = Date.now();
-    const customer = await request(app)
-      .post("/api/auth/register")
-      .send({
-        fullName: "Inbox Customer",
-        email: `inboxcustomer${timestamp}@example.com`,
-        password: "TestPass123!",
-        phone: `092${timestamp.toString().slice(-8)}`,
-      });
+
+    const customer = await User.create({
+      fullName: "Inbox Customer",
+      email: `inboxcustomer${timestamp}@example.com`,
+      password: await bcrypt.hash("TestPass123!", 10),
+      phone: `092${timestamp.toString().slice(-8)}`,
+      role: "customer",
+    });
 
     const provider = await User.create({
       fullName: "Inbox Provider",
@@ -272,18 +273,64 @@ describe("Trust boundary", () => {
       isVerified: true,
     });
 
+    const hireRequest = await HireRequest.create({
+      providerName: provider.fullName,
+      providerId: provider._id.toString(),
+      customerId: customer._id.toString(),
+      customerName: customer.fullName,
+      customerPhone: customer.phone,
+      serviceNeeded: "Electrical diagnostics",
+      description: "A request belonging to this provider.",
+    });
+
+    const providerLogin = await request(app).post("/api/auth/login").send({
+      identifier: provider.email,
+      password: "TestPass123!",
+    });
+
     const response = await request(app)
-      .get(`/api/hire/provider/${provider._id}`)
-      .set("Authorization", `Bearer ${customer.body.token}`);
+      .get("/api/hire/provider")
+      .set("Authorization", `Bearer ${providerLogin.body.token}`);
 
-    expect(response.statusCode).toBe(403);
+    expect(response.statusCode).toBe(200);
+    expect(response.body.requests).toHaveLength(1);
+    expect(response.body.requests[0].providerId).toBe(provider._id.toString());
 
+    await HireRequest.findByIdAndDelete(hireRequest._id);
+    await User.findByIdAndDelete(customer._id);
     await User.findByIdAndDelete(provider._id);
-    await User.findByIdAndDelete(customer.body.user.id);
   });
 
-  test("provider cannot read another provider's inbox", async () => {
+  test("provider with no requests gets an empty inbox", async () => {
     const timestamp = Date.now();
+
+    const provider = await User.create({
+      fullName: "Empty Inbox Provider",
+      email: `emptyinbox${timestamp}@example.com`,
+      password: await bcrypt.hash("TestPass123!", 10),
+      phone: `097${timestamp.toString().slice(-8)}`,
+      role: "provider",
+      isVerified: true,
+    });
+
+    const providerLogin = await request(app).post("/api/auth/login").send({
+      identifier: provider.email,
+      password: "TestPass123!",
+    });
+
+    const response = await request(app)
+      .get("/api/hire/provider")
+      .set("Authorization", `Bearer ${providerLogin.body.token}`);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.requests).toEqual([]);
+
+    await User.findByIdAndDelete(provider._id);
+  });
+
+  test("provider cannot see another provider's requests", async () => {
+    const timestamp = Date.now();
+
     const customer = await User.create({
       fullName: "Inbox Customer",
       email: `inboxcustomerpp${timestamp}@example.com`,
@@ -310,7 +357,7 @@ describe("Trust boundary", () => {
       isVerified: true,
     });
 
-    const ownedRequest = await HireRequest.create({
+    const requestForA = await HireRequest.create({
       providerName: providerA.fullName,
       providerId: providerA._id.toString(),
       customerId: customer._id.toString(),
@@ -320,22 +367,110 @@ describe("Trust boundary", () => {
       description: "A request belonging to Provider A.",
     });
 
-    expect(ownedRequest.providerId).toBe(providerA._id.toString());
-
     const providerBLogin = await request(app).post("/api/auth/login").send({
       identifier: providerB.email,
       password: "TestPass123!",
     });
 
     const response = await request(app)
-      .get(`/api/hire/provider/${providerA._id}`)
+      .get("/api/hire/provider")
       .set("Authorization", `Bearer ${providerBLogin.body.token}`);
 
-    expect(response.statusCode).toBe(403);
+    expect(response.statusCode).toBe(200);
+    expect(response.body.requests).toEqual([]);
 
-    await HireRequest.findByIdAndDelete(ownedRequest._id);
+    await HireRequest.findByIdAndDelete(requestForA._id);
     await User.findByIdAndDelete(customer._id);
     await User.findByIdAndDelete(providerA._id);
     await User.findByIdAndDelete(providerB._id);
+  });
+
+  test("altered browser identity cannot change the provider inbox", async () => {
+    const timestamp = Date.now();
+
+    const customer = await User.create({
+      fullName: "Altered Identity Customer",
+      email: `alteredcustomer${timestamp}@example.com`,
+      password: await bcrypt.hash("TestPass123!", 10),
+      phone: `099${timestamp.toString().slice(-8)}`,
+      role: "customer",
+    });
+
+    const providerA = await User.create({
+      fullName: "Real Inbox Provider",
+      email: `realprovider${timestamp}@example.com`,
+      password: await bcrypt.hash("TestPass123!", 10),
+      phone: `092${timestamp.toString().slice(-8)}`,
+      role: "provider",
+      isVerified: true,
+    });
+
+    const providerB = await User.create({
+      fullName: "Other Provider",
+      email: `otherprovider${timestamp}@example.com`,
+      password: await bcrypt.hash("TestPass123!", 10),
+      phone: `093${timestamp.toString().slice(-8)}`,
+      role: "provider",
+      isVerified: true,
+    });
+
+    const hireRequest = await HireRequest.create({
+      providerName: providerA.fullName,
+      providerId: providerA._id.toString(),
+      customerId: customer._id.toString(),
+      customerName: customer.fullName,
+      customerPhone: customer.phone,
+      serviceNeeded: "Electrical diagnostics",
+      description: "This request belongs to the real provider.",
+    });
+
+    const providerALogin = await request(app).post("/api/auth/login").send({
+      identifier: providerA.email,
+      password: "TestPass123!",
+    });
+
+    const response = await request(app)
+      .get(`/api/hire/provider?providerId=${providerB._id}`)
+      .set("Authorization", `Bearer ${providerALogin.body.token}`);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.requests).toHaveLength(1);
+    expect(response.body.requests[0].providerId).toBe(providerA._id.toString());
+
+    await HireRequest.findByIdAndDelete(hireRequest._id);
+    await User.findByIdAndDelete(customer._id);
+    await User.findByIdAndDelete(providerA._id);
+    await User.findByIdAndDelete(providerB._id);
+  });
+
+  test("customer cannot read a provider inbox", async () => {
+    const timestamp = Date.now();
+
+    const customer = await User.create({
+      fullName: "Inbox Customer",
+      email: `customerinbox${timestamp}@example.com`,
+      password: await bcrypt.hash("TestPass123!", 10),
+      phone: `098${timestamp.toString().slice(-8)}`,
+      role: "customer",
+    });
+
+    const customerLogin = await request(app).post("/api/auth/login").send({
+      identifier: customer.email,
+      password: "TestPass123!",
+    });
+
+    const response = await request(app)
+      .get("/api/hire/provider")
+      .set("Authorization", `Bearer ${customerLogin.body.token}`);
+
+    expect(response.statusCode).toBe(403);
+
+    await User.findByIdAndDelete(customer._id);
+  });
+
+  test("signed-out caller cannot read a provider inbox", async () => {
+    const response = await request(app).get("/api/hire/provider");
+
+    expect(response.statusCode).toBe(401);
   });
 });

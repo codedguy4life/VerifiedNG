@@ -69,10 +69,19 @@ if (user) {
     if (inboxCard) inboxCard.style.display = "block";
 
     const token = localStorage.getItem("token");
-    fetch(`${API_URL}/api/hire/provider/${user.id}`, {
+    fetch(`${API_URL}/api/hire/provider`, {
       headers: { authorization: `Bearer ${token}` },
     })
-      .then((res) => res.json())
+      .then(async (res) => {
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.message || "Could not load requests");
+        }
+
+        return data;
+      })
+
       .then((data) => {
         const list = document.getElementById("hireRequestsList");
 
@@ -80,8 +89,7 @@ if (user) {
           list.replaceChildren();
 
           const empty = document.createElement("div");
-          empty.style.cssText =
-            "text-align:center;padding:32px;color:#888;";
+          empty.style.cssText = "text-align:center;padding:32px;color:#888;";
 
           const icon = document.createElement("i");
           icon.className = "bi bi-inbox";
@@ -142,12 +150,14 @@ function createHireRequestCard(request) {
   customerName.textContent = request.customerName || "Customer";
 
   const phoneRow = document.createElement("div");
-  phoneRow.style.cssText =
-    "font-size:0.82rem;color:#888;margin-top:2px;";
+  phoneRow.style.cssText = "font-size:0.82rem;color:#888;margin-top:2px;";
 
   const phoneIcon = document.createElement("i");
   phoneIcon.className = "bi bi-phone";
-  phoneRow.append(phoneIcon, document.createTextNode(` ${request.customerPhone || ""}`));
+  phoneRow.append(
+    phoneIcon,
+    document.createTextNode(` ${request.customerPhone || ""}`),
+  );
 
   customerBlock.append(customerName, phoneRow);
 
@@ -177,8 +187,7 @@ function createHireRequestCard(request) {
   description.textContent = request.description || "";
 
   const created = document.createElement("div");
-  created.style.cssText =
-    "font-size:0.78rem;color:#aaa;margin-bottom:12px;";
+  created.style.cssText = "font-size:0.78rem;color:#aaa;margin-bottom:12px;";
   const clockIcon = document.createElement("i");
   clockIcon.className = "bi bi-clock";
   const createdDate = request.createdAt

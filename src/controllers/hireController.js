@@ -58,12 +58,6 @@ const createHireRequest = async (req, res) => {
 
 const getRequestsForProvider = async (req, res) => {
   try {
-    if (req.user.id !== req.params.providerId) {
-      return res.status(403).json({
-        message: "You are not allowed to view these requests",
-      });
-    }
-
     const requests = await HireRequest.find({
       providerId: req.user.id,
     }).sort({ createdAt: -1 });
@@ -72,7 +66,6 @@ const getRequestsForProvider = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "Server error",
-      error: error.message,
     });
   }
 };

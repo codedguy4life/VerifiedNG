@@ -8,7 +8,7 @@ const { protect, requireRole } = require("../middleware/authMiddleware");
 
 router.post("/", protect, requireRole("customer"), createHireRequest);
 router.get(
-  "/provider/:providerId",
+  "/provider",
   protect,
   requireRole("provider"),
   getRequestsForProvider,
