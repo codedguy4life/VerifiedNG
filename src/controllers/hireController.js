@@ -49,7 +49,7 @@ const createHireRequest = async (req, res) => {
     });
   } catch (error) {
     if (error?.name === "CastError") {
-      return res.status(404).json({ message: "Provider not found" });
+      return res.status(404).json({ message: "Hire request not found" });
     }
 
     res.status(500).json({ message: "Server error" });
@@ -70,4 +70,85 @@ const getRequestsForProvider = async (req, res) => {
   }
 };
 
-module.exports = { createHireRequest, getRequestsForProvider };
+const getRequestsSentByCustomer = async (req, res) => {
+  try {
+    const requests = await HireRequest.find({
+      customerId: req.user.id,
+    }).sort({ createdAt: -1 });
+
+    res.status(200).json({ requests });
+  } catch (error) {
+    res.status(500).json({
+      message: "Server error",
+    });
+  }
+};
+
+const updateHireRequestStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+
+    if (!["accepted", "declined"].includes(status)) {
+      return res.status(400).json({
+        message: "Status must be accepted or declined",
+      });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(req.params.requestId)) {
+      return res.status(404).json({
+        message: "Hire request not found",
+      });
+    }
+
+    const hireRequest = await HireRequest.findOneAndUpdate(
+      {
+        _id: req.params.requestId,
+        providerId: req.user.id.toString(),
+        status: "pending",
+      },
+      {
+        $set: { status },
+      },
+      {
+        returnDocument: "after",
+      },
+    );
+
+    if (!hireRequest) {
+      // Same answer whether the id doesn't exist or belongs to someone else,
+      // so outsiders can't tell which request ids are real.
+      const ownRequest = await HireRequest.findOne({
+        _id: req.params.requestId,
+        providerId: req.user.id.toString(),
+      });
+
+      if (!ownRequest) {
+        return res.status(404).json({ message: "Hire request not found" });
+      }
+
+      return res.status(400).json({
+        message: "Only pending hire requests can be updated",
+      });
+    }
+
+    res.status(200).json({
+      message: `Hire request ${status}`,
+      request: hireRequest,
+    });
+  } catch (error) {
+    if (error?.name === "CastError") {
+      return res.status(404).json({ message: "Hire request not found" });
+    }
+
+    res.status(500).json({
+      message: "Server error",
+    });
+  }
+};
+
+module.exports = {
+  createHireRequest,
+  getRequestsForProvider,
+  updateHireRequestStatus,
+  getRequestsSentByCustomer,
+};
