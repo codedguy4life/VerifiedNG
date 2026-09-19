@@ -627,7 +627,8 @@ describe("Trust boundary", () => {
       .set("Authorization", `Bearer ${outsiderLogin.body.token}`)
       .send({ status: "declined" });
 
-    expect(response.statusCode).toBe(403);
+    expect(response.statusCode).toBe(404);
+    expect(response.body.message).toBe("Hire request not found");
 
     const unchangedRequest = await HireRequest.findById(hireRequest._id);
     expect(unchangedRequest.status).toBe("pending");
@@ -819,5 +820,172 @@ describe("Trust boundary", () => {
     await HireRequest.findByIdAndDelete(hireRequest._id);
     await User.findByIdAndDelete(customer._id);
     await User.findByIdAndDelete(provider._id);
+  });
+
+  describe("Hire status and sent-requests rejections", () => {
+    const makeUser = async (role, prefix, label) => {
+      const t = Date.now();
+      return User.create({
+        fullName: `${label} ${t}`,
+        email: `${label.toLowerCase().replace(/\s/g, "")}${t}@example.com`,
+        password: await bcrypt.hash("TestPass123!", 10),
+        phone: `${prefix}${t.toString().slice(-8)}`,
+        role,
+        isVerified: role === "provider",
+      });
+    };
+
+    const login = async (user) => {
+      const res = await request(app).post("/api/auth/login").send({
+        identifier: user.email,
+        password: "TestPass123!",
+      });
+      return res.body.token;
+    };
+
+    const makeRequest = (provider, customer, extra = {}) =>
+      HireRequest.create({
+        providerName: provider.fullName,
+        providerId: provider._id.toString(),
+        customerId: customer._id.toString(),
+        customerName: customer.fullName,
+        customerPhone: customer.phone,
+        serviceNeeded: "Electrical diagnostics",
+        description: "A request used for rejection tests.",
+        ...extra,
+      });
+
+    test("signed-out caller cannot change a request status", async () => {
+      const customer = await makeUser("customer", "070", "Signed Out Customer");
+      const provider = await makeUser("provider", "071", "Signed Out Provider");
+      const hireRequest = await makeRequest(provider, customer);
+
+      const response = await request(app)
+        .patch(`/api/hire/${hireRequest._id}/status`)
+        .send({ status: "accepted" });
+
+      expect(response.statusCode).toBe(401);
+      const stored = await HireRequest.findById(hireRequest._id);
+      expect(stored.status).toBe("pending");
+
+      await HireRequest.findByIdAndDelete(hireRequest._id);
+      await User.findByIdAndDelete(customer._id);
+      await User.findByIdAndDelete(provider._id);
+    });
+
+    test("customer cannot change a request status", async () => {
+      const customer = await makeUser("customer", "072", "Status Customer");
+      const provider = await makeUser("provider", "073", "Status Provider");
+      const hireRequest = await makeRequest(provider, customer);
+      const token = await login(customer);
+
+      const response = await request(app)
+        .patch(`/api/hire/${hireRequest._id}/status`)
+        .set("Authorization", `Bearer ${token}`)
+        .send({ status: "accepted" });
+
+      expect(response.statusCode).toBe(403);
+      const stored = await HireRequest.findById(hireRequest._id);
+      expect(stored.status).toBe("pending");
+
+      await HireRequest.findByIdAndDelete(hireRequest._id);
+      await User.findByIdAndDelete(customer._id);
+      await User.findByIdAndDelete(provider._id);
+    });
+
+    test("invalid status value is rejected", async () => {
+      const customer = await makeUser(
+        "customer",
+        "074",
+        "Invalid Status Customer",
+      );
+      const provider = await makeUser(
+        "provider",
+        "075",
+        "Invalid Status Provider",
+      );
+      const hireRequest = await makeRequest(provider, customer);
+      const token = await login(provider);
+
+      const response = await request(app)
+        .patch(`/api/hire/${hireRequest._id}/status`)
+        .set("Authorization", `Bearer ${token}`)
+        .send({ status: "hacked" });
+
+      expect(response.statusCode).toBe(400);
+      const stored = await HireRequest.findById(hireRequest._id);
+      expect(stored.status).toBe("pending");
+
+      await HireRequest.findByIdAndDelete(hireRequest._id);
+      await User.findByIdAndDelete(customer._id);
+      await User.findByIdAndDelete(provider._id);
+    });
+
+    test("an already accepted request cannot be changed again", async () => {
+      const customer = await makeUser("customer", "076", "Settled Customer");
+      const provider = await makeUser("provider", "077", "Settled Provider");
+      const hireRequest = await makeRequest(provider, customer, {
+        status: "accepted",
+      });
+      const token = await login(provider);
+
+      const response = await request(app)
+        .patch(`/api/hire/${hireRequest._id}/status`)
+        .set("Authorization", `Bearer ${token}`)
+        .send({ status: "declined" });
+
+      expect(response.statusCode).toBe(400);
+      const stored = await HireRequest.findById(hireRequest._id);
+      expect(stored.status).toBe("accepted");
+
+      await HireRequest.findByIdAndDelete(hireRequest._id);
+      await User.findByIdAndDelete(customer._id);
+      await User.findByIdAndDelete(provider._id);
+    });
+
+    test("outsider gets the same answer for a real request and a missing one", async () => {
+      const customer = await makeUser("customer", "078", "Oracle Customer");
+      const owner = await makeUser("provider", "079", "Oracle Owner");
+      const outsider = await makeUser("provider", "060", "Oracle Outsider");
+      const hireRequest = await makeRequest(owner, customer);
+      const token = await login(outsider);
+
+      const real = await request(app)
+        .patch(`/api/hire/${hireRequest._id}/status`)
+        .set("Authorization", `Bearer ${token}`)
+        .send({ status: "declined" });
+
+      const missing = await request(app)
+        .patch("/api/hire/507f1f77bcf86cd799439011/status")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ status: "declined" });
+
+      expect(real.statusCode).toBe(missing.statusCode);
+      expect(real.body).toEqual(missing.body);
+
+      await HireRequest.findByIdAndDelete(hireRequest._id);
+      await User.findByIdAndDelete(customer._id);
+      await User.findByIdAndDelete(owner._id);
+      await User.findByIdAndDelete(outsider._id);
+    });
+
+    test("signed-out caller cannot read the sent list", async () => {
+      const response = await request(app).get("/api/hire/sent");
+
+      expect(response.statusCode).toBe(401);
+    });
+
+    test("provider cannot read the customer sent list", async () => {
+      const provider = await makeUser("provider", "061", "Sent Provider");
+      const token = await login(provider);
+
+      const response = await request(app)
+        .get("/api/hire/sent")
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(response.statusCode).toBe(403);
+
+      await User.findByIdAndDelete(provider._id);
+    });
   });
 });

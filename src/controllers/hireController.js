@@ -115,18 +115,15 @@ const updateHireRequestStatus = async (req, res) => {
     );
 
     if (!hireRequest) {
-      const existingRequest = await HireRequest.findById(req.params.requestId);
+      // Same answer whether the id doesn't exist or belongs to someone else,
+      // so outsiders can't tell which request ids are real.
+      const ownRequest = await HireRequest.findOne({
+        _id: req.params.requestId,
+        providerId: req.user.id.toString(),
+      });
 
-      if (!existingRequest) {
-        return res.status(404).json({
-          message: "Hire request not found",
-        });
-      }
-
-      if (existingRequest.providerId !== req.user.id.toString()) {
-        return res.status(403).json({
-          message: "You are not allowed to update this hire request",
-        });
+      if (!ownRequest) {
+        return res.status(404).json({ message: "Hire request not found" });
       }
 
       return res.status(400).json({
