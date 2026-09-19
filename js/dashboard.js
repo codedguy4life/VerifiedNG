@@ -1,7 +1,6 @@
 // PROTECTED — redirects to login if not logged in
-const user = checkAuth();
-
-if (user) {
+getVerifiedUser().then((user) => {
+  if (!user) return;
   // ─── FILL USER INFO ───
   document.getElementById("firstName").textContent =
     user.fullName.split(" ")[0];
@@ -176,7 +175,7 @@ if (user) {
 
   document.getElementById("totalLoginsText").textContent =
     `Total logins: ${user.loginCount || 1}`;
-}
+});
 
 function createHireRequestCard(request) {
   const card = document.createElement("div");

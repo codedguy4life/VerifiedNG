@@ -5,6 +5,36 @@ const User = require("../src/models/user");
 const HireRequest = require("../src/models/HireRequest");
 
 describe("Trust boundary", () => {
+  test("profile verification returns the role belonging to the authenticated user", async () => {
+    const timestamp = Date.now();
+
+    const customer = await User.create({
+      fullName: "Verified Profile Customer",
+      email: `verifiedprofile${timestamp}@example.com`,
+      password: await bcrypt.hash("TestPass123!", 10),
+      phone: `062${timestamp.toString().slice(-8)}`,
+      role: "customer",
+    });
+
+    const login = await request(app).post("/api/auth/login").send({
+      identifier: customer.email,
+      password: "TestPass123!",
+    });
+
+    expect(login.statusCode).toBe(200);
+    expect(login.body.token).toBeDefined();
+
+    const response = await request(app)
+      .get("/api/user/profile")
+      .set("Authorization", `Bearer ${login.body.token}`);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.user._id).toBe(customer._id.toString());
+    expect(response.body.user.role).toBe("customer");
+
+    await User.findByIdAndDelete(customer._id);
+  });
+
   test("local server serves the homepage but not repository source files", async () => {
     const homepage = await request(app).get("/");
     const packageFile = await request(app).get("/package.json");

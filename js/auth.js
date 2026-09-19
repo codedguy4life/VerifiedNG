@@ -14,6 +14,37 @@ function checkAuth() {
   return JSON.parse(user);
 }
 
+async function getVerifiedUser() {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    window.location.href = "login.html";
+    return null;
+  }
+
+  try {
+    const response = await fetch(`${API_URL}/api/user/profile`, {
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      window.location.href = "login.html";
+      return null;
+    }
+
+    const data = await response.json();
+
+    return data.user;
+  } catch (error) {
+    console.error("Could not verify user:", error);
+    return null;
+  }
+}
+
 // Get current user without redirecting
 function getCurrentUser() {
   const user = localStorage.getItem("user");
@@ -28,16 +59,22 @@ function signOut() {
 }
 
 // Use this function on every "Become a Provider" button sitewide
-function goToProviderSignup() {
-  const user = getCurrentUser();
-  if (user) {
-    if (user.role === "provider") {
-      window.location.href = "dashboard.html";
-    } else {
-      window.location.href = "upgrade-to-provider.html";
-    }
-  } else {
+async function goToProviderSignup() {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
     window.location.href = "signup-provider.html";
+    return;
+  }
+
+  const user = await getVerifiedUser();
+
+  if (!user) return;
+
+  if (user.role === "provider") {
+    window.location.href = "dashboard.html";
+  } else {
+    window.location.href = "upgrade-to-provider.html";
   }
 }
 
