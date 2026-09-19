@@ -764,4 +764,60 @@ describe("Trust boundary", () => {
 
     await User.findByIdAndDelete(provider._id);
   });
+
+  test("concurrent accept and decline: only one wins", async () => {
+    const timestamp = Date.now();
+
+    const customer = await User.create({
+      fullName: "Race Test Customer",
+      email: `racecustomer${timestamp}@example.com`,
+      password: await bcrypt.hash("TestPass123!", 10),
+      phone: `070${timestamp.toString().slice(-8)}`,
+      role: "customer",
+    });
+
+    const provider = await User.create({
+      fullName: "Race Test Provider",
+      email: `raceprovider${timestamp}@example.com`,
+      password: await bcrypt.hash("TestPass123!", 10),
+      phone: `071${timestamp.toString().slice(-8)}`,
+      role: "provider",
+      isVerified: true,
+    });
+
+    const hireRequest = await HireRequest.create({
+      providerName: provider.fullName,
+      providerId: provider._id.toString(),
+      customerId: customer._id.toString(),
+      customerName: customer.fullName,
+      customerPhone: customer.phone,
+      serviceNeeded: "Electrical diagnostics",
+      description: "A pending request for the concurrency test.",
+    });
+
+    const providerLogin = await request(app).post("/api/auth/login").send({
+      identifier: provider.email,
+      password: "TestPass123!",
+    });
+
+    expect(providerLogin.statusCode).toBe(200);
+    expect(providerLogin.body.token).toBeDefined();
+
+    const send = (status) =>
+      request(app)
+        .patch(`/api/hire/${hireRequest._id}/status`)
+        .set("Authorization", `Bearer ${providerLogin.body.token}`)
+        .send({ status });
+
+    const [a, b] = await Promise.all([send("accepted"), send("declined")]);
+
+    expect([a.statusCode, b.statusCode].sort()).toEqual([200, 400]);
+
+    const stored = await HireRequest.findById(hireRequest._id);
+    expect(stored.status).toBe(a.statusCode === 200 ? "accepted" : "declined");
+
+    await HireRequest.findByIdAndDelete(hireRequest._id);
+    await User.findByIdAndDelete(customer._id);
+    await User.findByIdAndDelete(provider._id);
+  });
 });

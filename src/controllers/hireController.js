@@ -49,7 +49,7 @@ const createHireRequest = async (req, res) => {
     });
   } catch (error) {
     if (error?.name === "CastError") {
-      return res.status(404).json({ message: "Provider not found" });
+      return res.status(404).json({ message: "Hire request not found" });
     }
 
     res.status(500).json({ message: "Server error" });
@@ -103,7 +103,7 @@ const updateHireRequestStatus = async (req, res) => {
     const hireRequest = await HireRequest.findOneAndUpdate(
       {
         _id: req.params.requestId,
-        providerId: req.user.id,
+        providerId: req.user.id.toString(),
         status: "pending",
       },
       {
@@ -123,7 +123,7 @@ const updateHireRequestStatus = async (req, res) => {
         });
       }
 
-      if (existingRequest.providerId !== req.user.id) {
+      if (existingRequest.providerId !== req.user.id.toString()) {
         return res.status(403).json({
           message: "You are not allowed to update this hire request",
         });
@@ -139,6 +139,10 @@ const updateHireRequestStatus = async (req, res) => {
       request: hireRequest,
     });
   } catch (error) {
+    if (error?.name === "CastError") {
+      return res.status(404).json({ message: "Hire request not found" });
+    }
+
     res.status(500).json({
       message: "Server error",
     });
