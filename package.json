@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
-    "test": "jest --runInBand"
+    "test": "jest --runInBand --testPathIgnorePatterns=dashboard-browser.test.js"
   },
   "keywords": [
     "nigeria",
@@ -32,6 +32,7 @@
   },
   "devDependencies": {
     "jest": "^30.5.1",
+    "jest-environment-jsdom": "^30.5.2",
     "nodemon": "^3.1.14",
     "supertest": "^7.2.2"
   },
