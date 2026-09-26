@@ -6,7 +6,9 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
-    "test": "jest --runInBand --testPathIgnorePatterns=dashboard-browser.test.js"
+    "test": "npm run test:backend && npm run test:browser",
+    "test:backend": "jest --runInBand --testPathIgnorePatterns=dashboard-browser.test.js",
+    "test:browser": "jest --config jest.browser.config.js --runInBand"
   },
   "keywords": [
     "nigeria",

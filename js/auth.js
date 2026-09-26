@@ -4,10 +4,15 @@ async function getVerifiedUser(options = {}) {
   const token = localStorage.getItem("token");
 
   if (!token) {
-    window.location.href = "login.html";
+    const redirect =
+      options.redirect ||
+      ((url) => {
+        window.location.href = url;
+      });
+
+    redirect("login.html");
     return null;
   }
-
   try {
     const response = await fetch(`${API_URL}/api/user/profile`, {
       headers: {
@@ -20,7 +25,13 @@ async function getVerifiedUser(options = {}) {
     if (response.status === 401) {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
-      window.location.href = "login.html";
+      const redirect =
+        options.redirect ||
+        ((url) => {
+          window.location.href = url;
+        });
+
+      redirect("login.html");
       return null;
     }
 

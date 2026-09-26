@@ -20,6 +20,16 @@ describe("TTB-005 browser trust boundary", () => {
     document.body.innerHTML = `
       <div class="nav-actions"></div>
 
+      <div
+  id="dashboardError"
+  style="display:none;"
+>
+  <h3>Unable to load your dashboard</h3>
+  <p>Please check your connection and try again.</p>
+  <button id="dashboardRetry">Try Again</button>
+</div>
+
+<div class="dashboard-wrapper"></div>
       <div id="firstName"></div>
       <div id="navGreeting"></div>
       <div id="userFullName"></div>
@@ -50,7 +60,7 @@ describe("TTB-005 browser trust boundary", () => {
 
     global.API_URL = window.API_URL;
 
-    window.location.href = "dashboard.html";
+    window.history.pushState({}, "", "/dashboard.html");
   });
 
   afterEach(() => {
@@ -177,11 +187,14 @@ describe("TTB-005 browser trust boundary", () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
 
+    const redirect = jest.fn();
+
     window.eval(authScript);
 
-    const result = await window.getVerifiedUser();
+    const result = await window.getVerifiedUser({ redirect });
 
     expect(result).toBeNull();
+    expect(redirect).toHaveBeenCalledWith("login.html");
   });
 
   test("401 from profile verification clears the session and redirects to login", async () => {
@@ -250,6 +263,39 @@ describe("TTB-005 browser trust boundary", () => {
 
     expect(onError).toHaveBeenCalledWith(
       "We couldn't verify your account right now. Please try again.",
+    );
+  });
+
+  test("dashboard shows a visible error when verification fails", async () => {
+    localStorage.setItem("token", "valid-token");
+    localStorage.setItem(
+      "user",
+      JSON.stringify({
+        id: "customer-500",
+        fullName: "Test Customer",
+        email: "test@example.com",
+        role: "customer",
+      }),
+    );
+
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: false,
+      status: 500,
+      json: async () => ({
+        message: "Server error",
+      }),
+    });
+
+    window.eval(authScript);
+    window.eval(dashboardScript);
+
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    const errorBox = document.getElementById("dashboardError");
+
+    expect(errorBox.style.display).toBe("block");
+    expect(errorBox.querySelector("p").textContent).toContain(
+      "verify your account",
     );
   });
 
