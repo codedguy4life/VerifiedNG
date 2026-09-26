@@ -8,7 +8,8 @@
     "dev": "nodemon src/index.js",
     "test": "npm run test:backend && npm run test:browser",
     "test:backend": "jest --runInBand --testPathIgnorePatterns=dashboard-browser.test.js",
-    "test:browser": "jest --config jest.browser.config.js --runInBand"
+    "test:browser": "jest --config jest.browser.config.js --runInBand",
+    "test:dashboard": "jest --config jest.browser.config.js --runInBand tests/dashboard-browser.test.js"
   },
   "keywords": [
     "nigeria",
