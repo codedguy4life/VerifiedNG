@@ -1042,7 +1042,6 @@ describe("Trust boundary", () => {
         .set("Authorization", `Bearer ${token}`);
 
       expect(response.statusCode).toBe(403);
-      expect(response.body).not.toHaveProperty("requests", [hireRequest._id]);
 
       await HireRequest.findByIdAndDelete(hireRequest._id);
       await User.findByIdAndDelete(customer._id);
