@@ -5,6 +5,39 @@ const User = require("../src/models/user");
 const HireRequest = require("../src/models/HireRequest");
 
 describe("Trust boundary", () => {
+  const makeUser = async (role, prefix, label) => {
+    const t = Date.now();
+
+    return User.create({
+      fullName: `${label} ${t}`,
+      email: `${label.toLowerCase().replace(/\s/g, "")}${t}@example.com`,
+      password: await bcrypt.hash("TestPass123!", 10),
+      phone: `${prefix}${t.toString().slice(-8)}`,
+      role,
+      isVerified: role === "provider",
+    });
+  };
+
+  const login = async (user) => {
+    const res = await request(app).post("/api/auth/login").send({
+      identifier: user.email,
+      password: "TestPass123!",
+    });
+
+    return res.body.token;
+  };
+
+  const makeRequest = (provider, customer, extra = {}) =>
+    HireRequest.create({
+      providerName: provider.fullName,
+      providerId: provider._id.toString(),
+      customerId: customer._id.toString(),
+      customerName: customer.fullName,
+      customerPhone: customer.phone,
+      serviceNeeded: "Electrical diagnostics",
+      description: "A request used for rejection tests.",
+      ...extra,
+    });
   test("local server serves the homepage but not repository source files", async () => {
     const homepage = await request(app).get("/");
     const packageFile = await request(app).get("/package.json");
@@ -823,38 +856,6 @@ describe("Trust boundary", () => {
   });
 
   describe("Hire status and sent-requests rejections", () => {
-    const makeUser = async (role, prefix, label) => {
-      const t = Date.now();
-      return User.create({
-        fullName: `${label} ${t}`,
-        email: `${label.toLowerCase().replace(/\s/g, "")}${t}@example.com`,
-        password: await bcrypt.hash("TestPass123!", 10),
-        phone: `${prefix}${t.toString().slice(-8)}`,
-        role,
-        isVerified: role === "provider",
-      });
-    };
-
-    const login = async (user) => {
-      const res = await request(app).post("/api/auth/login").send({
-        identifier: user.email,
-        password: "TestPass123!",
-      });
-      return res.body.token;
-    };
-
-    const makeRequest = (provider, customer, extra = {}) =>
-      HireRequest.create({
-        providerName: provider.fullName,
-        providerId: provider._id.toString(),
-        customerId: customer._id.toString(),
-        customerName: customer.fullName,
-        customerPhone: customer.phone,
-        serviceNeeded: "Electrical diagnostics",
-        description: "A request used for rejection tests.",
-        ...extra,
-      });
-
     test("signed-out caller cannot change a request status", async () => {
       const customer = await makeUser("customer", "070", "Signed Out Customer");
       const provider = await makeUser("provider", "071", "Signed Out Provider");
@@ -985,6 +986,97 @@ describe("Trust boundary", () => {
 
       expect(response.statusCode).toBe(403);
 
+      await User.findByIdAndDelete(provider._id);
+    });
+  });
+
+  // TTB-006: Proof boundary suite
+  describe("TTB-006 proof: every outsider gets nothing", () => {
+    test("unauthenticated caller on protected hire action gets nothing", async () => {
+      const response = await request(app).post("/api/hire").send({
+        providerId: "507f1f77bcf86cd799439011",
+        message: "Unauthenticated request",
+      });
+
+      expect(response.statusCode).toBe(401);
+    });
+
+    test("cross-user request: another provider gets nothing from the inbox", async () => {
+      const customer = await makeUser("customer", "062", "Cross User Customer");
+      const owner = await makeUser("provider", "063", "Cross User Owner");
+      const outsider = await makeUser("provider", "064", "Cross User Outsider");
+
+      const hireRequest = await makeRequest(owner, customer);
+      const token = await login(outsider);
+
+      const response = await request(app)
+        .get("/api/hire/provider")
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(response.body).toEqual({ requests: [] });
+      expect(response.body.requests).not.toContainEqual(
+        expect.objectContaining({
+          _id: hireRequest._id.toString(),
+        }),
+      );
+
+      await HireRequest.findByIdAndDelete(hireRequest._id);
+      await User.findByIdAndDelete(customer._id);
+      await User.findByIdAndDelete(owner._id);
+      await User.findByIdAndDelete(outsider._id);
+    });
+
+    test("customer acting as provider gets nothing from the provider inbox", async () => {
+      const customer = await makeUser(
+        "customer",
+        "065",
+        "Impersonating Customer",
+      );
+      const provider = await makeUser("provider", "066", "Real Provider");
+
+      const hireRequest = await makeRequest(provider, customer);
+      const token = await login(customer);
+
+      const response = await request(app)
+        .get("/api/hire/provider")
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(response.statusCode).toBe(403);
+
+      await HireRequest.findByIdAndDelete(hireRequest._id);
+      await User.findByIdAndDelete(customer._id);
+      await User.findByIdAndDelete(provider._id);
+    });
+
+    test("tampered identity on protected action gets nothing", async () => {
+      const customer = await makeUser("customer", "067", "Tampered Customer");
+      const provider = await makeUser("provider", "068", "Tampered Provider");
+
+      const hireRequest = await makeRequest(provider, customer);
+      const token = await login(customer);
+
+      const parts = token.split(".");
+      parts[1] = Buffer.from(
+        JSON.stringify({
+          id: provider._id.toString(),
+          role: "provider",
+        }),
+      ).toString("base64url");
+
+      const tamperedToken = parts.join(".");
+
+      const response = await request(app)
+        .patch(`/api/hire/${hireRequest._id}/status`)
+        .set("Authorization", `Bearer ${tamperedToken}`)
+        .send({ status: "accepted" });
+
+      expect(response.statusCode).toBe(401);
+
+      const stored = await HireRequest.findById(hireRequest._id);
+      expect(stored.status).toBe("pending");
+
+      await HireRequest.findByIdAndDelete(hireRequest._id);
+      await User.findByIdAndDelete(customer._id);
       await User.findByIdAndDelete(provider._id);
     });
   });
