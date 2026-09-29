@@ -1,182 +1,227 @@
 // PROTECTED — redirects to login if not logged in
-const user = checkAuth();
+function loadDashboard() {
+  getVerifiedUser({
+    onError: (message) => {
+      const errorBox = document.getElementById("dashboardError");
+      const dashboard = document.querySelector(".dashboard-wrapper");
 
-if (user) {
-  // ─── FILL USER INFO ───
-  document.getElementById("firstName").textContent =
-    user.fullName.split(" ")[0];
-  document.getElementById("navGreeting").textContent =
-    "Hi, " + user.fullName.split(" ")[0];
-  document.getElementById("userFullName").textContent = user.fullName;
-  document.getElementById("userEmail").textContent = user.email;
-  document.getElementById("userRole").textContent =
-    user.role === "customer" ? "Customer" : "Service Provider";
+      if (errorBox) {
+        errorBox.querySelector("p").textContent = message;
+        errorBox.style.display = "block";
+      }
 
-  // ─── AVATAR ───
-  const avatarEl = document.getElementById("userAvatar");
-  if (user.profilePhoto && user.profilePhoto.startsWith("data:")) {
-    // Show real photo
-    avatarEl.style.backgroundImage = `url(${user.profilePhoto})`;
-    avatarEl.style.backgroundSize = "cover";
-    avatarEl.style.backgroundPosition = "center";
-    avatarEl.textContent = "";
-  } else {
-    // Show initials
-    const parts = user.fullName.split(" ");
-    const initials = parts[0][0] + (parts[1] ? parts[1][0] : "");
-    avatarEl.textContent = initials.toUpperCase();
-  }
+      if (dashboard) {
+        dashboard.style.display = "none";
+      }
+    },
+  }).then((user) => {
+    if (!user) return;
 
-  // ─── STATS ───
-  document.getElementById("loginCount").textContent = user.loginCount || 1;
+    const errorBox = document.getElementById("dashboardError");
+    const dashboard = document.querySelector(".dashboard-wrapper");
 
-  // Days as member
-  if (user.createdAt) {
-    const joined = new Date(user.createdAt);
-    const today = new Date();
-    const days = Math.floor((today - joined) / (1000 * 60 * 60 * 24));
-    document.getElementById("memberDays").textContent = days || 1;
-  }
+    if (errorBox) {
+      errorBox.style.display = "none";
+    }
 
-  // ─── CUSTOMER SENT REQUESTS ───
-  if (user.role === "customer") {
-    const sentRequestsCard = document.getElementById("sentRequestsCard");
-    const sentRequestsList = document.getElementById("sentRequestsList");
+    if (dashboard) {
+      dashboard.style.display = "";
+    }
 
-    if (sentRequestsCard) sentRequestsCard.style.display = "block";
+    // ─── FILL USER INFO ───
+    document.getElementById("firstName").textContent =
+      user.fullName.split(" ")[0];
+    document.getElementById("navGreeting").textContent =
+      "Hi, " + user.fullName.split(" ")[0];
+    document.getElementById("userFullName").textContent = user.fullName;
+    document.getElementById("userEmail").textContent = user.email;
+    document.getElementById("userRole").textContent =
+      user.role === "customer" ? "Customer" : "Service Provider";
 
-    const token = localStorage.getItem("token");
+    // ─── AVATAR ───
+    const avatarEl = document.getElementById("userAvatar");
+    if (user.profilePhoto && user.profilePhoto.startsWith("data:")) {
+      // Show real photo
+      avatarEl.style.backgroundImage = `url(${user.profilePhoto})`;
+      avatarEl.style.backgroundSize = "cover";
+      avatarEl.style.backgroundPosition = "center";
+      avatarEl.textContent = "";
+    } else {
+      // Show initials
+      const parts = user.fullName.split(" ");
+      const initials = parts[0][0] + (parts[1] ? parts[1][0] : "");
+      avatarEl.textContent = initials.toUpperCase();
+    }
 
-    fetch(`${API_URL}/api/hire/sent`, {
-      headers: { authorization: `Bearer ${token}` },
-    })
-      .then(async (res) => {
-        const data = await res.json();
+    // ─── STATS ───
+    document.getElementById("loginCount").textContent = user.loginCount || 1;
 
-        if (!res.ok) {
-          throw new Error(data.message || "Could not load sent requests");
-        }
+    // Days as member
+    if (user.createdAt) {
+      const joined = new Date(user.createdAt);
+      const today = new Date();
+      const days = Math.floor((today - joined) / (1000 * 60 * 60 * 24));
+      document.getElementById("memberDays").textContent = days || 1;
+    }
 
-        return data;
+    // ─── CUSTOMER SENT REQUESTS ───
+    if (user.role === "customer") {
+      const sentRequestsCard = document.getElementById("sentRequestsCard");
+      const sentRequestsList = document.getElementById("sentRequestsList");
+
+      if (sentRequestsCard) sentRequestsCard.style.display = "block";
+
+      const token = localStorage.getItem("token");
+
+      fetch(`${API_URL}/api/hire/sent`, {
+        headers: { authorization: `Bearer ${token}` },
       })
-      .then((data) => {
-        if (!data.requests || data.requests.length === 0) {
-          sentRequestsList.replaceChildren();
+        .then(async (res) => {
+          const data = await res.json();
 
-          const empty = document.createElement("div");
-          empty.style.cssText = "text-align:center;padding:32px;color:#888;";
-          empty.textContent = "You haven't sent any hire requests yet.";
+          if (!res.ok) {
+            throw new Error(data.message || "Could not load sent requests");
+          }
 
-          sentRequestsList.appendChild(empty);
-          return;
-        }
+          return data;
+        })
+        .then((data) => {
+          if (!data.requests || data.requests.length === 0) {
+            sentRequestsList.replaceChildren();
 
-        sentRequestsList.replaceChildren(
-          ...data.requests.map((request) => createSentRequestCard(request)),
-        );
+            const empty = document.createElement("div");
+            empty.style.cssText = "text-align:center;padding:32px;color:#888;";
+            empty.textContent = "You haven't sent any hire requests yet.";
+
+            sentRequestsList.appendChild(empty);
+            return;
+          }
+
+          sentRequestsList.replaceChildren(
+            ...data.requests.map((request) => createSentRequestCard(request)),
+          );
+        })
+        .catch(() => {
+          sentRequestsList.textContent =
+            "Could not load sent requests. Try refreshing.";
+          sentRequestsList.style.color = "#888";
+          sentRequestsList.style.fontSize = "0.9rem";
+        });
+    }
+
+    // Last login in stats card
+    if (user.lastLogin) {
+      const last = new Date(user.lastLogin);
+      document.getElementById("lastLogin").textContent =
+        last.toLocaleDateString("en-NG", {
+          day: "numeric",
+          month: "short",
+          year: "numeric",
+        });
+    }
+
+    // ─── ACTIVITY SECTION ───
+    if (user.createdAt) {
+      const joined = new Date(user.createdAt);
+      document.getElementById("joinedDate").textContent =
+        "Joined " +
+        joined.toLocaleDateString("en-NG", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        });
+    }
+
+    // ─── PROVIDER INBOX ───
+    if (user.role === "provider") {
+      const inboxCard = document.getElementById("providerInbox");
+      if (inboxCard) inboxCard.style.display = "block";
+
+      const token = localStorage.getItem("token");
+      fetch(`${API_URL}/api/hire/provider`, {
+        headers: { authorization: `Bearer ${token}` },
       })
-      .catch(() => {
-        sentRequestsList.textContent =
-          "Could not load sent requests. Try refreshing.";
-        sentRequestsList.style.color = "#888";
-        sentRequestsList.style.fontSize = "0.9rem";
-      });
-  }
+        .then(async (res) => {
+          const data = await res.json();
 
-  // Last login in stats card
-  if (user.lastLogin) {
-    const last = new Date(user.lastLogin);
-    document.getElementById("lastLogin").textContent = last.toLocaleDateString(
-      "en-NG",
-      {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-      },
-    );
-  }
+          if (!res.ok) {
+            throw new Error(data.message || "Could not load requests");
+          }
 
-  // ─── ACTIVITY SECTION ───
-  if (user.createdAt) {
-    const joined = new Date(user.createdAt);
-    document.getElementById("joinedDate").textContent =
-      "Joined " +
-      joined.toLocaleDateString("en-NG", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      });
-  }
+          return data;
+        })
 
-  // ─── PROVIDER INBOX ───
-  if (user.role === "provider") {
-    const inboxCard = document.getElementById("providerInbox");
-    if (inboxCard) inboxCard.style.display = "block";
+        .then((data) => {
+          const list = document.getElementById("hireRequestsList");
 
-    const token = localStorage.getItem("token");
-    fetch(`${API_URL}/api/hire/provider`, {
-      headers: { authorization: `Bearer ${token}` },
-    })
-      .then(async (res) => {
-        const data = await res.json();
+          if (!data.requests || data.requests.length === 0) {
+            list.replaceChildren();
 
-        if (!res.ok) {
-          throw new Error(data.message || "Could not load requests");
-        }
+            const empty = document.createElement("div");
+            empty.style.cssText = "text-align:center;padding:32px;color:#888;";
 
-        return data;
-      })
+            const icon = document.createElement("i");
+            icon.className = "bi bi-inbox";
+            icon.style.cssText =
+              "font-size:2rem;margin-bottom:8px;display:block;";
 
-      .then((data) => {
-        const list = document.getElementById("hireRequestsList");
+            const message = document.createElement("div");
+            message.textContent =
+              "No hire requests yet. Share your profile to start getting jobs!";
 
-        if (!data.requests || data.requests.length === 0) {
-          list.replaceChildren();
+            empty.append(icon, message);
+            list.appendChild(empty);
+            return;
+          }
 
-          const empty = document.createElement("div");
-          empty.style.cssText = "text-align:center;padding:32px;color:#888;";
+          list.replaceChildren(
+            ...data.requests.map((request) => createHireRequestCard(request)),
+          );
+        })
+        .catch(() => {
+          const list = document.getElementById("hireRequestsList");
+          list.textContent = "Could not load requests. Try refreshing.";
+          list.style.color = "#888";
+          list.style.fontSize = "0.9rem";
+        });
+    }
 
-          const icon = document.createElement("i");
-          icon.className = "bi bi-inbox";
-          icon.style.cssText =
-            "font-size:2rem;margin-bottom:8px;display:block;";
+    if (user.lastLogin) {
+      const last = new Date(user.lastLogin);
+      document.getElementById("lastLoginActivity").textContent =
+        last.toLocaleDateString("en-NG", {
+          day: "numeric",
+          month: "short",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+    }
 
-          const message = document.createElement("div");
-          message.textContent =
-            "No hire requests yet. Share your profile to start getting jobs!";
-
-          empty.append(icon, message);
-          list.appendChild(empty);
-          return;
-        }
-
-        list.replaceChildren(
-          ...data.requests.map((request) => createHireRequestCard(request)),
-        );
-      })
-      .catch(() => {
-        const list = document.getElementById("hireRequestsList");
-        list.textContent = "Could not load requests. Try refreshing.";
-        list.style.color = "#888";
-        list.style.fontSize = "0.9rem";
-      });
-  }
-
-  if (user.lastLogin) {
-    const last = new Date(user.lastLogin);
-    document.getElementById("lastLoginActivity").textContent =
-      last.toLocaleDateString("en-NG", {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-  }
-
-  document.getElementById("totalLoginsText").textContent =
-    `Total logins: ${user.loginCount || 1}`;
+    document.getElementById("totalLoginsText").textContent =
+      `Total logins: ${user.loginCount || 1}`;
+  });
 }
+
+// Retry dashboard loading
+const dashboardRetry = document.getElementById("dashboardRetry");
+
+if (dashboardRetry) {
+  dashboardRetry.addEventListener("click", () => {
+    dashboardRetry.textContent = "Trying again...";
+    dashboardRetry.disabled = true;
+
+    loadDashboard();
+
+    setTimeout(() => {
+      dashboardRetry.textContent = "Try Again";
+      dashboardRetry.disabled = false;
+    }, 1000);
+  });
+}
+
+// Initial dashboard load
+loadDashboard();
 
 function createHireRequestCard(request) {
   const card = document.createElement("div");

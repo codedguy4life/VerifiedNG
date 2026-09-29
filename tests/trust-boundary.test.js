@@ -38,6 +38,36 @@ describe("Trust boundary", () => {
       description: "A request used for rejection tests.",
       ...extra,
     });
+  test("profile verification returns the role belonging to the authenticated user", async () => {
+    const timestamp = Date.now();
+
+    const customer = await User.create({
+      fullName: "Verified Profile Customer",
+      email: `verifiedprofile${timestamp}@example.com`,
+      password: await bcrypt.hash("TestPass123!", 10),
+      phone: `062${timestamp.toString().slice(-8)}`,
+      role: "customer",
+    });
+
+    const login = await request(app).post("/api/auth/login").send({
+      identifier: customer.email,
+      password: "TestPass123!",
+    });
+
+    expect(login.statusCode).toBe(200);
+    expect(login.body.token).toBeDefined();
+
+    const response = await request(app)
+      .get("/api/user/profile")
+      .set("Authorization", `Bearer ${login.body.token}`);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.user._id).toBe(customer._id.toString());
+    expect(response.body.user.role).toBe("customer");
+
+    await User.findByIdAndDelete(customer._id);
+  });
+
   test("local server serves the homepage but not repository source files", async () => {
     const homepage = await request(app).get("/");
     const packageFile = await request(app).get("/package.json");
@@ -856,6 +886,38 @@ describe("Trust boundary", () => {
   });
 
   describe("Hire status and sent-requests rejections", () => {
+    const makeUser = async (role, prefix, label) => {
+      const t = Date.now();
+      return User.create({
+        fullName: `${label} ${t}`,
+        email: `${label.toLowerCase().replace(/\s/g, "")}${t}@example.com`,
+        password: await bcrypt.hash("TestPass123!", 10),
+        phone: `${prefix}${t.toString().slice(-8)}`,
+        role,
+        isVerified: role === "provider",
+      });
+    };
+
+    const login = async (user) => {
+      const res = await request(app).post("/api/auth/login").send({
+        identifier: user.email,
+        password: "TestPass123!",
+      });
+      return res.body.token;
+    };
+
+    const makeRequest = (provider, customer, extra = {}) =>
+      HireRequest.create({
+        providerName: provider.fullName,
+        providerId: provider._id.toString(),
+        customerId: customer._id.toString(),
+        customerName: customer.fullName,
+        customerPhone: customer.phone,
+        serviceNeeded: "Electrical diagnostics",
+        description: "A request used for rejection tests.",
+        ...extra,
+      });
+
     test("signed-out caller cannot change a request status", async () => {
       const customer = await makeUser("customer", "070", "Signed Out Customer");
       const provider = await makeUser("provider", "071", "Signed Out Provider");

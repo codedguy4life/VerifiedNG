@@ -6,10 +6,12 @@
     <title>Become a Provider — VerifiedNG</title>
     <link
       href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap"
-      rel="stylesheet" />
+      rel="stylesheet"
+    />
     <link
       rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+    />
     <link rel="stylesheet" href="styles/signup-provider.css" />
   </head>
   <body>
@@ -41,7 +43,8 @@
           margin-bottom: 24px;
           background: #f8f9ff;
           border: 1px solid #e0e0ff;
-        ">
+        "
+      >
         <h3 style="color: #1a1a2e; margin-bottom: 16px">
           <i class="bi bi-person-check"></i> Your Account Details
         </h3>
@@ -71,7 +74,8 @@
             <div style="font-size: 0.8rem; color: #888">Location</div>
             <div
               style="font-weight: 600; color: #1a1a2e"
-              id="prefilledLocation">
+              id="prefilledLocation"
+            >
               —
             </div>
           </div>
@@ -83,7 +87,8 @@
             color: #1a1a2e;
             margin-top: 12px;
             display: inline-block;
-          ">
+          "
+        >
           <i class="bi bi-pencil"></i> Edit these details in your dashboard
         </a>
       </div>
@@ -180,7 +185,8 @@
             <textarea
               id="bioInput"
               rows="5"
-              placeholder="Describe your experience and why customers should choose you. Minimum 30 characters."></textarea>
+              placeholder="Describe your experience and why customers should choose you. Minimum 30 characters."
+            ></textarea>
             <span class="error-text" id="bioError"></span>
           </div>
 
@@ -189,7 +195,8 @@
             <input
               type="text"
               id="voucherName"
-              placeholder="Name of someone who can vouch for you (pastor, employer, neighbour)" />
+              placeholder="Name of someone who can vouch for you (pastor, employer, neighbour)"
+            />
             <span class="error-text" id="voucherNameError"></span>
           </div>
 
@@ -198,7 +205,8 @@
             <input
               type="tel"
               id="voucherPhone"
-              placeholder="e.g. 08012345678" />
+              placeholder="e.g. 08012345678"
+            />
             <span class="error-text" id="voucherPhoneError"></span>
           </div>
         </div>
@@ -218,7 +226,8 @@
             font-family: &quot;DM Sans&quot;, sans-serif;
             margin-top: 20px;
             font-weight: 600;
-          ">
+          "
+        >
           <i class="bi bi-patch-check"></i> Submit Provider Application
         </button>
       </div>
@@ -227,14 +236,15 @@
     <script src="js/config.js"></script>
     <script src="js/auth.js"></script>
     <script>
-      const user = checkAuth();
+      getVerifiedUser().then((user) => {
+        if (!user) return;
 
-      if (user && user.role === "provider") {
-        window.location.href = "dashboard.html";
-      }
+        if (user.role === "provider") {
+          window.location.href = "dashboard.html";
+          return;
+        }
 
-      // Pre-fill from existing account
-      if (user) {
+        // Pre-fill from server-confirmed user
         document.getElementById("prefilledName").textContent =
           user.fullName || "—";
         document.getElementById("prefilledPhone").textContent =
@@ -245,8 +255,7 @@
           user.city && user.state
             ? `${user.city}, ${user.state}`
             : user.state || "—";
-      }
-
+      });
       function toggleSkill(el) {
         el.classList.toggle("selected");
       }

@@ -1,17 +1,82 @@
-// AUTH GUARD — protects pages from non-logged-in users
+// AUTH GUARD - protects pages from non-logged-in users
 
-function checkAuth() {
+async function getVerifiedUser(options = {}) {
   const token = localStorage.getItem("token");
-  const user = localStorage.getItem("user");
 
-  if (!token || !user) {
-    // Not logged in — redirect to login
-    window.location.href = "login.html";
+  if (!token) {
+    const redirect =
+      options.redirect ||
+      ((url) => {
+        window.location.href = url;
+      });
+
+    redirect("login.html");
     return null;
   }
+  try {
+    const response = await fetch(`${API_URL}/api/user/profile`, {
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+    });
 
-  // Logged in — return user data
-  return JSON.parse(user);
+    // The token is invalid/expired.
+    // Only a 401 should clear the user's session.
+    if (response.status === 401) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      const redirect =
+        options.redirect ||
+        ((url) => {
+          window.location.href = url;
+        });
+
+      redirect("login.html");
+      return null;
+    }
+
+    // Other server errors should NOT log the user out.
+    if (!response.ok) {
+      console.error(
+        `Could not verify user. Server returned ${response.status}.`,
+      );
+
+      if (typeof options.onError === "function") {
+        options.onError(
+          "We couldn't verify your account right now. Please try again.",
+        );
+      }
+
+      return null;
+    }
+
+    const data = await response.json();
+
+    if (!data.user) {
+      console.error("Profile response did not contain a user.");
+
+      if (typeof options.onError === "function") {
+        options.onError(
+          "We couldn't verify your account right now. Please try again.",
+        );
+      }
+
+      return null;
+    }
+
+    return data.user;
+  } catch (error) {
+    // Network errors, connection failures, etc.
+    console.error("Could not verify user:", error);
+
+    if (typeof options.onError === "function") {
+      options.onError(
+        "Connection problem. Please check your internet and try again.",
+      );
+    }
+
+    return null;
+  }
 }
 
 // Get current user without redirecting
@@ -28,16 +93,26 @@ function signOut() {
 }
 
 // Use this function on every "Become a Provider" button sitewide
-function goToProviderSignup() {
-  const user = getCurrentUser();
-  if (user) {
-    if (user.role === "provider") {
-      window.location.href = "dashboard.html";
-    } else {
-      window.location.href = "upgrade-to-provider.html";
-    }
-  } else {
+async function goToProviderSignup() {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
     window.location.href = "signup-provider.html";
+    return;
+  }
+
+  const user = await getVerifiedUser({
+    onError: (message) => {
+      alert(message);
+    },
+  });
+
+  if (!user) return;
+
+  if (user.role === "provider") {
+    window.location.href = "dashboard.html";
+  } else {
+    window.location.href = "upgrade-to-provider.html";
   }
 }
 
@@ -47,7 +122,7 @@ function updateNavForLoginState() {
   const navActions = document.querySelector(".nav-actions");
   if (!navActions) return;
 
-  // Skip on dashboard — it handles its own nav
+  // Skip on dashboard - it handles its own nav
   if (window.location.pathname.includes("dashboard")) return;
 
   if (user) {

@@ -6,7 +6,10 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
-    "test": "jest --runInBand"
+    "test": "npm run test:backend && npm run test:browser",
+    "test:backend": "jest --runInBand --testPathIgnorePatterns=dashboard-browser.test.js",
+    "test:browser": "jest --config jest.browser.config.js --runInBand",
+    "test:dashboard": "jest --config jest.browser.config.js --runInBand tests/dashboard-browser.test.js"
   },
   "keywords": [
     "nigeria",
@@ -32,6 +35,7 @@
   },
   "devDependencies": {
     "jest": "^30.5.1",
+    "jest-environment-jsdom": "^30.5.2",
     "nodemon": "^3.1.14",
     "supertest": "^7.2.2"
   },
