@@ -183,6 +183,128 @@ describe("TTB-005 browser trust boundary", () => {
     );
   });
 
+  test("provider dashboard uses server role, loads own inbox, and can update a pending request", async () => {
+    const providerUser = {
+      id: "provider-789",
+      fullName: "Test Provider",
+      email: "provider@example.com",
+      role: "customer",
+      loginCount: 3,
+      createdAt: new Date().toISOString(),
+    };
+
+    localStorage.setItem("token", "provider-token");
+    localStorage.setItem("user", JSON.stringify(providerUser));
+
+    const hireRequest = {
+      _id: "request-123",
+      customer: {
+        fullName: "Test Customer",
+        phone: "08012345678",
+      },
+      service: "Electrical Installation",
+      description: "Need electrical installation work",
+      status: "pending",
+      createdAt: new Date().toISOString(),
+    };
+
+    global.fetch = jest.fn().mockImplementation(async (url, options) => {
+      if (url.endsWith("/api/user/profile")) {
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({
+            user: {
+              id: "provider-789",
+              fullName: "Test Provider",
+              email: "provider@example.com",
+              role: "provider",
+              loginCount: 3,
+              createdAt: new Date().toISOString(),
+            },
+          }),
+        };
+      }
+
+      if (url.endsWith("/api/hire/provider")) {
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({
+            requests: [hireRequest],
+          }),
+        };
+      }
+
+      if (url.endsWith("/api/hire/request-123/status")) {
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({
+            message: "Request updated successfully",
+          }),
+        };
+      }
+
+      throw new Error(`Unexpected fetch: ${url}`);
+    });
+
+    window.eval(authScript);
+    window.eval(dashboardScript);
+
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(document.getElementById("userRole").textContent).toBe(
+      "Service Provider",
+    );
+
+    expect(document.getElementById("providerInbox").style.display).toBe(
+      "block",
+    );
+
+    expect(document.getElementById("sentRequestsCard").style.display).toBe(
+      "none",
+    );
+
+    expect(global.fetch).toHaveBeenCalledWith(
+      "http://localhost:5000/api/hire/provider",
+      expect.objectContaining({
+        headers: {
+          authorization: "Bearer provider-token",
+        },
+      }),
+    );
+
+    const inbox = document.getElementById("hireRequestsList");
+
+    expect(inbox.textContent).toContain("Need electrical installation work");
+    expect(inbox.textContent).toContain("Pending");
+
+    const buttons = Array.from(inbox.querySelectorAll("button"));
+    const acceptButton = buttons.find(
+      (button) => button.textContent.trim() === "Accept",
+    );
+
+    expect(acceptButton).toBeDefined();
+
+    await acceptButton.click();
+
+    expect(global.fetch).toHaveBeenCalledWith(
+      "http://localhost:5000/api/hire/request-123/status",
+      expect.objectContaining({
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: "Bearer provider-token",
+        },
+        body: JSON.stringify({
+          status: "accepted",
+        }),
+      }),
+    );
+  });
+
   test("signed-out users are redirected to login", async () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
