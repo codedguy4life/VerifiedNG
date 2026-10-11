@@ -33,6 +33,7 @@ const publicPages = new Set([
   "about.html",
   "all-providers-profile.html",
   "contact.html",
+  "community.html",
   "dashboard.html",
   "homepage2.html",
   "index.html",
@@ -49,6 +50,7 @@ const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const providerRoutes = require("./routes/providerRoutes");
 const hireRoutes = require("./routes/hireRoutes");
+const communityRoutes = require("./routes/communityRoutes");
 
 app.get("/api/health", (req, res) => {
   res.json({ message: "VerifiedNG Backend is running!" });
@@ -58,6 +60,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/providers", providerRoutes);
 app.use("/api/hire", hireRoutes);
+app.use("/api/community", communityRoutes);
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(frontendRoot, "index.html"));
