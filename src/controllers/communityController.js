@@ -119,6 +119,27 @@ const toggleReaction = async (req, res) => {
   }
 };
 
+const updatePost = async (req, res) => {
+  try {
+    const text = typeof req.body.text === "string" ? req.body.text.trim() : "";
+    const categories = ["General", "Question", "Opportunity", "Recommendation", "Service Request", "Safety Alert"];
+    if (!text) return res.status(400).json({ message: "A post cannot be empty." });
+    if (text.length > 2000) return res.status(400).json({ message: "Posts must be 2,000 characters or fewer." });
+    const post = await CommunityPost.findById(req.params.postId);
+    if (!post || post.isHidden) return res.status(404).json({ message: "Post not found." });
+    if (String(post.author) !== String(req.user.id)) return res.status(403).json({ message: "You can only edit your own posts." });
+    post.text = text;
+    if (categories.includes(req.body.category)) post.category = req.body.category;
+    await post.save();
+    await post.populate({ path: "author", select: authorFields });
+    return res.json({ message: "Post updated.", post });
+  } catch (error) {
+    if (error instanceof mongoose.Error.CastError) return res.status(404).json({ message: "Post not found." });
+    console.error("Community updatePost:", error);
+    return res.status(500).json({ message: "Could not update your post." });
+  }
+};
+
 const deletePost = async (req, res) => {
   try {
     const post = await CommunityPost.findById(req.params.postId);
@@ -154,4 +175,4 @@ const reportPost = async (req, res) => {
   }
 };
 
-module.exports = { createPost, getFeed, addComment, toggleReaction, deletePost, reportPost };
+module.exports = { createPost, getFeed, addComment, toggleReaction, updatePost, deletePost, reportPost };

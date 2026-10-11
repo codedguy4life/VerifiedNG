@@ -62,7 +62,7 @@
       <p class="post-text">${escapeHtml(post.text)}</p>
       <div class="post-actions"><button class="post-action ${post.reactedByMe ? "reacted" : ""}" type="button" data-action="react"><i class="bi ${post.reactedByMe ? "bi-heart-fill" : "bi-heart"}"></i><span>${post.reactionCount || 0} helpful</span></button>
       <button class="post-action" type="button" data-action="comments"><i class="bi bi-chat"></i><span>${post.commentCount || 0} comments</span></button>
-      ${String(author._id || author.id || "") === String(user?.id || user?._id || "") ? '<button class="post-action" type="button" data-action="delete"><i class="bi bi-trash3"></i><span>Delete</span></button>' : ""}</div>
+      ${String(author._id || author.id || "") === String(user?.id || user?._id || "") ? '<button class="post-action" type="button" data-action="edit"><i class="bi bi-pencil"></i><span>Edit</span></button><button class="post-action" type="button" data-action="delete"><i class="bi bi-trash3"></i><span>Delete</span></button>' : ""}</div>
       <div class="comment-area hidden"><div class="comment-list">${comments || '<p class="post-meta">No comments yet. Start the conversation.</p>'}</div>
         <form class="comment-form"><input name="comment" maxlength="1000" placeholder="Write a thoughtful reply…" aria-label="Write a comment" required><button type="submit" aria-label="Send comment"><i class="bi bi-send"></i></button></form></div>
       <form class="report-form hidden"><select name="reason" aria-label="Report reason" required><option value="">Choose a reason</option><option value="spam">Spam</option><option value="harassment">Harassment</option><option value="scam">Scam or fraud</option><option value="misinformation">Misinformation</option><option value="other">Other</option></select><input name="details" maxlength="500" placeholder="Optional details" aria-label="Report details"><button type="submit">Send report</button></form>
@@ -127,6 +127,13 @@
       try { await api(`/api/community/posts/${encodeURIComponent(id)}/reactions`, { method: "POST", body: JSON.stringify({}) }); await loadFeed(); }
       catch (error) { notify(error.message); }
       finally { button.disabled = false; }
+    }
+    if (action === "edit") {
+      const currentText = card.querySelector(".post-text")?.textContent || "";
+      const editedText = window.prompt("Edit your post", currentText);
+      if (editedText === null || !editedText.trim()) return;
+      try { await api(`/api/community/posts/${encodeURIComponent(id)}`, { method: "PUT", body: JSON.stringify({ text: editedText, category: card.querySelector(".category-chip")?.textContent || "General" }) }); await loadFeed(); notify("Post updated."); }
+      catch (error) { notify(error.message); }
     }
     if (action === "delete") {
       if (!window.confirm("Delete this post? This cannot be undone.")) return;
