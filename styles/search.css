@@ -26,7 +26,7 @@ html {
 }
 
 body {
-  font-family: "DM Sans", sans-serif;
+  font-family: "Inter", sans-serif;
   background: var(--light);
   color: var(--dark);
   overflow-x: hidden;
@@ -37,7 +37,7 @@ h2,
 h3,
 h4,
 h5 {
-  font-family: "Syne", sans-serif;
+  font-family: "Manrope", sans-serif;
 }
 
 ::-webkit-scrollbar {
@@ -68,7 +68,7 @@ nav {
 }
 
 .logo {
-  font-family: "Syne", sans-serif;
+  font-family: "Manrope", sans-serif;
   font-size: 22px;
   font-weight: 800;
   color: var(--dark);
@@ -109,7 +109,7 @@ nav {
   padding: 8px 12px;
   font-size: 14px;
   background: transparent;
-  font-family: "DM Sans", sans-serif;
+  font-family: "Inter", sans-serif;
   color: var(--dark);
 }
 
@@ -132,7 +132,7 @@ nav {
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  font-family: "DM Sans", sans-serif;
+  font-family: "Inter", sans-serif;
   transition: all 0.2s;
   white-space: nowrap;
 }
@@ -149,7 +149,7 @@ nav {
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  font-family: "DM Sans", sans-serif;
+  font-family: "Inter", sans-serif;
   transition: all 0.2s;
   white-space: nowrap;
 }
@@ -243,7 +243,7 @@ nav {
   font-weight: 600;
   background: none;
   border: none;
-  font-family: "DM Sans", sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
 .filter-group {
@@ -393,7 +393,7 @@ nav {
   border-radius: 8px;
   padding: 8px 14px;
   font-size: 13px;
-  font-family: "DM Sans", sans-serif;
+  font-family: "Inter", sans-serif;
   background: white;
   color: var(--dark);
   cursor: pointer;
@@ -615,7 +615,7 @@ nav {
 .cs-val {
   font-size: 16px;
   font-weight: 800;
-  font-family: "Syne", sans-serif;
+  font-family: "Manrope", sans-serif;
   color: var(--dark);
 }
 
@@ -641,7 +641,7 @@ nav {
 .price-info .amount {
   font-size: 18px;
   font-weight: 800;
-  font-family: "Syne", sans-serif;
+  font-family: "Manrope", sans-serif;
   color: var(--dark);
 }
 .price-info .per {
@@ -663,7 +663,7 @@ nav {
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  font-family: "DM Sans", sans-serif;
+  font-family: "Inter", sans-serif;
   transition: all 0.2s;
 }
 .btn-hire:hover {
@@ -680,7 +680,7 @@ nav {
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  font-family: "DM Sans", sans-serif;
+  font-family: "Inter", sans-serif;
   transition: all 0.2s;
 }
 .btn-msg:hover {
@@ -751,7 +751,7 @@ nav {
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  font-family: "DM Sans", sans-serif;
+  font-family: "Inter", sans-serif;
   transition: all 0.2s;
   color: var(--mid);
 }
@@ -778,7 +778,7 @@ nav {
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  font-family: "DM Sans", sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
 /* FILTER OVERLAY ON MOBILE */
