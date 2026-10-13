@@ -241,7 +241,7 @@ export default function PostCard({
             <img src={post.imageUrl || post.media?.url || post.mediaUrl} alt="Post attachment" loading="lazy" />
           )}
         </div>
-      )
+      )}
 
       {(post.location?.city || post.location?.state) && (
         <p className="post-location">
