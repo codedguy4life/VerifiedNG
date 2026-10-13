@@ -12,6 +12,22 @@ import {
   ShieldCheck,
 } from "lucide-react";
 
+const formatRelativeTime = (value) => {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  const minutes = Math.max(0, Math.floor((Date.now() - date.getTime()) / 60000));
+  if (minutes < 1) return "Just now";
+  if (minutes < 60) return `${minutes} min ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours} hr${hours === 1 ? "" : "s"} ago`;
+  const days = Math.floor(hours / 24);
+  if (days < 7) return `${days} day${days === 1 ? "" : "s"} ago`;
+  return new Intl.DateTimeFormat("en-NG", { day: "numeric", month: "short" }).format(date);
+};
+
+const initials = (name = "U") => name.trim().split(/\\s+/).slice(0, 2).map((part) => part[0] || "").join("").toUpperCase();
+
 const formatDate = (value) => {
   if (!value) return "";
 
@@ -121,7 +137,7 @@ export default function PostCard({
           {author.profilePhoto ? (
             <img src={author.profilePhoto} alt="" className="avatar-image" />
           ) : (
-            (author.fullName || "U").charAt(0).toUpperCase()
+            initials(author.fullName)
           )}
         </div>
 
@@ -138,7 +154,7 @@ export default function PostCard({
           </div>
 
           <div className="post-meta">
-            <span>{formatDate(post.createdAt)}</span>
+            <span>{formatRelativeTime(post.createdAt)}</span>
             {author.role && (
               <>
                 <span aria-hidden="true">·</span>
@@ -217,6 +233,16 @@ export default function PostCard({
 
       <p className="post-text">{post.text}</p>
 
+      {(post.videoUrl || post.imageUrl || post.mediaUrl || post.media?.url) && (
+        <div className="post-media">
+          {(post.videoUrl || post.media?.type === "video") ? (
+            <video controls preload="metadata" src={post.videoUrl || post.media?.url || post.mediaUrl} />
+          ) : (
+            <img src={post.imageUrl || post.media?.url || post.mediaUrl} alt="Post attachment" loading="lazy" />
+          )}
+        </div>
+      )
+
       {(post.location?.city || post.location?.state) && (
         <p className="post-location">
           <MapPin size={13} />
@@ -226,7 +252,7 @@ export default function PostCard({
 
       <div className="post-stats">
         <span>
-          <Heart size={14} /> {reactionCount} reactions
+          <Heart size={14} /> {reactionCount} reaches
         </span>
         <button
           type="button"
