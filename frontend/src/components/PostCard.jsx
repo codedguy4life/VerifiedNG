@@ -267,10 +267,10 @@ export default function PostCard({
         <button
           type="button"
           className={`post-action ${post.reactedByMe ? "is-active" : ""}`}
-          onClick={() => onReact(post._id)}
+          onClick={() => onReach(post._id)}
         >
           <Heart size={17} fill={post.reactedByMe ? "currentColor" : "none"} />
-          React
+          Reach
         </button>
 
         <button
