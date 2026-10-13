@@ -5,7 +5,7 @@
         text-align: center;
       }
       .about-hero h1 {
-        font-family: Syne, sans-serif;
+        font-family: Manrope, sans-serif;
         font-size: 2.8rem;
         margin-bottom: 16px;
       }
@@ -18,7 +18,7 @@
       }
       .about-section { margin-bottom: 48px; }
       .about-section h2 {
-        font-family: Syne, sans-serif;
+        font-family: Manrope, sans-serif;
         font-size: 1.8rem;
         color: #1a1a2e;
         margin-bottom: 16px;
@@ -42,7 +42,7 @@
         text-align: center;
       }
       .value-card i { font-size: 2rem; color: #1a1a2e; margin-bottom: 12px; display: block; }
-      .value-card h4 { font-family: Syne, sans-serif; margin-bottom: 8px; }
+      .value-card h4 { font-family: Manrope, sans-serif; margin-bottom: 8px; }
       .value-card p { font-size: 0.88rem; color: #666; }
       .team-note {
         background: #1a1a2e;
@@ -52,5 +52,5 @@
         text-align: center;
         margin-top: 48px;
       }
-      .team-note h3 { font-family: Syne, sans-serif; margin-bottom: 12px; }
+      .team-note h3 { font-family: Manrope, sans-serif; margin-bottom: 12px; }
       .team-note p { opacity: 0.7; margin-bottom: 20px; }
