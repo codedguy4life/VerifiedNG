@@ -26,7 +26,7 @@ const formatRelativeTime = (value) => {
   return new Intl.DateTimeFormat("en-NG", { day: "numeric", month: "short" }).format(date);
 };
 
-const initials = (name = "U") => name.trim().split(/\\s+/).slice(0, 2).map((part) => part[0] || "").join("").toUpperCase();
+const initials = (name = "U") => name.trim().split(/\s+/).slice(0, 2).map((part) => part[0] || "").join("").toUpperCase();
 
 const formatDate = (value) => {
   if (!value) return "";
@@ -52,7 +52,7 @@ const reportReasons = [
 export default function PostCard({
   post,
   currentUser,
-  onReact,
+  onReach,
   onComment,
   onEdit,
   onDelete,
