@@ -1,7 +1,12 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 
-const protect = (req, res, next) => {
+// A valid JWT proves who signed in previously, but it must not keep working
+// after that account has been deleted. Resolve the account on each protected
+// request and use its current role instead of trusting stale token claims.
+const protect = async (req, res, next) => {
+  let decoded;
+
   try {
     let token = req.headers.authorization;
 
@@ -15,19 +20,42 @@ const protect = (req, res, next) => {
       token = token.slice(7);
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
-    next();
+    decoded = jwt.verify(token, process.env.JWT_SECRET);
   } catch (error) {
-    res.status(401).json({
+    return res.status(401).json({
       message: "Invalid token — please login again",
     });
+  }
+
+  try {
+    const user = await User.findById(decoded.id).select("role");
+
+    if (!user) {
+      return res.status(401).json({
+        message: "User not found. Please login again.",
+      });
+    }
+
+    req.user = { ...decoded, role: user.role };
+    req.authUser = user;
+    return next();
+  } catch (error) {
+    if (error?.name === "CastError") {
+      return res.status(401).json({
+        message: "Invalid token — please login again",
+      });
+    }
+
+    return res.status(500).json({ message: "Server error" });
   }
 };
 
 const requireRole = (role) => async (req, res, next) => {
   try {
-    const user = await User.findById(req.user.id).select("role");
+    // protect() has already loaded the current account and role. Keep the
+    // fallback so requireRole also remains safe if reused independently.
+    const user =
+      req.authUser || (await User.findById(req.user.id).select("role"));
 
     if (!user) {
       return res.status(401).json({ message: "User not found" });
