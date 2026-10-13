@@ -22,6 +22,13 @@ const userSchema = new mongoose.Schema(
       minlength: 6,
     },
 
+    // Incremented when credentials change so previously issued JWTs stop working.
+    tokenVersion: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+
     phone: {
       type: String,
       required: true,
