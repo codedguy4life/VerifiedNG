@@ -1,13 +1,25 @@
 import { useCallback, useEffect, useState } from "react";
-import { ArrowRight, ArrowUpRight, Globe2, MapPin, Plus, RefreshCw, ShieldCheck, Sparkles, Users, BriefcaseBusiness, LogOut } from "lucide-react";
+import {
+  ArrowRight, Bell, Check, ChevronDown, Compass, Globe2, Heart,
+  Home, ImagePlus, MapPin, MessageCircle, MoreHorizontal, Search,
+  Send, ShieldCheck, ShoppingBag, Users, Video, X, LogOut, RefreshCw
+} from "lucide-react";
 import { api, getToken } from "./lib/api.js";
 import PostComposer from "./components/PostComposer.jsx";
 import PostCard from "./components/PostCard.jsx";
 
 const scopes = [
-  { id: "for-you", label: "For you", icon: Sparkles },
+  { id: "for-you", label: "For you", icon: Compass },
   { id: "nearby", label: "Near me", icon: MapPin },
   { id: "nigeria", label: "Across Nigeria", icon: Globe2 },
+];
+
+const tabs = [
+  { id: "home", label: "Home", icon: Home },
+  { id: "search", label: "Search", icon: Search },
+  { id: "providers", label: "Providers", icon: Users },
+  { id: "sale", label: "For Sale", icon: ShoppingBag },
+  { id: "faves", label: "Local Faves", icon: Heart },
 ];
 
 export default function App() {
@@ -16,6 +28,8 @@ export default function App() {
     try { return JSON.parse(localStorage.getItem("user") || "null"); } catch { return null; }
   });
   const [scope, setScope] = useState("for-you");
+  const [activeTab, setActiveTab] = useState("home");
+  const [area, setArea] = useState(() => localStorage.getItem("verifiedng-area") || "");
   const [posts, setPosts] = useState([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
@@ -43,7 +57,10 @@ export default function App() {
 
   useEffect(() => { loadFeed(); }, [loadFeed]);
   useEffect(() => {
-    const onStorage = () => { setToken(getToken()); try { setUser(JSON.parse(localStorage.getItem("user") || "null")); } catch { setUser(null); } };
+    const onStorage = () => {
+      setToken(getToken());
+      try { setUser(JSON.parse(localStorage.getItem("user") || "null")); } catch { setUser(null); }
+    };
     window.addEventListener("storage", onStorage);
     return () => window.removeEventListener("storage", onStorage);
   }, []);
@@ -58,7 +75,7 @@ export default function App() {
       } else await loadFeed();
       return true;
     } catch (cause) {
-      setError(cause.message);
+      setError(cause.message || "Could not publish your post.");
       return false;
     } finally { setPublishing(false); }
   }
@@ -97,9 +114,28 @@ export default function App() {
     } catch (cause) { setError(cause.message || "Could not sign in."); }
     finally { setLoginBusy(false); }
   }
-
   function signOut() {
-    localStorage.removeItem("token"); localStorage.removeItem("user"); setToken(null); setUser(null); setPosts([]);
+    localStorage.removeItem("token"); localStorage.removeItem("user");
+    setToken(null); setUser(null); setPosts([]);
+  }
+  function chooseArea() {
+    const nextArea = window.prompt("Which neighbourhood or area should VerifiedNG show?", area);
+    if (nextArea === null) return;
+    const cleanArea = nextArea.trim();
+    if (cleanArea) {
+      localStorage.setItem("verifiedng-area", cleanArea);
+      setArea(cleanArea);
+    } else {
+      localStorage.removeItem("verifiedng-area");
+      setArea("");
+    }
+  }
+  function chooseTab(id) {
+    setActiveTab(id);
+    if (id !== "home") {
+      const label = tabs.find((tab) => tab.id === id)?.label || "This section";
+      setMessage(`${label} is next on our build list. We're focusing on Home first.`);
+    } else setMessage("");
   }
 
   if (!token) return <main className="login-wall"><form className="login-card card" onSubmit={signIn}><div className="brand">Verified<span>NG</span></div><h1>Your community is waiting.</h1><p>Sign in with your existing VerifiedNG email or phone number.</p>{error && <div className="notice error-notice" role="alert">{error}</div>}<label className="login-label">Email or phone<input autoComplete="username" value={loginIdentifier} onChange={(event) => setLoginIdentifier(event.target.value)} required /></label><label className="login-label">Password<input type="password" autoComplete="current-password" value={loginPassword} onChange={(event) => setLoginPassword(event.target.value)} required /></label><button className="primary-button login-submit" disabled={loginBusy}>{loginBusy ? "Signing in…" : "Sign in"} <ArrowRight size={16} /></button><p className="muted small">Your existing account is used. This does not create a new account or change your role.</p><a className="muted small" href="https://codedguy4life.github.io/VerifiedNG/">Back to the existing website</a></form></main>;
@@ -107,32 +143,53 @@ export default function App() {
   const activeLabel = scopes.find((item) => item.id === scope)?.label || "For you";
   return <div className="app-shell">
     <header className="topbar">
-      <a className="brand" href="https://codedguy4life.github.io/VerifiedNG/">Verified<span>NG</span><small> COMMUNITY</small></a>
-      <nav className="top-nav"><a href="https://codedguy4life.github.io/VerifiedNG/search.html"><BriefcaseBusiness size={16} /><span>Find services</span></a><a href="https://codedguy4life.github.io/VerifiedNG/dashboard.html"><Users size={16} /><span>Dashboard</span></a><button type="button" onClick={signOut}><LogOut size={16} /><span>Sign out</span></button></nav>
+      <a className="brand" href="https://codedguy4life.github.io/VerifiedNG/" aria-label="VerifiedNG home">Verified<span>NG</span><small> YOUR COMMUNITY</small></a>
+      <div className="header-actions">
+        <button className="header-icon" type="button" aria-label="Messages" onClick={() => setMessage("Your chats inbox will be connected in a later step.")}><MessageCircle size={20} /><span className="notification-dot" /></button>
+        <button className="header-icon" type="button" aria-label="Notifications" onClick={() => setMessage("Your notifications will be connected in a later step.")}><Bell size={20} /></button>
+        <button className="profile-button" type="button" onClick={signOut} title="Sign out">
+          <span className="avatar">{user?.profilePhoto ? <img src={user.profilePhoto} alt="" /> : initials(user?.fullName)}</span>
+          <span className="profile-name">{user?.fullName || "Your account"}</span>
+          <LogOut size={15} />
+        </button>
+      </div>
     </header>
-    <main className="page-layout">
-      <aside className="left-rail">
-        <section className="welcome-panel"><span className="eyebrow">YOUR PEOPLE. YOUR PLACE.</span><h1>Good things happen when we connect.</h1><p>Ask questions, share opportunities and find trusted people across Nigeria.</p><a className="white-link" href="#composer"><Plus size={16} /> Start a conversation</a></section>
-        <section className="rail-card"><h2>Explore</h2>{scopes.map(({ id, label, icon: Icon }) => <button className={`scope-button ${scope === id ? "active" : ""}`} key={id} onClick={() => setScope(id)}><Icon size={17} /> {label}</button>)}<p className="privacy-note"><ShieldCheck size={15} /> Your exact address is never shown on posts.</p></section>
-      </aside>
+    <div className="location-strip">
+      <div className="location-details">
+        <span className="location-pin"><MapPin size={17} /></span>
+        <div><span className="location-caption">YOUR COMMUNITY</span><strong>{area || "Choose your neighbourhood"}</strong></div>
+        <button className={area ? "area-status active" : "area-status"} type="button" onClick={chooseArea}>{area ? <><Check size={13} /> Active here</> : "Set location"}</button>
+      </div>
+      <button className="change-area" type="button" onClick={chooseArea}>{area ? "Change" : "Choose area"} <ChevronDown size={14} /></button>
+    </div>
+    <main className="home-layout">
       <section className="feed-column">
-        <div className="feed-heading"><div><span className="eyebrow">VERIFIEDNG COMMUNITY</span><h2>{activeLabel}</h2></div><button className="icon-button" aria-label="Refresh feed" onClick={() => loadFeed()}><RefreshCw size={17} /></button></div>
+        <div className="feed-heading"><div><span className="eyebrow">LOCAL PEOPLE. REAL CONNECTIONS.</span><h1>Home</h1><p>What's happening around your community?</p></div><button className="icon-button" aria-label="Refresh feed" onClick={() => loadFeed()}><RefreshCw size={17} /></button></div>
+        <div className="scope-tabs" role="tablist" aria-label="Choose your feed">
+          {scopes.map(({ id, label, icon: Icon }) => <button type="button" role="tab" aria-selected={scope === id} className={scope === id ? "scope-tab active" : "scope-tab"} key={id} onClick={() => setScope(id)}><Icon size={15} />{label}</button>)}
+        </div>
         <PostComposer user={user} onPublish={publishPost} busy={publishing} />
-        {message && <div className="notice success-notice" role="status">{message}</div>}
+        {message && <div className="notice success-notice" role="status">{message}<button type="button" className="notice-close" aria-label="Dismiss message" onClick={() => setMessage("")}><X size={15} /></button></div>}
         {error && <div className="notice error-notice" role="alert">{error}<button type="button" onClick={() => setError("")}>Dismiss</button></div>}
-        <div className="feed-caption">{scope === "nearby" ? "Posts from your area, plus national conversations" : scope === "nigeria" ? "Conversations shared with people across Nigeria" : "Useful conversations from your community"}</div>
+        <div className="feed-caption">{scope === "nearby" ? "Posts from your area and nearby conversations" : scope === "nigeria" ? "Conversations shared across Nigeria" : "Conversations from your community"}</div>
         {loading && !posts.length && <div className="empty-state card">Loading your community…</div>}
         {!loading && error && !posts.length && <div className="empty-state card">We couldn't load the feed. Check your connection and try again.</div>}
-        {!loading && !error && !posts.length && <div className="empty-state card"><div className="empty-icon"><Users size={22} /></div><h3>Be part of the first conversation.</h3><p>There aren't any posts in this feed yet. Share something helpful to get things started.</p></div>}
+        {!loading && !error && !posts.length && <div className="empty-state card"><div className="empty-icon"><Users size={22} /></div><h3>Your community starts here.</h3><p>Ask a question, share something useful or help a neighbour find what they need.</p></div>}
         <div className="posts-list">{posts.map((post) => <PostCard key={post._id} post={post} currentUser={user} onReact={reactToPost} onComment={addComment} onEdit={editPost} onDelete={deletePost} onReport={reportPost} />)}</div>
         {hasMore && <button className="load-more" type="button" disabled={loading} onClick={() => loadFeed({ append: true, requestedPage: page + 1 })}>{loading ? "Loading…" : "Load more posts"}</button>}
         {loading && posts.length > 0 && <p className="muted small centered">Refreshing feed…</p>}
       </section>
-      <aside className="right-rail">
-        <section className="rail-card trust-card"><div className="trust-icon"><ShieldCheck size={22} /></div><h2>Community with trust at its core</h2><p>Be respectful. Verify opportunities. Never share passwords, verification codes or sensitive banking details.</p><a href="https://codedguy4life.github.io/VerifiedNG/safety.html">Community safety tips <ArrowUpRight size={14} /></a></section>
-        <section className="rail-card"><span className="eyebrow">WHAT BELONGS HERE?</span><h2>Useful beats viral.</h2><ul className="ideas-list"><li>Jobs and opportunities</li><li>Local questions and advice</li><li>Trusted service recommendations</li><li>Updates that help your community</li></ul></section>
+      <aside className="home-side">
+        <section className="side-card community-tip"><div className="side-card-icon"><ShieldCheck size={20} /></div><h2>A community built on trust</h2><p>Share useful information, treat neighbours with respect, and report suspicious posts.</p><a href="https://codedguy4life.github.io/VerifiedNG/safety.html">Read our safety tips <ArrowRight size={14} /></a></section>
+        <section className="side-card"><span className="eyebrow">A GOOD PLACE TO START</span><h2>What can you share?</h2><ul><li>Ask your neighbours for advice</li><li>Recommend a trusted provider</li><li>Share local news or opportunities</li><li>Help someone find what they need</li></ul></section>
       </aside>
     </main>
-    <footer className="app-footer">VerifiedNG · Connecting communities, building trust.</footer>
+    <nav className="bottom-nav" aria-label="Main navigation">
+      {tabs.map(({ id, label, icon: Icon }) => <button type="button" key={id} className={activeTab === id ? "bottom-tab active" : "bottom-tab"} aria-current={activeTab === id ? "page" : undefined} onClick={() => chooseTab(id)}><Icon size={21} strokeWidth={activeTab === id ? 2.4 : 1.8} /><span>{label}</span></button>)}
+    </nav>
   </div>;
+}
+
+function initials(name = "V") {
+  return name.trim().split(/\s+/).slice(0, 2).map((part) => part[0] || "").join("").toUpperCase();
 }
