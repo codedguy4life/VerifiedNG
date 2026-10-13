@@ -4,7 +4,7 @@ import {
   ChevronDown, CircleHelp, Compass, Globe2, Heart, Home, MapPin,
   MessageCircle, Newspaper, Search, Settings, ShieldCheck, ShoppingBag,
   Users, UserCog, UserPlus, UserRound, X, LogOut, RefreshCw, ShieldAlert,
-  Activity, Clock3
+  Activity
 } from "lucide-react";
 import { api, getToken } from "./lib/api.js";
 import PostComposer from "./components/PostComposer.jsx";
@@ -181,7 +181,6 @@ export default function App() {
 
   if (!token) return <main className="login-wall"><form className="login-card card" onSubmit={signIn}><div className="brand">Verified<span>NG</span></div><h1>Your community is waiting.</h1><p>Sign in with your existing VerifiedNG email or phone number.</p>{error && <div className="notice error-notice" role="alert">{error}</div>}<label className="login-label">Email or phone<input autoComplete="username" value={loginIdentifier} onChange={(event) => setLoginIdentifier(event.target.value)} required /></label><label className="login-label">Password<input type="password" autoComplete="current-password" value={loginPassword} onChange={(event) => setLoginPassword(event.target.value)} required /></label><button className="primary-button login-submit" disabled={loginBusy}>{loginBusy ? "Signing in…" : "Sign in"} <ArrowRight size={16} /></button><p className="muted small">Your existing account is used. This does not create a new account or change your role.</p><a className="muted small" href="https://codedguy4life.github.io/VerifiedNG/">Back to the existing website</a></form></main>;
 
-  const activeLabel = scopes.find((item) => item.id === scope)?.label || "For you";
   return <div className="app-shell">
     <header className="topbar">
       <a className="brand" href="https://codedguy4life.github.io/VerifiedNG/" aria-label="VerifiedNG home">Verified<span>NG</span><small> YOUR COMMUNITY</small></a>
@@ -271,11 +270,11 @@ export default function App() {
             <button type="button" onClick={() => openProfileItem("Local news")}><Newspaper size={18} /><span>Local news</span></button>
             <button type="button" onClick={() => openProfileItem("Events")}><CalendarDays size={18} /><span>Events</span></button>
             <button type="button" onClick={() => openProfileItem("Groups")}><Users size={18} /><span>Groups</span></button>
-            <button type="button" onClick={() => openProfileItem("Invite neighbours")}><UserPlus size={18} /><span>Invite neighbours</span></button>
             <button type="button" onClick={() => openProfileItem("Saved posts")}><Bookmark size={18} /><span>Saved posts</span></button>
             <button type="button" onClick={openNotifications}><Bell size={18} /><span>Notifications</span></button>
           </div>
           <div className="drawer-bottom-links">
+            <button type="button" onClick={() => openProfileItem("Invite neighbours")}><UserPlus size={17} /><span>Invite neighbours</span></button>
             <button type="button" onClick={() => openProfileItem("Settings")}><Settings size={17} /><span>Settings</span></button>
             <button type="button" onClick={() => openProfileItem("Help centre")}><CircleHelp size={17} /><span>Help centre</span></button>
             <button type="button" onClick={() => openProfileItem("Safety and trust")}><ShieldCheck size={17} /><span>Safety and trust</span></button>
