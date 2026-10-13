@@ -10,6 +10,7 @@ const buildAuthToken = (user) =>
       id: user._id,
       email: user.email,
       role: user.role,
+      tokenVersion: user.tokenVersion || 0,
     },
     process.env.JWT_SECRET,
     { expiresIn: "7d" },
@@ -315,9 +316,12 @@ const resetPassword = async (req, res) => {
     const hashedPassword = await bcrypt.hash(newPassword, salt);
 
     await User.findByIdAndUpdate(user._id, {
-      password: hashedPassword,
-      resetToken: null,
-      resetTokenExpiry: null,
+      $set: {
+        password: hashedPassword,
+        resetToken: null,
+        resetTokenExpiry: null,
+      },
+      $inc: { tokenVersion: 1 },
     });
 
     res.status(200).json({
