@@ -165,7 +165,7 @@ export default function PostCard({
             <span className="post-meta-separator" aria-hidden="true">·</span>
             <span className="post-meta-chip post-audience-chip">
               {post.audience === "local" ? <MapPin size={11} /> : <Globe2 size={11} />}
-              {post.audience === "local" ? (post.location?.neighborhood || post.location?.area || "My neighbourhood") : "Worldwide"}
+              {post.audience === "local" ? (post.location?.neighborhood || post.location?.area || "My neighbourhood") : "Across Nigeria"}
             </span>
           </div>
         </div>
@@ -234,13 +234,6 @@ export default function PostCard({
             <img src={post.imageUrl || post.media?.url || post.mediaUrl} alt="Post attachment" loading="lazy" />
           )}
         </div>
-      )}
-
-      {(post.location?.city || post.location?.state) && (
-        <p className="post-location">
-          <MapPin size={13} />
-          {[post.location.city, post.location.state].filter(Boolean).join(", ")}
-        </p>
       )}
 
       <div className="post-stats">
