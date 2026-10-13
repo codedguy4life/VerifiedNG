@@ -164,7 +164,6 @@ export default function App() {
     </div>
     <main className="home-layout">
       <section className="feed-column">
-        <div className="feed-heading"><div><span className="eyebrow">LOCAL PEOPLE. REAL CONNECTIONS.</span><h1>Home</h1><p>What's happening around your community?</p></div><button className="icon-button" aria-label="Refresh feed" onClick={() => loadFeed()}><RefreshCw size={17} /></button></div>
         <div className="scope-tabs" role="tablist" aria-label="Choose your feed">
           {scopes.map(({ id, label, icon: Icon }) => <button type="button" role="tab" aria-selected={scope === id} className={scope === id ? "scope-tab active" : "scope-tab"} key={id} onClick={() => setScope(id)}><Icon size={15} />{label}</button>)}
         </div>
@@ -175,7 +174,7 @@ export default function App() {
         {loading && !posts.length && <div className="empty-state card">Loading your community…</div>}
         {!loading && error && !posts.length && <div className="empty-state card">We couldn't load the feed. Check your connection and try again.</div>}
         {!loading && !error && !posts.length && <div className="empty-state card"><div className="empty-icon"><Users size={22} /></div><h3>Your community starts here.</h3><p>Ask a question, share something useful or help a neighbour find what they need.</p></div>}
-        <div className="posts-list">{posts.map((post) => <PostCard key={post._id} post={post} currentUser={user} onReact={reactToPost} onComment={addComment} onEdit={editPost} onDelete={deletePost} onReport={reportPost} />)}</div>
+        <div className="posts-list">{posts.map((post) => <PostCard key={post._id} post={post} currentUser={user} onReach={reactToPost} onComment={addComment} onEdit={editPost} onDelete={deletePost} onReport={reportPost} />)}</div>
         {hasMore && <button className="load-more" type="button" disabled={loading} onClick={() => loadFeed({ append: true, requestedPage: page + 1 })}>{loading ? "Loading…" : "Load more posts"}</button>}
         {loading && posts.length > 0 && <p className="muted small centered">Refreshing feed…</p>}
       </section>
