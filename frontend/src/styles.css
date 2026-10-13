@@ -9,3 +9,79 @@
 @media(min-width:901px){.home-layout{padding-bottom:30px}}
 
 .post-media{width:100%;margin:10px 0 14px;border-radius:12px;overflow:hidden;background:#eef2ef;max-height:560px}.post-media img,.post-media video{display:block;width:100%;max-height:560px;object-fit:contain;background:#eef2ef}
+
+
+/* Compact, one-line community composer and tighter feed */
+.home-layout{max-width:940px;grid-template-columns:minmax(0,620px) 240px;gap:20px;margin-top:14px}
+.feed-column{min-width:0;width:100%;max-width:620px}
+.feed-caption{padding-top:1px;padding-bottom:8px}
+.scope-tabs{margin-bottom:10px}
+.composer{padding:11px 13px;margin-bottom:12px;border-radius:14px}
+.composer-inline{display:flex;align-items:center;gap:10px;min-width:0}
+.composer-avatar{width:36px;height:36px;flex:0 0 36px;font-size:12px}
+.composer-prompt{min-width:0;flex:1;text-align:left;border:0;border-radius:999px;background:#f3f7f4;color:#7a867e;padding:11px 14px;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.composer-prompt:hover{background:#eaf6ef;color:var(--green-dark)}
+.composer-inline textarea{min-width:0;flex:1;min-height:118px;resize:vertical;border:1px solid var(--line);border-radius:12px;padding:12px;background:#fbfdfb;font-size:13px;line-height:1.6;outline:none}
+.composer-inline textarea:focus{border-color:#65b38a;box-shadow:0 0 0 3px #eaf6ef}
+.composer-settings{flex:0 0 36px;width:36px;height:36px;display:grid;place-items:center;border:1px solid var(--line);border-radius:50%;background:#fff;color:#627168}
+.composer-settings:hover,.composer-settings.active{background:var(--green-pale);color:var(--green);border-color:#cfe7d8}
+.composer-toolbar{display:flex;align-items:center;gap:8px;margin:9px 0 0 46px;padding-top:8px;border-top:1px solid #edf1ee;min-width:0}
+.composer-media-actions{display:flex;align-items:center;gap:5px}
+.composer-toolbar .media-option{border:0;background:transparent;padding:6px 8px;border-radius:8px}
+.composer-toolbar .media-option:hover{background:var(--green-pale)}
+.composer-toolbar .media-option span{font-size:10px}
+.composer-toolbar .character-count{margin-left:auto;white-space:nowrap}
+.composer-cancel{display:grid;place-items:center;width:30px;height:30px;border:0;border-radius:8px;background:transparent;color:var(--muted)}
+.composer-cancel:hover{background:#f2f5f3}
+.composer-submit{padding:8px 12px;white-space:nowrap}
+.composer-settings-panel{display:flex;align-items:center;gap:8px;margin:10px 0 0 46px;padding-top:10px;border-top:1px solid #edf1ee;flex-wrap:wrap}
+.composer-settings-panel .select-field{padding:7px 9px}
+.composer-settings-panel .select-field select{max-width:170px}
+.composer .media-notice{margin:8px 0 0 46px}
+.post-card{padding:15px 16px}
+.post-header{align-items:center;gap:9px}
+.post-avatar{width:37px;height:37px;flex-basis:37px;font-size:12px}
+.post-author-name{font-size:12px;line-height:1.3}
+.post-meta{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-top:5px;min-width:0}
+.post-meta-chip{display:inline-flex;align-items:center;gap:4px;min-width:0;border:1px solid #e6ece8;background:#fbfcfb;color:#66746b;border-radius:999px;padding:3px 7px;font-size:9px;line-height:1.25;white-space:nowrap}
+.post-location-chip{color:#53685b;background:#f6f9f7}
+.post-time-chip{background:#fff}
+.post-audience-chip{color:var(--green-dark);background:var(--green-pale);border-color:#d9ebdf}
+.post-meta-separator{font-size:10px;color:#a0aaa3}
+.post-labels{margin:9px 0 6px}
+.post-category{padding:4px 8px}
+.post-text{font-size:12px;line-height:1.65;margin-bottom:10px}
+.post-stats{padding:8px 0}
+.post-actions{padding-top:6px}
+.posts-list{gap:10px}
+@media(max-width:900px){.home-layout{max-width:660px;grid-template-columns:minmax(0,1fr);padding-left:14px;padding-right:14px}.feed-column{max-width:100%}}
+@media(max-width:600px){
+  .home-layout{padding:0 10px;margin-top:12px;margin-bottom:94px}
+  .scope-tabs{gap:6px;margin-bottom:8px}
+  .scope-tab{padding:8px 10px;font-size:10px}
+  .composer{padding:9px 10px}
+  .composer-inline{gap:7px}
+  .composer-avatar{width:34px;height:34px;flex-basis:34px}
+  .composer-prompt{padding:10px 12px;font-size:11px}
+  .composer-settings{width:33px;height:33px;flex-basis:33px}
+  .composer-toolbar{margin-left:41px;gap:3px}
+  .composer-toolbar .media-option{padding:6px}
+  .composer-toolbar .media-option span{display:none}
+  .composer-toolbar .media-option svg{width:19px;height:19px}
+  .composer-submit{padding:8px 10px;font-size:10px}
+  .composer-inline textarea{min-height:105px;padding:10px;font-size:12px}
+  .composer-settings-panel,.composer .media-notice{margin-left:41px}
+  .composer-settings-panel{gap:6px}
+  .composer-settings-panel .select-field{flex:1;min-width:0}
+  .composer-settings-panel .select-field select{max-width:100%;min-width:0;font-size:10px}
+  .post-card{padding:12px}
+  .post-header{gap:8px}
+  .post-avatar{width:34px;height:34px;flex-basis:34px}
+  .post-author-name{font-size:11px}
+  .post-meta{gap:3px;margin-top:4px}
+  .post-meta-chip{font-size:8px;padding:3px 5px;gap:3px}
+  .post-meta-chip svg{width:10px;height:10px}
+  .post-meta-separator{font-size:9px}
+  .post-menu-wrap .icon-button{width:29px;height:29px}
+  .post-text{font-size:12px;line-height:1.6}
+}
