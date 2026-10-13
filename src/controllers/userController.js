@@ -93,6 +93,12 @@ const updateProfile = async (req, res) => {
       }
     }
 
+    if (Object.keys(updateData).length === 0) {
+      return res.status(400).json({
+        message: "No supported profile fields were provided",
+      });
+    }
+
     const updatedUser = await User.findByIdAndUpdate(req.user.id, updateData, {
       new: true,
       runValidators: true,
