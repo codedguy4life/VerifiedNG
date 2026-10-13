@@ -8,6 +8,15 @@
 }
 
 :root {
+  --font-body: "Inter", sans-serif;
+  --font-heading: "Manrope", sans-serif;
+  --text-xs: 0.6875rem;
+  --text-sm: 0.8125rem;
+  --text-base: 0.9375rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.375rem;
+  --text-2xl: 1.75rem;
+  --line-body: 1.65;
   --green: #00b85e;
   --green-dark: #007a3d;
   --green-light: #e6f9ee;
@@ -45,7 +54,8 @@ html {
 }
 
 body {
-  font-family: "Inter", sans-serif;
+  font-family: var(--font-body);
+  line-height: var(--line-body);
   background: var(--light);
   color: var(--dark);
   overflow-x: hidden;
@@ -55,8 +65,9 @@ h1,
 h2,
 h3,
 h4,
-h5 {
-  font-family: "Manrope", sans-serif;
+h5,
+h6 {
+  font-family: var(--font-heading);
 }
 
 /* ─── SCROLLBAR ─── */
