@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import {
   ArrowRight, Bell, Check, ChevronDown, Compass, Globe2, Heart,
-  Home, ImagePlus, MapPin, MessageCircle, MoreHorizontal, Search,
-  Send, ShieldCheck, ShoppingBag, Users, Video, X, LogOut, RefreshCw
+  Home, MapPin, MessageCircle, Search, ShieldCheck, ShoppingBag,
+  Users, X, LogOut, RefreshCw
 } from "lucide-react";
 import { api, getToken } from "./lib/api.js";
 import PostComposer from "./components/PostComposer.jsx";
@@ -55,7 +55,7 @@ export default function App() {
     } finally { setLoading(false); }
   }, [scope]);
 
-  useEffect(() => { loadFeed(); }, [loadFeed]);
+  useEffect(() => { if (token) loadFeed(); }, [loadFeed, token]);
   useEffect(() => {
     const onStorage = () => {
       setToken(getToken());
