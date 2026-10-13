@@ -22,7 +22,7 @@
 html { scroll-behavior: smooth; }
 
 body {
-  font-family: "DM Sans", sans-serif;
+  font-family: "Inter", sans-serif;
   background: var(--light);
   color: var(--dark);
   min-height: 100vh;
@@ -31,7 +31,7 @@ body {
 }
 
 h1, h2, h3, h4, h5 {
-  font-family: "Syne", sans-serif;
+  font-family: "Manrope", sans-serif;
 }
 
 /* ─── NAV ─── */
@@ -49,7 +49,7 @@ nav {
 }
 
 .logo {
-  font-family: "Syne", sans-serif;
+  font-family: "Manrope", sans-serif;
   font-size: 22px;
   font-weight: 800;
   color: var(--dark);
@@ -97,7 +97,7 @@ nav {
 }
 
 .panel-logo {
-  font-family: "Syne", sans-serif;
+  font-family: "Manrope", sans-serif;
   font-size: 24px;
   font-weight: 800;
   color: white;
@@ -273,13 +273,13 @@ nav {
   font-weight: 700;
   color: var(--dark);
   display: block;
-  font-family: "DM Sans", sans-serif;
+  font-family: "Inter", sans-serif;
 }
 .type-sub {
   font-size: 12px;
   color: var(--mid);
   display: block;
-  font-family: "DM Sans", sans-serif;
+  font-family: "Inter", sans-serif;
 }
 .type-btn.active {
   border-color: var(--green);
@@ -309,7 +309,7 @@ nav {
   border: 1.5px solid var(--border);
   border-radius: 10px;
   font-size: 14px;
-  font-family: "DM Sans", sans-serif;
+  font-family: "Inter", sans-serif;
   color: var(--dark);
   outline: none;
   transition: all 0.2s;
@@ -376,7 +376,7 @@ nav {
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
-  font-family: "DM Sans", sans-serif;
+  font-family: "Inter", sans-serif;
   transition: all 0.25s;
 }
 .login-btn:hover {
@@ -434,7 +434,7 @@ nav {
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  font-family: "DM Sans", sans-serif;
+  font-family: "Inter", sans-serif;
   color: var(--dark);
   transition: all 0.2s;
 }
