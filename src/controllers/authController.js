@@ -300,7 +300,7 @@ const resetPassword = async (req, res) => {
       .digest("hex");
 
     const user = await User.findOne({
-      email: decodeURIComponent(email).trim().toLowerCase(),
+      email: email.trim().toLowerCase(),
       resetToken: tokenHash,
       resetTokenExpiry: { $gt: new Date() },
     });
