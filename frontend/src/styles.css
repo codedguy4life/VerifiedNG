@@ -159,3 +159,25 @@
  .notifications-page{width:calc(100% - 26px);margin:20px auto 110px;min-height:calc(100vh - 190px)}.notifications-header{gap:9px;margin-bottom:18px;align-items:flex-start}.notifications-header h1{font-size:22px}.notifications-header p{font-size:11px}.back-button{padding:9px 10px;font-size:11px}.notification-settings{width:36px;height:36px;flex-basis:36px}.notification-filters{gap:5px;margin-bottom:13px}.notification-filter{flex-direction:column;gap:5px;padding:10px 3px;font-size:10px;border-radius:10px}.notification-filter svg{width:18px;height:18px}.notification-empty{min-height:300px;padding:28px 20px}.notification-empty h2{font-size:17px}.notification-empty p{font-size:12px}
  .profile-drawer{padding:18px 15px calc(18px + env(safe-area-inset-bottom))}.drawer-primary-links button,.drawer-link-list button,.drawer-bottom-links button{padding:12px 10px}
 }
+
+
+/* Final navigation polish: clean notifications header and menu icon */
+.topbar.notifications-topbar,.location-strip.notifications-location-strip{display:none}
+.profile-menu-button{width:42px;height:42px;display:grid;place-items:center;border:1px solid var(--line);border-radius:12px;background:#fff;color:#435249}
+.profile-menu-button:hover{background:var(--green-pale);color:var(--green)}
+.notifications-page{margin-top:20px}
+.notification-filters{gap:7px;margin-bottom:14px}
+.notification-filter{border-radius:10px;padding:11px 8px}
+.profile-drawer{padding-top:18px}
+.drawer-primary-links{gap:5px;padding:13px 0}
+.drawer-link-list{gap:0;padding:13px 0}
+.drawer-primary-links button,.drawer-link-list button,.drawer-bottom-links button{padding:9px 10px;min-height:39px}
+.drawer-bottom-links{gap:0;padding-top:11px}
+.drawer-primary-links,.drawer-link-list,.drawer-bottom-links{border-color:var(--line)}
+@media(max-width:600px){
+ .profile-menu-button{width:36px;height:36px;border-radius:10px}
+ .notifications-page{margin-top:12px;width:calc(100% - 24px)}
+ .notifications-header{margin-bottom:14px}
+ .notification-filters{gap:5px;margin-bottom:11px}
+ .notification-filter{padding:9px 2px}
+}
