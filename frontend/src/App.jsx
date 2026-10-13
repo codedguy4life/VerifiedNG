@@ -4,7 +4,7 @@ import {
   ChevronDown, CircleHelp, Compass, Globe2, Heart, Home, MapPin,
   MessageCircle, Newspaper, Search, Settings, ShieldCheck, ShoppingBag,
   Users, UserCog, UserPlus, UserRound, X, LogOut, RefreshCw, ShieldAlert,
-  Activity
+  Activity, Menu
 } from "lucide-react";
 import { api, getToken } from "./lib/api.js";
 import PostComposer from "./components/PostComposer.jsx";
@@ -182,19 +182,17 @@ export default function App() {
   if (!token) return <main className="login-wall"><form className="login-card card" onSubmit={signIn}><div className="brand">Verified<span>NG</span></div><h1>Your community is waiting.</h1><p>Sign in with your existing VerifiedNG email or phone number.</p>{error && <div className="notice error-notice" role="alert">{error}</div>}<label className="login-label">Email or phone<input autoComplete="username" value={loginIdentifier} onChange={(event) => setLoginIdentifier(event.target.value)} required /></label><label className="login-label">Password<input type="password" autoComplete="current-password" value={loginPassword} onChange={(event) => setLoginPassword(event.target.value)} required /></label><button className="primary-button login-submit" disabled={loginBusy}>{loginBusy ? "Signing in…" : "Sign in"} <ArrowRight size={16} /></button><p className="muted small">Your existing account is used. This does not create a new account or change your role.</p><a className="muted small" href="https://codedguy4life.github.io/VerifiedNG/">Back to the existing website</a></form></main>;
 
   return <div className="app-shell">
-    <header className="topbar">
+    <header className={currentView === "notifications" ? "topbar notifications-topbar" : "topbar"}>
       <a className="brand" href="https://codedguy4life.github.io/VerifiedNG/" aria-label="VerifiedNG home">Verified<span>NG</span><small> YOUR COMMUNITY</small></a>
       <div className="header-actions">
         <button className="header-icon" type="button" aria-label="Messages" onClick={() => setMessage("Your chats inbox is on the build list.")}><MessageCircle size={20} /><span className="notification-dot" /></button>
         <button className="header-icon" type="button" aria-label="Notifications" onClick={openNotifications}><Bell size={20} /></button>
-        <button className="profile-button" type="button" onClick={() => setProfileDrawerOpen(true)} aria-label="Open profile menu" title="Profile and menu">
-          <span className="avatar">{user?.profilePhoto ? <img src={user.profilePhoto} alt="" /> : initials(user?.fullName)}</span>
-          <span className="profile-name">{user?.fullName || "Your account"}</span>
-          <ChevronDown size={15} />
+        <button className="profile-menu-button" type="button" onClick={() => setProfileDrawerOpen(true)} aria-label="Open options menu" title="Options">
+          <Menu size={23} strokeWidth={2} />
         </button>
       </div>
     </header>
-    <div className="location-strip">
+    <div className={currentView === "notifications" ? "location-strip notifications-location-strip" : "location-strip"}>
       <div className="location-details">
         <span className="location-pin"><MapPin size={17} /></span>
         <div><span className="location-caption">YOUR COMMUNITY</span><strong>{area || "Choose your neighbourhood"}</strong></div>
