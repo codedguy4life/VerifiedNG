@@ -154,13 +154,19 @@ export default function PostCard({
           </div>
 
           <div className="post-meta">
-            <span>{formatRelativeTime(post.createdAt)}</span>
-            {author.role && (
-              <>
-                <span aria-hidden="true">·</span>
-                <span>{author.role}</span>
-              </>
+            {(post.location?.city || post.location?.state || post.location?.neighborhood || post.location?.area) && (
+              <span className="post-meta-chip post-location-chip">
+                <MapPin size={11} />
+                {[post.location?.neighborhood || post.location?.area || post.location?.city, post.location?.state].filter(Boolean).join(", ")}
+              </span>
             )}
+            <span className="post-meta-separator" aria-hidden="true">·</span>
+            <span className="post-meta-chip post-time-chip">{formatRelativeTime(post.createdAt)}</span>
+            <span className="post-meta-separator" aria-hidden="true">·</span>
+            <span className="post-meta-chip post-audience-chip">
+              {post.audience === "local" ? <MapPin size={11} /> : <Globe2 size={11} />}
+              {post.audience === "local" ? (post.location?.neighborhood || post.location?.area || "My neighbourhood") : "Worldwide"}
+            </span>
           </div>
         </div>
 
@@ -216,20 +222,7 @@ export default function PostCard({
         </div>
       </header>
 
-      <div className="post-labels">
-        {post.category && (
-          <span className="post-category">{post.category}</span>
-        )}
-
-        <span className="post-audience">
-          {post.audience === "local" ? (
-            <MapPin size={13} />
-          ) : (
-            <Globe2 size={13} />
-          )}
-          {post.audience === "local" ? "Local" : "Across Nigeria"}
-        </span>
-      </div>
+      {post.category && <div className="post-labels"><span className="post-category">{post.category}</span></div>}
 
       <p className="post-text">{post.text}</p>
 
