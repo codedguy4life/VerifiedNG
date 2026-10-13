@@ -1,7 +1,40 @@
-// PROTECTED — redirects to login if not logged in
-const user = checkAuth();
+// PROTECTED — validate the signed-in account with the backend before choosing a role view.
+async function initializeDashboard() {
+  const cachedUser = checkAuth();
+  if (!cachedUser) return;
 
-if (user) {
+  const token = localStorage.getItem("token");
+  let user;
+
+  try {
+    const response = await fetch(`${API_URL}/api/user/profile`, {
+      headers: { authorization: `Bearer ${token}` },
+    });
+
+    if (response.status === 401) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      window.location.href = "login.html";
+      return;
+    }
+
+    const data = await response.json();
+    if (!response.ok || !data.user) {
+      throw new Error(data.message || "Could not verify your account.");
+    }
+
+    // Server-returned fields override anything a user edits in localStorage.
+    user = { ...cachedUser, ...data.user };
+    localStorage.setItem("user", JSON.stringify(user));
+  } catch (error) {
+    const notice = document.createElement("p");
+    notice.textContent = "We couldn't verify your account right now. Please refresh and try again.";
+    notice.style.cssText = "max-width:760px;margin:24px auto;padding:16px;color:#8a2b2b;background:#fff0f0;border-radius:8px;";
+    document.body.prepend(notice);
+    return;
+  }
+
+  if (user) {
   // ─── FILL USER INFO ───
   document.getElementById("firstName").textContent =
     user.fullName.split(" ")[0];
@@ -176,7 +209,10 @@ if (user) {
 
   document.getElementById("totalLoginsText").textContent =
     `Total logins: ${user.loginCount || 1}`;
+  }
 }
+
+initializeDashboard();
 
 function createHireRequestCard(request) {
   const card = document.createElement("div");
