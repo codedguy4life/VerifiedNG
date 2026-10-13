@@ -72,6 +72,7 @@ async function handleLogin(event) {
   button.disabled = true;
   button.textContent = "Logging In...";
   button.classList.add("loading");
+  let loginSucceeded = false;
 
   try {
     const response = await fetch(`${API_URL}/api/auth/login`, {
@@ -88,12 +89,13 @@ async function handleLogin(event) {
 
     localStorage.setItem("token", data.token);
     localStorage.setItem("user", JSON.stringify(data.user));
+    loginSucceeded = true;
     button.textContent = "Logged In!";
     window.location.href = "index.html";
   } catch (error) {
     showError("loginIdentifier", "identifierError", "Connection failed. Please try again.");
   } finally {
-    if (!localStorage.getItem("token")) {
+    if (!loginSucceeded) {
       button.disabled = false;
       button.textContent = "Log In";
       button.classList.remove("loading");
