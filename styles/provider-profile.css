@@ -28,7 +28,7 @@ html {
 }
 
 body {
-  font-family: "DM Sans", sans-serif;
+  font-family: "Inter", sans-serif;
   background: var(--light);
   color: var(--dark);
   overflow-x: hidden;
@@ -39,7 +39,7 @@ h2,
 h3,
 h4,
 h5 {
-  font-family: "Syne", sans-serif;
+  font-family: "Manrope", sans-serif;
 }
 
 ::-webkit-scrollbar {
@@ -70,7 +70,7 @@ nav {
 }
 
 .logo {
-  font-family: "Syne", sans-serif;
+  font-family: "Manrope", sans-serif;
   font-size: 22px;
   font-weight: 800;
   color: var(--dark);
@@ -106,7 +106,7 @@ nav {
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  font-family: "DM Sans", sans-serif;
+  font-family: "Inter", sans-serif;
   transition: all 0.2s;
 }
 .btn-ghost:hover {
@@ -123,7 +123,7 @@ nav {
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  font-family: "DM Sans", sans-serif;
+  font-family: "Inter", sans-serif;
   transition: all 0.2s;
 }
 .btn-primary:hover {
@@ -294,7 +294,7 @@ nav {
   font-size: 22px;
   font-weight: 800;
   color: white;
-  font-family: "Syne", sans-serif;
+  font-family: "Manrope", sans-serif;
 }
 
 .rating-count {
@@ -357,7 +357,7 @@ nav {
   font-size: 28px;
   font-weight: 800;
   color: white;
-  font-family: "Syne", sans-serif;
+  font-family: "Manrope", sans-serif;
 }
 .hire-price .per {
   font-size: 13px;
@@ -374,7 +374,7 @@ nav {
   font-size: 15px;
   font-weight: 700;
   cursor: pointer;
-  font-family: "DM Sans", sans-serif;
+  font-family: "Inter", sans-serif;
   transition: all 0.2s;
   margin-bottom: 10px;
 }
@@ -394,7 +394,7 @@ nav {
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  font-family: "DM Sans", sans-serif;
+  font-family: "Inter", sans-serif;
   transition: all 0.2s;
 }
 .msg-btn:hover {
@@ -426,7 +426,7 @@ nav {
   font-size: 26px;
   font-weight: 800;
   color: var(--dark);
-  font-family: "Syne", sans-serif;
+  font-family: "Manrope", sans-serif;
   margin-bottom: 4px;
 }
 
@@ -615,7 +615,7 @@ nav {
 .big-rating {
   font-size: 44px;
   font-weight: 800;
-  font-family: "Syne", sans-serif;
+  font-family: "Manrope", sans-serif;
   color: var(--dark);
   line-height: 1;
 }
@@ -755,7 +755,7 @@ nav {
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  font-family: "DM Sans", sans-serif;
+  font-family: "Inter", sans-serif;
   color: var(--dark);
   transition: all 0.2s;
   margin-top: 16px;
@@ -800,7 +800,7 @@ nav {
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
-  font-family: "DM Sans", sans-serif;
+  font-family: "Inter", sans-serif;
   transition: all 0.2s;
   margin-bottom: 10px;
 }
@@ -820,7 +820,7 @@ nav {
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  font-family: "DM Sans", sans-serif;
+  font-family: "Inter", sans-serif;
   transition: all 0.2s;
   margin-bottom: 16px;
 }
@@ -881,7 +881,7 @@ nav {
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  font-family: "DM Sans", sans-serif;
+  font-family: "Inter", sans-serif;
   color: var(--mid);
   transition: all 0.2s;
   text-align: center;
@@ -1030,7 +1030,7 @@ nav {
   border: 1.5px solid var(--border);
   border-radius: 10px;
   font-size: 14px;
-  font-family: "DM Sans", sans-serif;
+  font-family: "Inter", sans-serif;
   color: var(--dark);
   outline: none;
   transition: border-color 0.2s;
@@ -1058,7 +1058,7 @@ nav {
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
-  font-family: "DM Sans", sans-serif;
+  font-family: "Inter", sans-serif;
   transition: all 0.2s;
   margin-top: 8px;
 }
