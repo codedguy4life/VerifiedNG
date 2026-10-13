@@ -1,4 +1,5 @@
-// ─── LOGIN VALIDATION ───
+// Login form behaviour for login.html.
+// Keep these functions at top level because the HTML calls them with onclick.
 
 function showError(inputId, errorId, message) {
   const input = document.getElementById(inputId);
@@ -17,6 +18,7 @@ function showSuccess(inputId, errorId) {
   input.classList.remove("error");
   input.classList.add("success");
   error.classList.remove("show");
+  error.textContent = "";
 }
 
 function clearError(inputId, errorId) {
@@ -25,6 +27,7 @@ function clearError(inputId, errorId) {
   if (!input || !error) return;
   input.classList.remove("error", "success");
   error.classList.remove("show");
+  error.textContent = "";
 }
 
 function validateEmail(email) {
@@ -35,159 +38,138 @@ function validatePhone(phone) {
   return /^0[7-9][0-1]\d{8}$/.test(phone);
 }
 
-function handleLogin(e) {
-  e.preventDefault();
+async function handleLogin(event) {
+  event.preventDefault();
 
-  let isValid = true;
-
-  // ─── Email or Phone ───
   const identifier = document.getElementById("loginIdentifier").value.trim();
+  const password = document.getElementById("passwordInput").value;
+  let valid = true;
+
   if (!identifier) {
-    showError(
-      "loginIdentifier",
-      "identifierError",
-      "Please enter your email or phone number",
-    );
-    isValid = false;
+    showError("loginIdentifier", "identifierError", "Please enter your email or phone number");
+    valid = false;
   } else if (!validateEmail(identifier) && !validatePhone(identifier)) {
-    showError(
-      "loginIdentifier",
-      "identifierError",
-      "Enter a valid email or Nigerian phone number e.g. 08012345678",
-    );
-    isValid = false;
+    showError("loginIdentifier", "identifierError", "Enter a valid email or Nigerian phone number e.g. 08012345678");
+    valid = false;
   } else {
     showSuccess("loginIdentifier", "identifierError");
   }
 
-  // ─── Password ───
-  // Login only checks the field isn't empty
-  // (strict rules are for signup, not login)
-  const password = document.getElementById("passwordInput").value;
   if (!password) {
     showError("passwordInput", "passwordError", "Please enter your password");
-    isValid = false;
+    valid = false;
   } else {
     showSuccess("passwordInput", "passwordError");
   }
 
-  // ─── If any errors — shake button and stop ───
-  if (!isValid) {
-    const btn = document.getElementById("loginBtn");
-    btn.classList.add("shake");
-    setTimeout(() => btn.classList.remove("shake"), 400);
+  const button = document.getElementById("loginBtn");
+  if (!valid) {
+    button.classList.add("shake");
+    setTimeout(() => button.classList.remove("shake"), 400);
     return;
   }
 
-  // ─── All good — show loading state ───
-  const btn = document.getElementById("loginBtn");
-  btn.textContent = "Logging In...";
-  btn.classList.add("loading");
+  button.disabled = true;
+  button.textContent = "Logging In...";
+  button.classList.add("loading");
 
-  // Send to real backend
-  fetch(`${API_URL}/api/auth/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ identifier: identifier, password: password }),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      if (data.message === "Login successful!") {
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user));
-        btn.textContent = "Logged In!";
-        window.location.href = "index.html";
-      } else {
-        btn.textContent = "Log In";
-        btn.classList.remove("loading");
-        // Show error inline — no alert
-        showError("loginIdentifier", "identifierError", data.message);
-      }
-    })
-    .catch(() => {
-      btn.textContent = "Log In";
-      btn.classList.remove("loading");
-      showError(
-        "loginIdentifier",
-        "identifierError",
-        "Connection failed. Please try again.",
-      );
+  try {
+    const response = await fetch(`${API_URL}/api/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ identifier, password }),
     });
+    const data = await response.json();
 
-  // ─── REAL TIME VALIDATION ───
-  // Clears error as soon as user starts typing
-  document.addEventListener("DOMContentLoaded", function () {
-    const fields = ["loginIdentifier", "passwordInput"];
-    fields.forEach((id) => {
-      const el = document.getElementById(id);
-      if (el) {
-        el.addEventListener("input", () => clearError(id, id + "Error"));
-      }
-    });
-  });
-
-  // ─── TOGGLE PASSWORD VISIBILITY ───
-  function togglePassword() {
-    const input = document.getElementById("passwordInput");
-    input.type = input.type === "password" ? "text" : "password";
-  }
-
-  // ─── ACCOUNT TYPE TOGGLE ───
-  let accountType = "customer";
-
-  function selectType(btn, type) {
-    accountType = type;
-    document
-      .querySelectorAll(".type-btn")
-      .forEach((b) => b.classList.remove("active"));
-    btn.classList.add("active");
-  }
-
-  // ─── FORGOT PASSWORD MODAL ───
-  function showForgotPassword() {
-    document.getElementById("forgotModal").style.display = "flex";
-  }
-
-  function hideForgotPassword() {
-    document.getElementById("forgotModal").style.display = "none";
-    document.getElementById("forgotEmail").value = "";
-    document.getElementById("forgotSuccess").style.display = "none";
-    document.getElementById("forgotError").style.display = "none";
-  }
-
-  function sendResetLink() {
-    const email = document.getElementById("forgotEmail").value.trim();
-    const btn = document.getElementById("sendResetBtn");
-
-    document.getElementById("forgotSuccess").style.display = "none";
-    document.getElementById("forgotError").style.display = "none";
-
-    if (!email) {
-      document.getElementById("forgotErrorText").textContent =
-        "Please enter your email address";
-      document.getElementById("forgotError").style.display = "block";
+    if (!response.ok || !data.token || !data.user) {
+      showError("loginIdentifier", "identifierError", data.message || "Could not log in. Please try again.");
       return;
     }
 
-    btn.textContent = "Sending...";
-    btn.style.opacity = "0.7";
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user));
+    button.textContent = "Logged In!";
+    window.location.href = "index.html";
+  } catch (error) {
+    showError("loginIdentifier", "identifierError", "Connection failed. Please try again.");
+  } finally {
+    if (!localStorage.getItem("token")) {
+      button.disabled = false;
+      button.textContent = "Log In";
+      button.classList.remove("loading");
+    }
+  }
+}
 
-    fetch(`${API_URL}/api/auth/forgot-password`, {
+function togglePassword() {
+  const input = document.getElementById("passwordInput");
+  if (input) input.type = input.type === "password" ? "text" : "password";
+}
+
+let accountType = "customer";
+function selectType(button, type) {
+  accountType = type;
+  document.querySelectorAll(".account-type .type-btn").forEach((item) => {
+    item.classList.toggle("active", item === button);
+  });
+}
+
+function showForgotPassword() {
+  const modal = document.getElementById("forgotModal");
+  if (modal) modal.style.display = "flex";
+}
+
+function hideForgotPassword() {
+  const modal = document.getElementById("forgotModal");
+  if (modal) modal.style.display = "none";
+  const email = document.getElementById("forgotEmail");
+  if (email) email.value = "";
+  const success = document.getElementById("forgotSuccess");
+  const error = document.getElementById("forgotError");
+  if (success) success.style.display = "none";
+  if (error) error.style.display = "none";
+}
+
+async function sendResetLink() {
+  const email = document.getElementById("forgotEmail").value.trim();
+  const button = document.getElementById("sendResetBtn");
+  const success = document.getElementById("forgotSuccess");
+  const errorBox = document.getElementById("forgotError");
+  const errorText = document.getElementById("forgotErrorText");
+
+  success.style.display = "none";
+  errorBox.style.display = "none";
+
+  if (!email || !validateEmail(email)) {
+    errorText.textContent = "Please enter a valid email address";
+    errorBox.style.display = "block";
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = "Sending...";
+  try {
+    const response = await fetch(`${API_URL}/api/auth/forgot-password`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        document.getElementById("forgotSuccess").style.display = "block";
-        btn.textContent = "Sent!";
-      })
-      .catch(() => {
-        document.getElementById("forgotErrorText").textContent =
-          "Something went wrong. Try again.";
-        document.getElementById("forgotError").style.display = "block";
-        btn.textContent = "Send Reset Link";
-        btn.style.opacity = "1";
-      });
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || "Could not send the reset link.");
+    success.style.display = "block";
+    button.textContent = "Sent!";
+  } catch (error) {
+    errorText.textContent = error.message || "Something went wrong. Try again.";
+    errorBox.style.display = "block";
+    button.textContent = "Send Reset Link";
+  } finally {
+    button.disabled = false;
   }
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  ["loginIdentifier", "passwordInput"].forEach((id) => {
+    const input = document.getElementById(id);
+    if (input) input.addEventListener("input", () => clearError(id, id === "loginIdentifier" ? "identifierError" : "passwordError"));
+  });
+});
