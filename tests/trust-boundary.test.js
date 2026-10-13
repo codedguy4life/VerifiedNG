@@ -99,6 +99,27 @@ describe("Trust boundary", () => {
     expect(response.statusCode).toBe(401);
   });
 
+  test("deleted accounts cannot keep using an existing token", async () => {
+    const timestamp = Date.now();
+    const signup = await request(app).post("/api/auth/register").send({
+      fullName: "Deleted Account Test",
+      email: `deletedaccount${timestamp}@example.com`,
+      password: "TestPass123!",
+      phone: `085${timestamp.toString().slice(-8)}`,
+    });
+
+    expect(signup.statusCode).toBe(201);
+
+    await User.findByIdAndDelete(signup.body.user.id);
+
+    const response = await request(app)
+      .get("/api/user/profile")
+      .set("Authorization", `Bearer ${signup.body.token}`);
+
+    expect(response.statusCode).toBe(401);
+    expect(response.body.message).toMatch(/user not found/i);
+  });
+
   test("tampered authentication proof cannot create a hire request", async () => {
     const timestamp = Date.now();
 
