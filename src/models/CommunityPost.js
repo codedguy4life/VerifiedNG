@@ -15,7 +15,9 @@ const reportSchema = new mongoose.Schema({
 
 const communityPostSchema = new mongoose.Schema({
   author: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true, index: true },
-  text: { type: String, required: true, trim: true, maxlength: 2000 },
+  text: { type: String, trim: true, maxlength: 2000, default: "" },
+  imageUrl: { type: String, trim: true, default: "" },
+  videoUrl: { type: String, trim: true, default: "" },
   category: {
     type: String,
     enum: ["General", "Question", "Opportunity", "Recommendation", "Service Request", "Safety Alert"],
