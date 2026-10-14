@@ -2493,3 +2493,35 @@ h6,
     font-size: 28px;
   }
 }
+
+
+/* Community section pages */
+.section-page {
+  width: min(900px, calc(100% - 32px));
+  margin: 28px auto 100px;
+}
+.section-page-header { margin-bottom: 22px; }
+.section-page-header .back-button { margin-bottom: 18px; }
+.section-page-header h1 { margin: 0; color: var(--ink); font-size: clamp(1.6rem, 4vw, 2.25rem); }
+.section-page-header p { margin: 8px 0 0; color: var(--muted); }
+.section-card {
+  padding: clamp(22px, 4vw, 34px);
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+}
+.section-icon {
+  display: grid; place-items: center; width: 54px; height: 54px;
+  margin-bottom: 18px; border-radius: 16px; color: var(--green);
+  background: var(--green-pale);
+}
+.section-card h2 { margin: 0 0 10px; font-size: 1.35rem; }
+.section-card p { max-width: 650px; color: var(--muted); margin: 0 0 22px; }
+.invite-preview { padding: 15px; margin: 0 0 18px; border: 1px dashed var(--line); border-radius: 12px; background: var(--canvas); }
+.settings-card { display: grid; gap: 14px; }
+.setting-row { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 16px 0; border-top: 1px solid var(--line); }
+.setting-row span { display: grid; gap: 4px; }
+.setting-row small { color: var(--muted); }
+.setting-row input { width: 20px; height: 20px; accent-color: var(--green); flex-shrink: 0; }
+.secondary-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: fit-content; padding: 10px 14px; border: 1px solid var(--line); border-radius: 10px; color: var(--ink); background: #fff; }
