@@ -87,7 +87,6 @@ export default function PostComposer({ user, onPublish, busy }) {
               onChange={(event) => setText(event.target.value)}
               placeholder="What's happening, famz?"
               autoFocus
-              required
             />
           ) : (
             <button className="composer-prompt" type="button" onClick={() => setExpanded(true)}>
@@ -122,7 +121,7 @@ export default function PostComposer({ user, onPublish, busy }) {
         </div>
 
         {previewUrl && <div className="composer-media-preview">{selectedFile?.type.startsWith("video/") ? <video controls src={previewUrl} /> : <img src={previewUrl} alt="Preview of your post attachment" />}<span>{selectedFile?.name}</span><button type="button" onClick={() => { setSelectedFile(null); if (fileInputRef.current) fileInputRef.current.value = ""; }} aria-label="Remove attachment">Remove</button></div>}
-        {mediaNotice && <p className="media-notice" role="status">{mediaNotice}</p>
+        {mediaNotice && <p className="media-notice" role="status">{mediaNotice}</p>}
 
         {expanded && showSettings && (
           <div className="composer-settings-panel">
