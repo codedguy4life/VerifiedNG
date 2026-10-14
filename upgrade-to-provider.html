@@ -18,8 +18,8 @@
         >Verified<span>NG</span> <sup>BETA</sup></a
       >
       <div class="nav-right">
-        <a href="dashboard.html"
-          ><i class="bi bi-arrow-left"></i> Back to Dashboard</a
+        <a href="#" onclick="goToCommunity(); return false;"
+          ><i class="bi bi-arrow-left"></i> Back to Community</a
         >
       </div>
     </nav>
@@ -224,6 +224,17 @@
       </div>
     </div>
 
+    <script>
+      function goToCommunity() {
+        if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
+          location.href = "http://localhost:5173/";
+        } else if (location.hostname === "codedguy4life.github.io") {
+          location.href = "/VerifiedNG/community/";
+        } else {
+          location.href = "/community/";
+        }
+      }
+    </script>
     <script src="js/config.js"></script>
     <script src="js/auth.js"></script>
     <script>
