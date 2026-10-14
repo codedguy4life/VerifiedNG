@@ -48,7 +48,7 @@ const getFeed = async (req, res) => {
     const scope = ["nearby", "nigeria", "for-you"].includes(req.query.scope) ? req.query.scope : "for-you";
     const selectedArea = typeof req.query.area === "string" ? req.query.area.trim() : "";
     const areaParts = selectedArea.split(",").map((part) => part.trim()).filter(Boolean);
-    const escapeRegex = (value) => value.replaceAll(".", "\\.").replaceAll("$", "\\$").replaceAll("*", "\\*").replaceAll("+", "\\+").replaceAll("?", "\\?").replaceAll("^", "\\^").replaceAll("{", "\\{").replaceAll("}", "\\}").replaceAll("(", "\\(").replaceAll(")", "\\)").replaceAll("|", "\\|").replaceAll("[", "\\[").replaceAll("]", "\\]").replaceAll("\\", "\\\\");
+    const escapeRegex = (value) => value.replaceAll("\\", "\\\\").replaceAll(".", "\\.").replaceAll("$", "\\$").replaceAll("*", "\\*").replaceAll("+", "\\+").replaceAll("?", "\\?").replaceAll("^", "\\^").replaceAll("{", "\\{").replaceAll("}", "\\}").replaceAll("(", "\\(").replaceAll(")", "\\)").replaceAll("|", "\\|").replaceAll("[", "\\[").replaceAll("]", "\\]");
     const city = areaParts.length > 1 ? areaParts[0] : (selectedArea || viewer.city || "");
     const state = areaParts.length > 1 ? areaParts[areaParts.length - 1] : (selectedArea || viewer.state || "");
     const locationMatches = [];
