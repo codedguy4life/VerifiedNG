@@ -15,7 +15,9 @@ const createPost = async (req, res) => {
     const text = typeof req.body.text === "string" ? req.body.text.trim() : "";
     const category = postCategories.includes(req.body.category) ? req.body.category : "General";
     const audience = req.body.audience === "local" ? "local" : "national";
-    if (!text) return res.status(400).json({ message: "Write something before posting." });
+    const imageUrl = typeof req.body.imageUrl === "string" && req.body.imageUrl.startsWith("https://res.cloudinary.com/") ? req.body.imageUrl : "";
+    const videoUrl = typeof req.body.videoUrl === "string" && req.body.videoUrl.startsWith("https://res.cloudinary.com/") ? req.body.videoUrl : "";
+    if (!text && !imageUrl && !videoUrl) return res.status(400).json({ message: "Write something or attach a photo/video before posting." });
     if (text.length > 2000) return res.status(400).json({ message: "Posts must be 2,000 characters or fewer." });
     if (audience === "local" && !author.state && !author.city) {
       return res.status(400).json({ message: "Add your state or city to your profile before posting locally." });
@@ -23,6 +25,8 @@ const createPost = async (req, res) => {
     const post = await CommunityPost.create({
       author: author._id,
       text,
+      imageUrl,
+      videoUrl,
       category,
       audience,
       location: { state: author.state || "", city: author.city || "" },
@@ -42,23 +46,21 @@ const getFeed = async (req, res) => {
     const page = Math.max(1, Number.parseInt(req.query.page, 10) || 1);
     const limit = Math.min(30, Math.max(1, Number.parseInt(req.query.limit, 10) || 10));
     const scope = ["nearby", "nigeria", "for-you"].includes(req.query.scope) ? req.query.scope : "for-you";
+    const selectedArea = typeof req.query.area === "string" ? req.query.area.trim() : "";
+    const areaParts = selectedArea.split(",").map((part) => part.trim()).filter(Boolean);
+    const escapeRegex = (value) => value.replaceAll(".", "\\.").replaceAll("$", "\\$").replaceAll("*", "\\*").replaceAll("+", "\\+").replaceAll("?", "\\?").replaceAll("^", "\\^").replaceAll("{", "\\{").replaceAll("}", "\\}").replaceAll("(", "\\(").replaceAll(")", "\\)").replaceAll("|", "\\|").replaceAll("[", "\\[").replaceAll("]", "\\]").replaceAll("\\", "\\\\");
+    const city = areaParts.length > 1 ? areaParts[0] : (selectedArea || viewer.city || "");
+    const state = areaParts.length > 1 ? areaParts[areaParts.length - 1] : (selectedArea || viewer.state || "");
+    const locationMatches = [];
+    if (city) locationMatches.push({ "location.city": new RegExp("^" + escapeRegex(city) + "$", "i") });
+    if (state) locationMatches.push({ "location.state": new RegExp("^" + escapeRegex(state) + "$", "i") });
     let visibility = { isHidden: false };
     if (scope === "nigeria") {
-      visibility.audience = "national";
+      visibility = { isHidden: false, audience: "national" };
     } else if (scope === "nearby") {
-      const locationMatches = [];
-      if (viewer.city) locationMatches.push({ "location.city": new RegExp("^" + viewer.city.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "$", "i") });
-      if (viewer.state) locationMatches.push({ "location.state": new RegExp("^" + viewer.state.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "$", "i") });
-      visibility = locationMatches.length
-        ? { isHidden: false, $or: [{ audience: "national" }, { audience: "local", $or: locationMatches }] }
-        : { isHidden: false, audience: "national" };
+      visibility = locationMatches.length ? { isHidden: false, audience: "local", $or: locationMatches } : { isHidden: false, audience: "local", _id: null };
     } else {
-      const locationMatches = [];
-      if (viewer.city) locationMatches.push({ "location.city": new RegExp("^" + viewer.city.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "$", "i") });
-      if (viewer.state) locationMatches.push({ "location.state": new RegExp("^" + viewer.state.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "$", "i") });
-      visibility = locationMatches.length
-        ? { isHidden: false, $or: [{ audience: "national" }, { audience: "local", $or: locationMatches }] }
-        : { isHidden: false, audience: "national" };
+      visibility = locationMatches.length ? { isHidden: false, $or: [{ audience: "national" }, { audience: "local", $or: locationMatches }] } : { isHidden: false, audience: "national" };
     }
     const [posts, total] = await Promise.all([
       CommunityPost.find(visibility)
