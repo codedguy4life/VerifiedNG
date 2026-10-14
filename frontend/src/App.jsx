@@ -152,12 +152,27 @@ export default function App() {
     setProfileDrawerOpen(false);
   }
 
+  function openLegacyPage(page) {
+    // Legacy account pages live at the repository root, outside the Vite app.
+    if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+      window.location.href = `http://localhost:5500/${page}`;
+      return;
+    }
+    if (window.location.hostname === "codedguy4life.github.io") {
+      window.location.href = `${window.location.origin}/VerifiedNG/${page}`;
+      return;
+    }
+    window.location.href = `${window.location.origin}/${page}`;
+  }
+
   function openProfileItem(label) {
     setProfileDrawerOpen(false);
     if (label === "My profile") {
-      setMessage("Your profile page is on the build list. Your account details remain available from your existing profile.");
+      openLegacyPage("dashboard.html");
+      return;
     } else if (label === "Become a provider") {
-      setMessage("Provider onboarding is coming next. We will connect this to VerifiedNG's provider registration flow.");
+      openLegacyPage("upgrade-to-provider.html");
+      return;
     } else if (label === "Local news") {
       setMessage("Local news will be connected to a trusted news source/API in a later build.");
     } else if (label === "Events") {
