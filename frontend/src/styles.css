@@ -2525,3 +2525,47 @@ h6,
 .setting-row small { color: var(--muted); }
 .setting-row input { width: 20px; height: 20px; accent-color: var(--green); flex-shrink: 0; }
 .secondary-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: fit-content; padding: 10px 14px; border: 1px solid var(--line); border-radius: 10px; color: var(--ink); background: #fff; }
+
+
+/* Community post media selection and preview */
+.composer-media-preview {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+  margin: 14px 0 4px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fbfdfb;
+  color: var(--muted);
+  font-size: 12px;
+  overflow: hidden;
+}
+.composer-media-preview img,
+.composer-media-preview video {
+  display: block;
+  width: 100%;
+  max-height: 360px;
+  object-fit: contain;
+  border-radius: 8px;
+  background: #edf1ee;
+}
+.composer-media-preview span {
+  overflow-wrap: anywhere;
+}
+.composer-media-preview button {
+  justify-self: start;
+  border: 0;
+  border-radius: 7px;
+  padding: 7px 10px;
+  background: #fff0ee;
+  color: #a42d22;
+  font-size: 12px;
+  font-weight: 700;
+}
+.media-notice {
+  margin: 10px 0 0;
+  color: #a42d22;
+  font-size: 12px;
+  line-height: 1.5;
+}
