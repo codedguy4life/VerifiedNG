@@ -54,13 +54,16 @@ const getFeed = async (req, res) => {
     const locationMatches = [];
     if (city) locationMatches.push({ "location.city": new RegExp("^" + escapeRegex(city) + "$", "i") });
     if (state) locationMatches.push({ "location.state": new RegExp("^" + escapeRegex(state) + "$", "i") });
+    const selectedLocation = areaParts.length > 1
+      ? { "location.city": new RegExp("^" + escapeRegex(city) + "$", "i"), "location.state": new RegExp("^" + escapeRegex(state) + "$", "i") }
+      : { $or: locationMatches };
     let visibility = { isHidden: false };
     if (scope === "nigeria") {
       visibility = { isHidden: false, audience: "national" };
     } else if (scope === "nearby") {
-      visibility = locationMatches.length ? { isHidden: false, audience: "local", $or: locationMatches } : { isHidden: false, audience: "local", _id: null };
+      visibility = locationMatches.length ? { isHidden: false, audience: "local", ...selectedLocation } : { isHidden: false, audience: "local", _id: null };
     } else {
-      visibility = locationMatches.length ? { isHidden: false, $or: [{ audience: "national" }, { audience: "local", $or: locationMatches }] } : { isHidden: false, audience: "national" };
+      visibility = locationMatches.length ? { isHidden: false, $or: [{ audience: "national" }, { audience: "local", ...selectedLocation }] } : { isHidden: false, audience: "national" };
     }
     const [posts, total] = await Promise.all([
       CommunityPost.find(visibility)
