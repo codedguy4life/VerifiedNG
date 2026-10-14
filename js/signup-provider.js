@@ -69,7 +69,7 @@ function submitForm() {
         document.getElementById("line3")?.classList.add("done");
         document.getElementById("step5").classList.add("active");
 
-        window.location.href = "index.html";
+        goToCommunityApp();
       } else {
         if (data.message.includes("email") || data.message.includes("Email")) {
           goToStep(1);

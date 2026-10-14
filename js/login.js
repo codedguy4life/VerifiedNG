@@ -91,7 +91,7 @@ async function handleLogin(event) {
     localStorage.setItem("user", JSON.stringify(data.user));
     loginSucceeded = true;
     button.textContent = "Logged In!";
-    window.location.href = "index.html";
+    goToCommunityApp();
   } catch (error) {
     showError("loginIdentifier", "identifierError", "Connection failed. Please try again.");
   } finally {

@@ -219,7 +219,7 @@ function handleSignup(e) {
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
         btn.textContent = "Account Created!";
-        window.location.href = "index.html";
+        goToCommunityApp();
       } else {
         btn.textContent = "Create My Account";
         btn.classList.remove("loading");

@@ -1,6 +1,7 @@
 :root {
-  --font-body: "Inter", sans-serif;
-  --font-heading: "Manrope", sans-serif;
+  --font-body: "Roboto", Arial, sans-serif;
+  --font-heading: "Google Sans", "Google Sans Text", "Segoe UI", sans-serif;
+  --font-semibold: "Segoe UI Semibold", "Segoe UI", Roboto, sans-serif;
   --text-xs: 0.6875rem;
   --text-sm: 0.8125rem;
   --text-base: 0.9375rem;
@@ -2429,88 +2430,66 @@ button:disabled {
   }
 }
 
-/* ===== VerifiedNG Typography Upgrade ===== */
+/* ===== VerifiedNG Mixed Typography ===== */
 
-/* Make the main headings more confident */
-.feed-heading h1 {
-  font-family: var(--font-heading);
-  font-size: 32px;
-  font-weight: 800;
-  line-height: 1.15;
-  letter-spacing: -1px;
+body,
+input,
+textarea,
+select {
+  font-family: var(--font-body);
 }
 
-.welcome-panel h1,
-.login-card h1 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.brand,
+.feed-heading h1 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.brand {
   font-weight: 800;
   letter-spacing: -0.8px;
 }
 
-/* Make post authors easier to notice */
-.post-author-name,
-.post-identity strong {
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: -0.2px;
-}
-
-/* Improve readability of posts */
-.post-text {
-  font-family: var(--font-body);
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 1.8;
-  letter-spacing: 0;
-}
-
-/* Strengthen section headings */
-.rail-card h2,
-.side-card h2,
-.feed-heading h2 {
-  font-family: var(--font-heading);
+.feed-heading h1 {
+  font-size: 32px;
   font-weight: 800;
-  letter-spacing: -0.35px;
+  letter-spacing: -1px;
 }
 
-/* Make navigation easier to read */
-.bottom-tab span {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: -0.1px;
-}
-
-.top-nav a,
-.top-nav button {
+.post-author-name,
+.post-identity strong,
+.composer-person strong {
+  font-family: var(--font-semibold);
+  font-size: 14px;
   font-weight: 600;
 }
 
-/* Improve the composer */
-.composer-person strong {
-  font-size: 13px;
-  font-weight: 700;
-}
-
+.post-text,
 .composer textarea {
   font-family: var(--font-body);
   font-size: 14px;
-  line-height: 1.7;
+  line-height: 1.8;
 }
 
-/* Make buttons feel stronger */
+.top-nav a,
+.top-nav button,
+.bottom-tab span,
 .primary-button,
-.white-link,
-.media-option {
-  font-weight: 700;
-  letter-spacing: -0.1px;
+.media-option,
+.white-link {
+  font-family: var(--font-semibold);
+  font-weight: 600;
 }
 
-/* Keep the layout comfortable on smaller screens */
 @media (max-width: 600px) {
   .feed-heading h1 {
     font-size: 28px;
-  }
-
-  .post-text {
-    font-size: 14px;
   }
 }
