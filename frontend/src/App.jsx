@@ -167,31 +167,52 @@ export default function App() {
 
   function openProfileItem(label) {
     setProfileDrawerOpen(false);
+    setMessage("");
+    setError("");
+    const views = {
+      "Local news": "local-news",
+      Events: "events",
+      Groups: "groups",
+      "Saved posts": "saved-posts",
+      Settings: "settings",
+      "Invite neighbours": "invite",
+      "Help centre": "help",
+    };
     if (label === "My profile") {
       openLegacyPage("dashboard.html");
       return;
-    } else if (label === "Become a provider") {
+    }
+    if (label === "Become a provider") {
       openLegacyPage("upgrade-to-provider.html");
       return;
-    } else if (label === "Local news") {
-      setMessage("Local news will be connected to a trusted news source/API in a later build.");
-    } else if (label === "Events") {
-      setMessage("Neighbourhood events are on the build list.");
-    } else if (label === "Groups") {
-      setMessage("Community groups are on the build list.");
-    } else if (label === "Invite neighbours") {
-      setMessage("Neighbour invitations will be added when sharing links is connected.");
-    } else if (label === "Saved posts") {
-      setMessage("Saved posts are on the build list.");
-    } else if (label === "Settings") {
-      setMessage("Account, privacy, and notification settings will be added here.");
-    } else if (label === "Help centre") {
-      setMessage("The VerifiedNG Help Centre is on the build list.");
-    } else if (label === "Safety and trust") {
+    }
+    if (label === "Safety and trust") {
       window.location.href = "https://codedguy4life.github.io/VerifiedNG/safety.html";
       return;
     }
+    setCurrentView(views[label] || "home");
+  }
+
+  function returnHome() {
     setCurrentView("home");
+    setActiveTab("home");
+    setMessage("");
+    setError("");
+  }
+
+  function saveInviteLink() {
+    const inviteUrl = window.location.origin + window.location.pathname;
+    const text = `Join me on VerifiedNG, our community for neighbours: ${inviteUrl}`;
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(text).then(() => setMessage("Invite message copied. Send it to your neighbours!")).catch(() => window.prompt("Copy this invite message", text));
+    } else {
+      window.prompt("Copy this invite message", text);
+    }
+  }
+
+  function updateSetting(key, value) {
+    localStorage.setItem(`verifiedng-setting-${key}`, value ? "true" : "false");
+    setMessage("Your setting has been saved on this device.");
   }
 
   if (!token) return <main className="login-wall"><form className="login-card card" onSubmit={signIn}><div className="brand">Verified<span>NG</span></div><h1>Your community is waiting.</h1><p>Sign in with your existing VerifiedNG email or phone number.</p>{error && <div className="notice error-notice" role="alert">{error}</div>}<label className="login-label">Email or phone<input autoComplete="username" value={loginIdentifier} onChange={(event) => setLoginIdentifier(event.target.value)} required /></label><label className="login-label">Password<input type="password" autoComplete="current-password" value={loginPassword} onChange={(event) => setLoginPassword(event.target.value)} required /></label><button className="primary-button login-submit" disabled={loginBusy}>{loginBusy ? "Signing in…" : "Sign in"} <ArrowRight size={16} /></button><p className="muted small">Your existing account is used. This does not create a new account or change your role.</p><a className="muted small" href="https://codedguy4life.github.io/VerifiedNG/">Back to the existing website</a></form></main>;
@@ -215,7 +236,39 @@ export default function App() {
       </div>
       <button className="change-area" type="button" onClick={chooseArea}>{area ? "Change" : "Choose area"} <ChevronDown size={14} /></button>
     </div>
-    {currentView === "notifications" ? (
+    {currentView !== "home" && currentView !== "notifications" ? (
+      <main className="section-page">
+        <header className="section-page-header">
+          <button className="back-button" type="button" onClick={returnHome}><ArrowLeft size={18} /> Back to community</button>
+          <h1>{({
+            "local-news": "Local news",
+            events: "Neighbourhood events",
+            groups: "Community groups",
+            "saved-posts": "Saved posts",
+            invite: "Invite neighbours",
+            settings: "Settings",
+            help: "Help centre",
+          })[currentView] || "Your community"}</h1>
+          <p>{({
+            "local-news": "Useful updates and conversations from your area.",
+            events: "Find and share things happening around your neighbourhood.",
+            groups: "Connect with neighbours who share your interests.",
+            "saved-posts": "Keep useful community posts close at hand.",
+            invite: "Help your neighbours discover VerifiedNG.",
+            settings: "Manage your community preferences on this device.",
+            help: "Get help using your VerifiedNG community.",
+          })[currentView] || ""}</p>
+        </header>
+        {message && <div className="notice success-notice" role="status">{message}<button type="button" className="notice-close" aria-label="Dismiss message" onClick={() => setMessage("")}><X size={15} /></button></div>}
+        {currentView === "local-news" && <section className="section-card"><div className="section-icon"><Newspaper size={24} /></div><h2>News from your neighbourhood</h2><p>Local news will appear here as trusted sources and local publishers are connected. For now, you can use the community feed to share verified updates and useful information.</p><button className="primary-button" type="button" onClick={returnHome}>Explore community posts <ArrowRight size={16} /></button></section>}
+        {currentView === "events" && <section className="section-card"><div className="section-icon"><CalendarDays size={24} /></div><h2>What's happening nearby?</h2><p>This space is ready for neighbourhood meetups, workshops, markets, and community activities. Event creation and listings need to be connected to the backend next.</p><button className="primary-button" type="button" onClick={() => setMessage("Event listings are the next step for this section.")}>Plan an event <CalendarDays size={16} /></button></section>}
+        {currentView === "groups" && <section className="section-card"><div className="section-icon"><Users size={24} /></div><h2>Find your people</h2><p>Groups will help neighbours gather around interests like estate updates, parents, sports, learning, and local business. Group creation and membership are not connected yet.</p><button className="primary-button" type="button" onClick={() => setMessage("Group creation and membership are queued for the next build.")}>Create a group <Users size={16} /></button></section>}
+        {currentView === "saved-posts" && <section className="section-card"><div className="section-icon"><Bookmark size={24} /></div><h2>Your saved posts</h2><p>Save useful posts to find them later. The saved-post storage and bookmark action still need to be connected, so nothing is being saved yet.</p><button className="primary-button" type="button" onClick={returnHome}>Browse the feed <ArrowRight size={16} /></button></section>}
+        {currentView === "invite" && <section className="section-card"><div className="section-icon"><UserPlus size={24} /></div><h2>Good communities grow together</h2><p>Invite people who live around you to join the conversation.</p><div className="invite-preview">Join me on VerifiedNG, our community for neighbours.</div><button className="primary-button" type="button" onClick={saveInviteLink}><UserPlus size={16} /> Copy invite message</button></section>}
+        {currentView === "settings" && <section className="section-card settings-card"><div className="section-icon"><Settings size={24} /></div><h2>Your preferences</h2><p>These preferences are saved in this browser on this device.</p><label className="setting-row"><span><strong>Community notifications</strong><small>Show community activity notifications when available.</small></span><input type="checkbox" defaultChecked={localStorage.getItem("verifiedng-setting-notifications") !== "false"} onChange={(event) => updateSetting("notifications", event.target.checked)} /></label><label className="setting-row"><span><strong>Neighbourhood feed</strong><small>Prefer posts relevant to your selected area.</small></span><input type="checkbox" defaultChecked={localStorage.getItem("verifiedng-setting-local-feed") !== "false"} onChange={(event) => updateSetting("local-feed", event.target.checked)} /></label><button className="secondary-button" type="button" onClick={chooseArea}><MapPin size={16} /> Change neighbourhood</button><button className="secondary-button" type="button" onClick={() => { setProfileDrawerOpen(false); signOut(); }}><LogOut size={16} /> Sign out</button></section>}
+        {currentView === "help" && <section className="section-card"><div className="section-icon"><CircleHelp size={24} /></div><h2>How can we help?</h2><p>Use the menu to open your profile, apply to become a provider, manage preferences, and explore your community.</p><button className="primary-button" type="button" onClick={returnHome}>Return to community <ArrowRight size={16} /></button></section>}
+      </main>
+    ) : currentView === "notifications" ? (
       <main className="notifications-page">
         <header className="notifications-header">
           <button className="back-button" type="button" onClick={() => setCurrentView("home")}><ArrowLeft size={18} /> Back</button>
