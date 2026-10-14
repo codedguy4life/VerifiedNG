@@ -51,14 +51,14 @@ export default function App() {
     setLoading(true);
     setError("");
     try {
-      const data = await api(`/api/community/feed?scope=${encodeURIComponent(scope)}&page=${requestedPage}&limit=10`);
+      const data = await api(`/api/community/feed?scope=${encodeURIComponent(scope)}&area=${encodeURIComponent(area)}&page=${requestedPage}&limit=10`);
       setPosts((current) => append ? [...current, ...(data.posts || [])] : (data.posts || []));
       setPage(requestedPage);
       setHasMore(Boolean(data.hasMore));
     } catch (cause) {
       setError(cause.message || "Could not load the community.");
     } finally { setLoading(false); }
-  }, [scope]);
+  }, [scope, area]);
 
   useEffect(() => { if (token) loadFeed(); }, [loadFeed, token]);
   useEffect(() => {
@@ -130,9 +130,11 @@ export default function App() {
     if (cleanArea) {
       localStorage.setItem("verifiedng-area", cleanArea);
       setArea(cleanArea);
+      setPage(1);
     } else {
       localStorage.removeItem("verifiedng-area");
       setArea("");
+      setPage(1);
     }
   }
   function chooseTab(id) {
@@ -298,7 +300,7 @@ export default function App() {
         <PostComposer user={user} onPublish={publishPost} busy={publishing} />
         {message && <div className="notice success-notice" role="status">{message}<button type="button" className="notice-close" aria-label="Dismiss message" onClick={() => setMessage("")}><X size={15} /></button></div>}
         {error && <div className="notice error-notice" role="alert">{error}<button type="button" onClick={() => setError("")}>Dismiss</button></div>}
-        <div className="feed-caption">{scope === "nearby" ? "Posts from your area and nearby conversations" : scope === "nigeria" ? "Conversations shared across Nigeria" : "Conversations from your community"}</div>
+        <div className="feed-caption">{scope === "nearby" ? `Local posts for ${area || user?.city || user?.state || "your profile location"}` : scope === "nigeria" ? "Posts shared across Nigeria" : "Posts from your area and across Nigeria"}</div>
         {loading && !posts.length && <div className="empty-state card">Loading your community…</div>}
         {!loading && error && !posts.length && <div className="empty-state card">We couldn't load the feed. Check your connection and try again.</div>}
         {!loading && !error && !posts.length && <div className="empty-state card"><div className="empty-icon"><Users size={22} /></div><h3>Your community starts here.</h3><p>Ask a question, share something useful or help a neighbour find what they need.</p></div>}
