@@ -18,11 +18,19 @@
   <body>
     <!-- NAV — same as homepage -->
     <nav>
-      <a href="#" onclick="goToCommunity(); return false;" class="logo"
+      <a
+        href="#"
+        onclick="
+          goToCommunity();
+          return false;
+        "
+        class="logo"
         >Verified<span>NG</span> <sup>BETA</sup></a
       >
       <ul class="nav-links">
-                <li><button class="btn-ghost" onclick="goToCommunity()">Community</button></li>
+        <li>
+          <button class="btn-ghost" onclick="goToCommunity()">Community</button>
+        </li>
         <li>
           <button
             class="btn-ghost"
@@ -334,9 +342,7 @@
               padding: 10px;
               border: 1px solid #ddd;
               border-radius: 8px;
-              font-family:
-                Inter,
-                sans-serif;
+              font-family: Inter, sans-serif;
             "
           />
         </div>
@@ -358,9 +364,7 @@
               padding: 10px;
               border: 1px solid #ddd;
               border-radius: 8px;
-              font-family:
-                Inter,
-                sans-serif;
+              font-family: Inter, sans-serif;
             "
           />
         </div>
@@ -382,9 +386,7 @@
               padding: 10px;
               border: 1px solid #ddd;
               border-radius: 8px;
-              font-family:
-                Inter,
-                sans-serif;
+              font-family: Inter, sans-serif;
             "
           />
         </div>
@@ -406,9 +408,7 @@
               padding: 10px;
               border: 1px solid #ddd;
               border-radius: 8px;
-              font-family:
-                Inter,
-                sans-serif;
+              font-family: Inter, sans-serif;
             "
           />
         </div>
@@ -430,9 +430,7 @@
               padding: 10px;
               border: 1px solid #ddd;
               border-radius: 8px;
-              font-family:
-                Inter,
-                sans-serif;
+              font-family: Inter, sans-serif;
               resize: vertical;
             "
           ></textarea>
@@ -459,9 +457,7 @@
               padding: 12px;
               border-radius: 8px;
               cursor: pointer;
-              font-family:
-                Inter,
-                sans-serif;
+              font-family: Inter, sans-serif;
             "
           >
             Save Changes
@@ -476,9 +472,7 @@
               padding: 12px;
               border-radius: 8px;
               cursor: pointer;
-              font-family:
-                Inter,
-                sans-serif;
+              font-family: Inter, sans-serif;
             "
           >
             Cancel
@@ -599,7 +593,10 @@
 
     <script>
       function goToCommunity() {
-        if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
+        if (
+          location.hostname === "localhost" ||
+          location.hostname === "127.0.0.1"
+        ) {
           location.href = "http://localhost:5173/";
         } else if (location.hostname === "codedguy4life.github.io") {
           location.href = "/VerifiedNG/community/";
