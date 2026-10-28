@@ -486,7 +486,7 @@ export default function App() {
         </button>
       </div>
       {currentView !== "home" && currentView !== "notifications" ? (
-        <main className="section-page">
+        <main className={currentView === "local-news" ? "section-page section-page-map" : "section-page"}>
           <header className="section-page-header">
             <button className="back-button" type="button" onClick={returnHome}>
               <ArrowLeft size={18} /> Back to community
