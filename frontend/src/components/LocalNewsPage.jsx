@@ -107,7 +107,7 @@ export default function LocalNewsPage({ area, onChangeArea }) {
               if (wasSwiped.current) { wasSwiped.current = false; return; }
               setSheetOpen((open) => !open);
             }}
-            onTouchStart={(event) => { touchStartY.current = event.touches[0]?.clientY ?? null; }}
+            onTouchStart={(event) => { wasSwiped.current = false; touchStartY.current = event.touches[0]?.clientY ?? null; }}
             onTouchEnd={(event) => {
               const endY = event.changedTouches[0]?.clientY;
               if (touchStartY.current === null || endY === undefined) return;
