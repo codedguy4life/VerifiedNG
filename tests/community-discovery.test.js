@@ -60,6 +60,14 @@ describe("Community discovery and local news", () => {
     }
   });
 
+  test("Near me feed cannot be tricked into showing another area's local-only posts", async () => {
+    const response = await request(app)
+      .get("/api/community/feed?scope=nearby&area=Ibadan")
+      .set("Authorization", "Bearer " + token);
+    expect(response.statusCode).toBe(200);
+    expect(response.body.posts.map((post) => post.text)).not.toContain("Private bridge report");
+  });
+
   test("a member can find safety alerts shared with their own area", async () => {
     const response = await request(app)
       .get("/api/community/search?area=Ikeja&category=Safety%20Alert")
