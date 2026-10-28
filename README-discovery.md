@@ -47,3 +47,22 @@ The new `tests/community-discovery.test.js` exercises privacy and the missing-ke
 - Persisted user notifications, read/unread state and subscriptions.
 - Replace external map embed with fully custom marker/cluster map and a production-suitable tile service.
 - Complete conversion of the original account, marketplace and provider pages to the new React design.
+
+## UI polish and troubleshooting
+
+- The **Providers** bottom tab now opens a browseable directory; typing `provider` also browses all. Try service phrases such as `electrician`, `plumber` or `photographer` when data exists.
+- If the connected database has no registered `role: "provider"` users, no real provider cards can appear. To check the connected backend, open `http://localhost:5000/api/providers` and inspect the `providers` array. If that endpoint shows `[]`, the backend currently has no provider accounts. Do not seed fake listings in production.
+- The Local News map follows the selected area, **but the Latest and Alerts cards now default to nationwide updates**. The old This area / Across Nigeria controls are removed. Publisher news still requires the server-side GNews API key.
+- The duplicate community area strip is hidden on sub-pages, Back is compact, and the mobile bottom navigation is a centred rounded floating pill with the page scrolling underneath it.
+- The sidebar has a short slide-in animation and pages have subtle transition animations; reduced-motion preferences are respected.
+- If an area map changes but Latest shows no publisher stories, confirm `GNEWS_API_KEY` is present in the **root** backend `.env`, restart the backend, then try the API request in the browser while signed in. GNews's free tier has a documented 12-hour delay.
+- Check the latest API `/api/providers` before diagnosing missing results: blank data is different from a broken search request.
+
+### Local smoke checks
+
+1. Run `git status` before pulling. Do not lose local uncommitted changes.
+2. Start backend `npm run dev` in the repo root and frontend `npm run dev` in `frontend/` (separate windows).
+3. On `localhost:5173`, open Providers without typing and see whether actual provider records load.
+4. Search `electrician`; if none show, inspect `http://localhost:5000/api/providers`.
+5. Open Local news, change the map to Ikeja, and verify that Latest/Alerts remain nationwide while the map moves.
+6. Check the compact Back link, sidebar animation, floating five-tab navigation and reduced vertical spacing.
