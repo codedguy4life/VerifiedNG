@@ -66,3 +66,18 @@ The new `tests/community-discovery.test.js` exercises privacy and the missing-ke
 4. Search `electrician`; if none show, inspect `http://localhost:5000/api/providers`.
 5. Open Local news, change the map to Ikeja, and verify that Latest/Alerts remain nationwide while the map moves.
 6. Check the compact Back link, sidebar animation, floating five-tab navigation and reduced vertical spacing.
+
+## Area-first news and Cloudinary troubleshooting
+
+- Local News now defaults to the **selected area** when one has been set on the community/map page. The map area and news coverage normally match. Without a selected area, it defaults to Across Nigeria until a location is chosen.
+- Use the compact **Coverage** dropdown beside Refresh in the news sheet to switch between the current area and Across Nigeria. The Latest / Alerts tabs remain unchanged.
+- Headlines matching a small neighbourhood may be unavailable in GNews. If there are no results, try the Coverage dropdown rather than assuming an API failure. The page does not invent incident locations or news reports.
+- If posting an image says Cloudinary isn't configured, the message comes from `frontend/src/components/PostComposer.jsx` **before any network upload**. It means Vite cannot read `VITE_CLOUDINARY_CLOUD_NAME` or `VITE_CLOUDINARY_UPLOAD_PRESET`. This is a frontend build-time configuration issue, not a MongoDB or GNews issue.
+- On Windows, run `cd frontend`, then `notepad .env.local` and add the **actual** cloud name and unsigned preset name:
+  ```dotenv
+  VITE_CLOUDINARY_CLOUD_NAME=your_actual_cloud_name
+  VITE_CLOUDINARY_UPLOAD_PRESET=your_actual_unsigned_preset
+  ```
+  Replace these example placeholders with actual settings. Stop Vite using Ctrl+C and run `npm run dev` again; Vite does not automatically reload environment files during a running dev server.
+- Do not put Cloudinary API secrets in the Vite frontend. For an online GitHub Pages build, frontend `VITE_*` variables must be supplied to the **build/deployment environment** and the site rebuilt; a local `.env.local` won't change a previously published build.
+- Unsigned direct uploads should be constrained by Cloudinary upload preset policies and replaced with authenticated backend-issued upload signatures for public, abuse-resistant production use.
