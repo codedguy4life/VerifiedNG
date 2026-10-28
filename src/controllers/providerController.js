@@ -30,16 +30,34 @@ const getProviders = async (req, res) => {
       ];
     }
 
-    if (search) {
-      const safeSearch = escapeRegex(search);
-      query.$and = [
-        { $or: [
-        { fullName: { $regex: safeSearch, $options: "i" } },
-        { category: { $regex: safeSearch, $options: "i" } },
-        { bio: { $regex: safeSearch, $options: "i" } },
-        { skills: { $regex: safeSearch, $options: "i" } },
-        ] },
-      ];
+    if (typeof search === "string" && search.trim()) {
+      if (search.length > 80) return res.status(400).json({ message: "Search is too long." });
+      // Match everyday job names to the categories used in provider profiles.
+      const aliases = {
+        electrician: ["electrical", "electrician", "wiring", "solar"],
+        plumber: ["plumbing", "plumber", "pipes"],
+        mechanic: ["auto mechanic", "mechanic", "automobile"],
+        photographer: ["photography", "photographer"],
+        tailor: ["tailoring", "tailor", "fashion"],
+        baker: ["catering", "baking", "baker"],
+        caterer: ["catering", "caterer", "cooking"],
+        cleaner: ["cleaning", "cleaner"],
+        developer: ["programming", "developer", "web"],
+        programmer: ["programming", "developer"],
+        designer: ["graphic designer", "design"],
+        tutor: ["tutoring", "tutor", "teacher"],
+      };
+      const phrase = search.trim().toLowerCase();
+      const terms = [phrase, ...(aliases[phrase] || [])];
+      const safeSearch = terms.map(escapeRegex).join("|");
+      query.$and = [{
+        $or: [
+          { fullName: { $regex: safeSearch, $options: "i" } },
+          { category: { $regex: safeSearch, $options: "i" } },
+          { bio: { $regex: safeSearch, $options: "i" } },
+          { skills: { $regex: safeSearch, $options: "i" } },
+        ],
+      }];
     }
 
     const providers = await User.find(query)
