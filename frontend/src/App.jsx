@@ -34,6 +34,9 @@ import {
 import { api, getToken } from "./lib/api.js";
 import PostComposer from "./components/PostComposer.jsx";
 import PostCard from "./components/PostCard.jsx";
+import SearchPage from "./components/SearchPage.jsx";
+import LocalNewsPage from "./components/LocalNewsPage.jsx";
+import CommunityNotifications from "./components/CommunityNotifications.jsx";
 
 const scopes = [
   { id: "for-you", label: "For you", icon: Compass },
@@ -258,8 +261,14 @@ export default function App() {
   }
   function chooseTab(id) {
     setActiveTab(id);
-    setCurrentView("home");
     setProfileDrawerOpen(false);
+    setError("");
+    if (id === "search" || id === "providers") {
+      setCurrentView("search");
+      setMessage("");
+      return;
+    }
+    setCurrentView("home");
     if (id !== "home") {
       const label = tabs.find((tab) => tab.id === id)?.label || "This section";
       setMessage(
@@ -484,7 +493,8 @@ export default function App() {
             </button>
             <h1>
               {{
-                "local-news": "Local news",
+                "local-news": "Local news & alerts",
+                search: activeTab === "providers" ? "Find service providers" : "Search VerifiedNG",
                 events: "Neighbourhood events",
                 groups: "Community groups",
                 "saved-posts": "Saved posts",
@@ -496,7 +506,8 @@ export default function App() {
             <p>
               {{
                 "local-news":
-                  "Useful updates and conversations from your area.",
+                  "Explore your area map, publisher news, community updates and safety reports.",
+                search: "Find providers and community posts using real VerifiedNG data.",
                 events:
                   "Find and share things happening around your neighbourhood.",
                 groups: "Connect with neighbours who share your interests.",
@@ -521,24 +532,16 @@ export default function App() {
             </div>
           )}
           {currentView === "local-news" && (
-            <section className="section-card">
-              <div className="section-icon">
-                <Newspaper size={24} />
-              </div>
-              <h2>News from your neighbourhood</h2>
-              <p>
-                Local news will appear here as trusted sources and local
-                publishers are connected. For now, you can use the community
-                feed to share verified updates and useful information.
-              </p>
-              <button
-                className="primary-button"
-                type="button"
-                onClick={returnHome}
-              >
-                Explore community posts <ArrowRight size={16} />
-              </button>
-            </section>
+            <LocalNewsPage area={area} onChangeArea={chooseArea} />
+          )}
+          {currentView === "search" && (
+            <SearchPage
+              area={area}
+              initialTab={activeTab === "providers" ? "providers" : "all"}
+              onOpenProvider={(providerId) =>
+                openLegacyPage("all-providers-profile.html?id=db_" + encodeURIComponent(providerId))
+              }
+            />
           )}
           {currentView === "events" && (
             <section className="section-card">
@@ -760,37 +763,11 @@ export default function App() {
               </button>
             ))}
           </div>
-          <section className="notification-empty card" aria-live="polite">
-            <div className="notification-empty-icon">
-              {notificationFilter === "alerts" ? (
-                <ShieldAlert size={30} />
-              ) : notificationFilter === "activity" ? (
-                <Activity size={30} />
-              ) : notificationFilter === "neighbourhood" ? (
-                <MapPin size={30} />
-              ) : (
-                <BellRing size={30} />
-              )}
-            </div>
-            <h2>
-              {notificationFilter === "alerts"
-                ? "No community alerts"
-                : notificationFilter === "activity"
-                  ? "No activity yet"
-                  : notificationFilter === "neighbourhood"
-                    ? "No neighbourhood updates"
-                    : "You're all caught up"}
-            </h2>
-            <p>
-              {notificationFilter === "alerts"
-                ? "Important safety notices and community alerts will appear here."
-                : notificationFilter === "activity"
-                  ? "Reaches, comments, and updates about your posts will show up here."
-                  : notificationFilter === "neighbourhood"
-                    ? "News and updates from your local area will appear here."
-                    : "When something new happens in your community, you'll see it here."}
-            </p>
-          </section>
+          <CommunityNotifications
+            area={area}
+            filter={notificationFilter}
+            onOpenLocalNews={() => setCurrentView("local-news")}
+          />
         </main>
       ) : (
         <main className="home-layout">
