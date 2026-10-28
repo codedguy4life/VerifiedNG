@@ -9,7 +9,7 @@ const tabs = [
 ];
 
 const quickSearches = ["Electrician", "Plumber", "Photographer", "Caterer", "Developer"];
-const directoryTerms = new Set(["provider", "providers", "service", "services", "all", "everyone"]);
+const directoryTerms = new Set(["provider", "providers", "povider", "poviders", "service", "services", "all", "everyone"]);
 
 export default function SearchPage({ area = "", initialTab = "all", onOpenProvider }) {
   const [query, setQuery] = useState("");
