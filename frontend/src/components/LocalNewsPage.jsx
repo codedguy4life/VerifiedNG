@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowUpRight, ChevronDown, ChevronUp, Globe2, MapPin, Newspaper, RefreshCw, ShieldAlert, Users } from "lucide-react";
 import { api } from "../lib/api.js";
 
@@ -48,6 +48,8 @@ export default function LocalNewsPage({ area, onChangeArea }) {
   const [section, setSection] = useState("news");
   const [newsMode, setNewsMode] = useState("local");
   const [sheetOpen, setSheetOpen] = useState(true);
+  const touchStartY = useRef(null);
+  const wasSwiped = useRef(false);
   const [articles, setArticles] = useState([]);
   const [community, setCommunity] = useState([]);
   const [alerts, setAlerts] = useState([]);
@@ -96,7 +98,27 @@ export default function LocalNewsPage({ area, onChangeArea }) {
         <iframe title={"Interactive map — " + locationLabel} src={iframeSrc} loading="lazy" className="local-map-frame" referrerPolicy="strict-origin-when-cross-origin" />
         <span className="local-map-caption"><MapPin size={14} /> {locationLabel} · Map data © OpenStreetMap contributors</span>
         <div className={sheetOpen ? "local-news-sheet open" : "local-news-sheet collapsed"}>
-          <button type="button" className="local-sheet-handle" onClick={() => setSheetOpen((open) => !open)} aria-expanded={sheetOpen} aria-controls="local-sheet-content">
+          <button
+            type="button"
+            className="local-sheet-handle"
+            aria-expanded={sheetOpen}
+            aria-controls="local-sheet-content"
+            onClick={() => {
+              if (wasSwiped.current) { wasSwiped.current = false; return; }
+              setSheetOpen((open) => !open);
+            }}
+            onTouchStart={(event) => { touchStartY.current = event.touches[0]?.clientY ?? null; }}
+            onTouchEnd={(event) => {
+              const endY = event.changedTouches[0]?.clientY;
+              if (touchStartY.current === null || endY === undefined) return;
+              const delta = endY - touchStartY.current;
+              touchStartY.current = null;
+              if (Math.abs(delta) > 35) {
+                wasSwiped.current = true;
+                setSheetOpen(delta < 0);
+              }
+            }}
+          >
             <span className="local-sheet-grip" />
             <span>Local news & alerts</span>
             {sheetOpen ? <ChevronDown size={18} /> : <ChevronUp size={18} />}
