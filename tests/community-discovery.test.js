@@ -8,6 +8,7 @@ describe("Community discovery and local news", () => {
   let viewer;
   let neighbour;
   let outsider;
+  let provider;
   let token;
   let createdPosts = [];
 
@@ -28,6 +29,10 @@ describe("Community discovery and local news", () => {
     viewer = await createMember("Viewer", "Ikeja", "Lagos");
     neighbour = await createMember("Neighbour", "Ikeja", "Lagos");
     outsider = await createMember("Outsider", "Ibadan", "Oyo");
+    provider = await createMember("Test Electrician", "Ikeja", "Lagos");
+    provider.role = "provider";
+    provider.category = "Electrical";
+    await provider.save();
     const login = await request(app).post("/api/auth/login").send({
       identifier: viewer.email,
       password: "TestPass123!",
@@ -44,7 +49,7 @@ describe("Community discovery and local news", () => {
 
   afterAll(async () => {
     await CommunityPost.deleteMany({ _id: { $in: createdPosts.map((post) => post._id) } });
-    await User.deleteMany({ _id: { $in: [viewer?._id, neighbour?._id, outsider?._id].filter(Boolean) } });
+    await User.deleteMany({ _id: { $in: [viewer?._id, neighbour?._id, outsider?._id, provider?._id].filter(Boolean) } });
   });
 
   test("searching another city never exposes that city's local-only posts", async () => {
@@ -75,6 +80,12 @@ describe("Community discovery and local news", () => {
     expect(response.statusCode).toBe(200);
     expect(response.body.posts.map((post) => post.text)).toContain("Neighbour bridge repair");
     expect(response.body.posts.map((post) => post.text)).not.toContain("Private bridge report");
+  });
+
+  test("provider search understands electrician as Electrical", async () => {
+    const response = await request(app).get("/api/providers?search=electrician");
+    expect(response.statusCode).toBe(200);
+    expect(response.body.providers.map((provider) => String(provider._id))).toContain(String(provider._id));
   });
 
   test("unconfigured publisher news returns an honest status instead of invented headlines", async () => {
