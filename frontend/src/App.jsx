@@ -260,6 +260,7 @@ export default function App() {
     }
   }
   function chooseTab(id) {
+    window.scrollTo({ top: 0, behavior: "smooth" });
     setActiveTab(id);
     setProfileDrawerOpen(false);
     setError("");
@@ -278,6 +279,7 @@ export default function App() {
   }
 
   function openNotifications() {
+    setActiveTab("home");
     setCurrentView("notifications");
     setNotificationFilter("all");
     setMessage("");
@@ -301,6 +303,7 @@ export default function App() {
   }
 
   function openProfileItem(label) {
+    setActiveTab("home");
     setProfileDrawerOpen(false);
     setMessage("");
     setError("");
@@ -452,6 +455,7 @@ export default function App() {
           </button>
         </div>
       </header>
+      {currentView === "home" && (
       <div
         className={
           currentView === "notifications"
@@ -485,11 +489,12 @@ export default function App() {
           {area ? "Change" : "Choose area"} <ChevronDown size={14} />
         </button>
       </div>
+      )}
       {currentView !== "home" && currentView !== "notifications" ? (
-        <main className={currentView === "local-news" ? "section-page section-page-map" : "section-page"}>
+        <main key={currentView} className={currentView === "local-news" ? "section-page section-page-map" : "section-page"}>
           <header className="section-page-header">
-            <button className="back-button" type="button" onClick={returnHome}>
-              <ArrowLeft size={18} /> Back to community
+            <button className="back-button subtle-back" type="button" onClick={returnHome}>
+              <ArrowLeft size={16} /> Back
             </button>
             <h1>
               {{
@@ -713,12 +718,12 @@ export default function App() {
           )}
         </main>
       ) : currentView === "notifications" ? (
-        <main className="notifications-page">
+        <main key="notifications" className="notifications-page">
           <header className="notifications-header">
             <button
-              className="back-button"
+              className="back-button subtle-back"
               type="button"
-              onClick={() => setCurrentView("home")}
+              onClick={returnHome}
             >
               <ArrowLeft size={18} /> Back
             </button>
@@ -770,7 +775,7 @@ export default function App() {
           />
         </main>
       ) : (
-        <main className="home-layout">
+        <main key="home" className="home-layout">
           <section className="feed-column">
             <div
               className="scope-tabs"
