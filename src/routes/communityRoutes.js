@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { protect } = require("../middleware/authMiddleware");
+const { searchCommunity } = require("../controllers/communityDiscoveryController");
 const {
   createPost,
   getFeed,
@@ -13,6 +14,7 @@ const {
 
 router.use(protect);
 router.get("/feed", getFeed);
+router.get("/search", searchCommunity);
 router.post("/posts", createPost);
 router.post("/posts/:postId/comments", addComment);
 router.post("/posts/:postId/reactions", toggleReaction);
