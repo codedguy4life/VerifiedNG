@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowUpRight, ChevronDown, ChevronUp, Globe2, MapPin, Newspaper, RefreshCw, ShieldAlert, Users } from "lucide-react";
+import { ArrowUpRight, ChevronDown, ChevronUp, MapPin, Newspaper, RefreshCw, ShieldAlert, Users } from "lucide-react";
 import { api } from "../lib/api.js";
 
 // Approximate city/neighbourhood centres, NOT coordinates of reported incidents.
@@ -45,8 +45,7 @@ function timeLabel(value) {
 }
 
 export default function LocalNewsPage({ area, onChangeArea }) {
-  const [section, setSection] = useState("news");
-  const [newsMode, setNewsMode] = useState("local");
+  const [section, setSection] = useState("latest");
   const [sheetOpen, setSheetOpen] = useState(true);
   const touchStartY = useRef(null);
   const wasSwiped = useRef(false);
@@ -59,45 +58,61 @@ export default function LocalNewsPage({ area, onChangeArea }) {
   const [refreshCount, setRefreshCount] = useState(0);
   const centre = useMemo(() => getCentre(area), [area]);
   const iframeSrc = useMemo(() => mapUrl(centre), [centre]);
+  const safetyWords = /\b(fire|flood|accident|road closure|security alert|evacuation|outage|emergency|police warning)\b/i;
 
   useEffect(() => {
     let cancelled = false;
-    const params = new URLSearchParams({ area: area || "", limit: "12" });
-    const newsParams = new URLSearchParams({ mode: newsMode, area: area || "" });
     setLoading(true);
     setErrors([]);
-    const jobs = [
-      api("/api/local-news?" + newsParams)
-        .then((data) => { if (!cancelled) { setArticles(data.articles || []); setNewsStatus(data.status || ""); } })
-        .catch((error) => { if (!cancelled) { setArticles([]); setNewsStatus("unavailable"); setErrors((all) => [...all, error.message]); } }),
-      api("/api/community/search?" + params)
-        .then((data) => { if (!cancelled) setCommunity(data.posts || []); })
-        .catch((error) => { if (!cancelled) { setCommunity([]); setErrors((all) => [...all, error.message]); } }),
-      api("/api/community/search?" + new URLSearchParams({ area: area || "", category: "Safety Alert", limit: "12" }))
-        .then((data) => { if (!cancelled) setAlerts(data.posts || []); })
-        .catch((error) => { if (!cancelled) { setAlerts([]); setErrors((all) => [...all, error.message]); } }),
-    ];
-    Promise.all(jobs).then(() => { if (!cancelled) setLoading(false); });
-    return () => { cancelled = true; };
-  }, [area, newsMode, refreshCount]);
 
-  const activeItems = section === "news" ? articles : section === "alerts" ? alerts : community;
-  const hasArea = Boolean(area && area.trim());
-  const locationLabel = centre.known ? area : "Nigeria overview";
+    // The map follows the chosen area; news and alerts cover Nigeria by default.
+    // Local-only community posts still obey the viewer's server-side permissions.
+    const jobs = [
+      api("/api/local-news?mode=nigeria")
+        .then((data) => { if (!cancelled) { setArticles(data.articles || []); setNewsStatus(data.status || ""); } })
+        .catch((error) => { if (!cancelled) { setArticles([]); setNewsStatus("unavailable"); setErrors((all) => [...all, "Publisher news: " + error.message]); } }),
+      api("/api/community/search?limit=20")
+        .then((data) => { if (!cancelled) setCommunity(data.posts || []); })
+        .catch((error) => { if (!cancelled) { setCommunity([]); setErrors((all) => [...all, "Community: " + error.message]); } }),
+      api("/api/community/search?category=Safety%20Alert&limit=20")
+        .then((data) => { if (!cancelled) setAlerts(data.posts || []); })
+        .catch((error) => { if (!cancelled) { setAlerts([]); setErrors((all) => [...all, "Alerts: " + error.message]); } }),
+    ];
+    Promise.allSettled(jobs).then(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, [refreshCount]);
+
+  const publisherSafety = articles.filter((item) => safetyWords.test(item.title || ""));
+  const latestItems = useMemo(() => [
+    ...articles.map((item) => ({ ...item, kind: "publisher", date: item.publishedAt })),
+    ...community.map((item) => ({ ...item, kind: "community", date: item.createdAt })),
+  ].sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0)), [articles, community]);
+  const alertItems = useMemo(() => [
+    ...publisherSafety.map((item) => ({ ...item, kind: "publisher", date: item.publishedAt })),
+    ...alerts.map((item) => ({ ...item, kind: "alert", date: item.createdAt })),
+  ].sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0)), [articles, alerts]);
+  const activeItems = section === "alerts" ? alertItems : latestItems;
 
   return (
     <div className="local-news-experience">
       <div className="local-map-toolbar">
-        <div>
-          <strong><MapPin size={17} /> {hasArea ? area : "Explore Nigeria"}</strong>
-          <small>{centre.known ? "Approximate area centre, not incident locations" : "Choose a supported city or neighbourhood for a closer map"}</small>
-        </div>
-        <button type="button" className="secondary-button" onClick={onChangeArea}>Change area <ChevronDown size={15} /></button>
+        <p>Explore an area on the map. Latest updates below cover Nigeria.</p>
+        <button type="button" className="local-change-area" onClick={onChangeArea}>
+          <MapPin size={15} /> Change map area <ChevronDown size={14} />
+        </button>
       </div>
       <div className="local-map-stage">
-        <iframe title={"Interactive map — " + locationLabel} src={iframeSrc} loading="lazy" className="local-map-frame" referrerPolicy="strict-origin-when-cross-origin" />
-        <span className="local-map-caption"><MapPin size={14} /> {locationLabel} · Map data © OpenStreetMap contributors</span>
-        <div className={sheetOpen ? "local-news-sheet open" : "local-news-sheet collapsed"}>
+        <iframe
+          title={"Interactive map — " + (centre.known ? area : "Nigeria")}
+          src={iframeSrc}
+          loading="lazy"
+          className="local-map-frame"
+          referrerPolicy="strict-origin-when-cross-origin"
+        />
+        <span className="local-map-caption">
+          <MapPin size={14} /> {centre.known ? area : "Nigeria overview"} · Map data © OpenStreetMap contributors
+        </span>
+        <section className={sheetOpen ? "local-news-sheet open" : "local-news-sheet collapsed"}>
           <button
             type="button"
             className="local-sheet-handle"
@@ -113,59 +128,59 @@ export default function LocalNewsPage({ area, onChangeArea }) {
               if (touchStartY.current === null || endY === undefined) return;
               const delta = endY - touchStartY.current;
               touchStartY.current = null;
-              if (Math.abs(delta) > 35) {
-                wasSwiped.current = true;
-                setSheetOpen(delta < 0);
-              }
+              if (Math.abs(delta) > 35) { wasSwiped.current = true; setSheetOpen(delta < 0); }
             }}
           >
-            <span className="local-sheet-grip" />
-            <span>Local news & alerts</span>
+            <span className="local-sheet-grip" aria-hidden="true" />
+            <span>Latest news & alerts</span>
             {sheetOpen ? <ChevronDown size={18} /> : <ChevronUp size={18} />}
           </button>
           <div id="local-sheet-content" className="local-sheet-content" hidden={!sheetOpen}>
-            <div className="local-news-tabs" role="group" aria-label="Local updates">
-              <button type="button" className={section === "news" ? "active" : ""} onClick={() => setSection("news")}><Newspaper size={15} /> News</button>
-              <button type="button" className={section === "alerts" ? "active" : ""} onClick={() => setSection("alerts")}><ShieldAlert size={15} /> Alerts</button>
-              <button type="button" className={section === "community" ? "active" : ""} onClick={() => setSection("community")}><Users size={15} /> Community</button>
-            </div>
-            {section === "news" && (
-              <div className="local-news-scope">
-                <button type="button" className={newsMode === "local" ? "active" : ""} onClick={() => setNewsMode("local")}><MapPin size={14} /> This area</button>
-                <button type="button" className={newsMode === "nigeria" ? "active" : ""} onClick={() => setNewsMode("nigeria")}><Globe2 size={14} /> Across Nigeria</button>
+            <div className="local-news-sheet-header">
+              <div className="local-news-tabs" role="group" aria-label="Choose updates">
+                <button type="button" className={section === "latest" ? "active" : ""} aria-pressed={section === "latest"} onClick={() => setSection("latest")}><Newspaper size={15} /> Latest</button>
+                <button type="button" className={section === "alerts" ? "active" : ""} aria-pressed={section === "alerts"} onClick={() => setSection("alerts")}><ShieldAlert size={15} /> Alerts</button>
               </div>
+              <button type="button" className="local-refresh-button" onClick={() => setRefreshCount((v) => v + 1)} disabled={loading}><RefreshCw size={14} /> Refresh</button>
+            </div>
+            <p className="local-news-caption">Recent publisher headlines and community updates from across Nigeria</p>
+            {errors.length > 0 && <p className="local-news-hint" role="status">{errors[0]}</p>}
+            {newsStatus === "not_configured" && (
+              <p className="local-news-hint">Publisher news is not connected yet. Add a GNews API key to the backend to see real headlines. Community updates still show when available.</p>
             )}
             <div className="local-news-items" aria-live="polite">
-              {loading ? <p className="muted small">Loading updates…</p> : (
+              {loading ? <p className="muted small">Loading latest updates…</p> : (
                 <>
-                  {errors.length > 0 && <p className="muted small">Some updates could not load. {errors[0]}</p>}
-                  {section === "news" && newsStatus === "not_configured" && <p className="local-news-hint">Publisher news is not connected yet. Add the GNews API key to the backend; community alerts already work.</p>}
-                  {section === "news" && newsStatus === "choose_area" && <p className="local-news-hint">Choose a neighbourhood to see matching publisher articles, or select Across Nigeria.</p>}
-                  {activeItems.map((item) => section === "news" ? (
-                    <a className="local-story-card" key={item.url} href={item.url} target="_blank" rel="noopener noreferrer">
-                      <span className="local-story-head"><span className="local-story-type"><Newspaper size={14} /> Publisher news</span><ArrowUpRight size={16} /></span>
+                  {activeItems.map((item) => item.kind === "publisher" ? (
+                    <a className="local-story-card" key={"publisher-" + item.url} href={item.url} target="_blank" rel="noopener noreferrer">
+                      <span className="local-story-head"><span className="local-story-type"><Newspaper size={14} /> Publisher report</span><ArrowUpRight size={16} /></span>
                       <strong>{item.title}</strong>
                       {item.description && <p>{item.description}</p>}
                       <small>{item.source} · {timeLabel(item.publishedAt)}</small>
                     </a>
                   ) : (
-                    <article className="local-story-card" key={item._id}>
-                      <span className="local-story-head"><span className="local-story-type">{section === "alerts" ? <ShieldAlert size={14} /> : <Users size={14} />}{section === "alerts" ? "Community report · unverified" : "Community post"}</span></span>
-                      <strong>{item.category || "Community update"}</strong>
-                      <p>{item.text || "Attached media"}</p>
-                      <small>{item.author?.fullName || "Member"} · {timeLabel(item.createdAt)}</small>
+                    <article className="local-story-card" key={"community-" + item._id}>
+                      <span className="local-story-head"><span className="local-story-type">{item.kind === "alert" ? <ShieldAlert size={14} /> : <Users size={14} />}{item.kind === "alert" || item.category === "Safety Alert" ? "Member safety report · unverified" : "Community update"}</span></span>
+                      <strong>{item.category || "Community post"}</strong>
+                      <p>{item.text || "Photo or video shared with the community"}</p>
+                      <small>{[item.location?.city, item.location?.state].filter(Boolean).join(", ") || "Nigeria"} · {timeLabel(item.createdAt)}</small>
                     </article>
                   ))}
-                  {activeItems.length === 0 && <p className="local-news-hint">{section === "alerts" ? "No community safety alerts found for this selection." : section === "community" ? "No community posts found for this area. Local-only posts remain restricted to authorised neighbours." : "No publisher headlines available for this selection yet."}</p>}
+                  {activeItems.length === 0 && (
+                    <div className="local-news-empty">
+                      {section === "alerts" ? <ShieldAlert size={23} /> : <Newspaper size={23} />}
+                      <strong>{section === "alerts" ? "No safety reports available yet" : "No recent updates available yet"}</strong>
+                      <p>{section === "alerts" ? "There are no accessible member safety reports or safety-related publisher headlines in the connected sources." : "No publisher articles or community updates were returned. A news API key is required for publisher headlines."}</p>
+                    </div>
+                  )}
                 </>
               )}
-              <button type="button" className="local-refresh-button" onClick={() => setRefreshCount((value) => value + 1)} disabled={loading}><RefreshCw size={15} /> Check for updates</button>
-              <p className="local-news-disclaimer">News comes from external publishers; member alerts are unverified reports. Never treat an unconfirmed report as an official emergency warning.</p>
             </div>
+            <p className="local-news-disclaimer">Publisher stories can be delayed. Member alerts are unverified reports, not confirmed official emergency warnings.</p>
           </div>
-        </div>
+        </section>
       </div>
-      <p className="muted small">The map marker shows an approximate area centre, not the location of an alert. A map tile or story source may be unavailable without internet access.</p>
+      <p className="local-news-map-note">Map pins show approximate area centres, not the locations of reported incidents.</p>
     </div>
   );
 }
