@@ -62,7 +62,12 @@ async function getLocalNews(req, res) {
       const query = new URLSearchParams({ lang: "en", country: "ng", max: "10" });
       const endpoint = mode === "nigeria" ? "top-headlines" : "search";
       if (mode === "nigeria") query.set("category", "general");
-      else query.set("q", area + " Nigeria");
+      else {
+        // GNews treats whitespace as AND: "Ikeja Lagos Nigeria" is often too restrictive.
+        // Quoted OR terms discover city or state stories without claiming an exact incident location.
+        const terms = area.split(",").map((part) => part.trim()).filter(Boolean).slice(0, 2);
+        query.set("q", terms.map((term) => '"' + term.replace(/"/g, "") + '"').join(" OR "));
+      }
       response = await fetch("https://gnews.io/api/v4/" + endpoint + "?" + query, {
         headers: { "X-Api-Key": process.env.GNEWS_API_KEY },
         signal: controller.signal,
@@ -81,7 +86,9 @@ async function getLocalNews(req, res) {
       source: "gnews",
       fetchedAt: new Date().toISOString(),
       // GNews free-plan news may be delayed; never label this a breaking-news alert.
-      note: "Publisher headlines may be delayed and are not independently verified by VerifiedNG.",
+      note: mode === "local" && area.includes(",")
+        ? "Headlines can mention either the chosen city or state; not every story is from the exact neighbourhood."
+        : "Publisher headlines may be delayed and are not independently verified by VerifiedNG.",
     };
     cache.set(key, { expires: Date.now() + CACHE_TTL_MS, payload });
     if (cache.size > 150) cache.delete(cache.keys().next().value);
