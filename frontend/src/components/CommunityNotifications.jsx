@@ -15,13 +15,13 @@ export default function CommunityNotifications({ area, filter, onOpenLocalNews }
     let cancelled = false;
     setLoading(true);
     setError("");
-    const areaQuery = area ? "&area=" + encodeURIComponent(area) : "";
+    const areaQuery = filter === "neighbourhood" && area ? "&area=" + encodeURIComponent(area) : "";
     const jobs = [
       api("/api/community/search?category=Safety%20Alert&limit=12" + areaQuery)
         .then((data) => { if (!cancelled) setAlerts(data.posts || []); }),
       api("/api/community/search?limit=12" + areaQuery)
         .then((data) => { if (!cancelled) setUpdates(data.posts || []); }),
-      api("/api/local-news?mode=local&area=" + encodeURIComponent(area || ""))
+      api("/api/local-news?mode=nigeria")
         .then((data) => { if (!cancelled) setArticles(data.articles || []); }),
     ];
     Promise.allSettled(jobs).then((results) => {
@@ -30,7 +30,7 @@ export default function CommunityNotifications({ area, filter, onOpenLocalNews }
       setLoading(false);
     });
     return () => { cancelled = true; };
-  }, [area]);
+  }, [area, filter]);
 
   const newsAlerts = articles.filter((article) => safetyWords.test(article.title || ""));
   const communityUpdates = filter === "alerts" ? [] : updates.filter((post) => post.category !== "Safety Alert").slice(0, 6);
@@ -49,7 +49,7 @@ export default function CommunityNotifications({ area, filter, onOpenLocalNews }
   return (
     <div className="community-notifications">
       <div className="notification-list-heading">
-        <span><MapPin size={15} /> {area || "Across Nigeria"}</span>
+        <span><MapPin size={15} /> {filter === "neighbourhood" && area ? area : "Latest across Nigeria"}</span>
         <button type="button" onClick={onOpenLocalNews}>Open area map <ArrowUpRight size={15} /></button>
       </div>
       {loading && <p className="muted small">Loading community updates…</p>}
@@ -57,7 +57,7 @@ export default function CommunityNotifications({ area, filter, onOpenLocalNews }
       {!loading && count === 0 && <section className="notification-empty card">
         <div className="notification-empty-icon">{filter === "alerts" ? <ShieldAlert size={28} /> : <Bell size={28} />}</div>
         <h2>{filter === "alerts" ? "No safety alerts found" : "No updates for this area yet"}</h2>
-        <p>When community members post updates or publisher news is connected, available stories will appear here. Change area to explore another location.</p>
+        <p>There are no matching updates from the connected sources yet. Publisher headlines require the news API to be configured; member posts appear when people publish them.</p>
       </section>}
       {!loading && count > 0 && (
         <div className="notification-story-list" aria-live="polite">
