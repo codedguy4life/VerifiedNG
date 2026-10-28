@@ -13,7 +13,6 @@ export default function CommunityNotifications({ area, filter, onOpenLocalNews }
 
   useEffect(() => {
     let cancelled = false;
-    if (filter === "activity") { setLoading(false); return undefined; }
     setLoading(true);
     setError("");
     const areaQuery = area ? "&area=" + encodeURIComponent(area) : "";
@@ -31,7 +30,7 @@ export default function CommunityNotifications({ area, filter, onOpenLocalNews }
       setLoading(false);
     });
     return () => { cancelled = true; };
-  }, [area, filter]);
+  }, [area]);
 
   const newsAlerts = articles.filter((article) => safetyWords.test(article.title || ""));
   const communityUpdates = filter === "alerts" ? [] : updates.filter((post) => post.category !== "Safety Alert").slice(0, 6);
