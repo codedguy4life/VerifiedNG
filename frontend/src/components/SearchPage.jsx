@@ -1,83 +1,89 @@
 import { useEffect, useState } from "react";
-import { ArrowRight, MapPin, Search, ShieldCheck, Users, MessageCircle } from "lucide-react";
+import { ArrowRight, MapPin, Search, ShieldCheck, Users, MessageCircle, RefreshCw } from "lucide-react";
 import { api } from "../lib/api.js";
 
 const tabs = [
-  { id: "all", label: "All results" },
+  { id: "all", label: "All" },
   { id: "providers", label: "Providers" },
-  { id: "community", label: "Community posts" },
+  { id: "community", label: "Posts" },
 ];
+
+const quickSearches = ["Electrician", "Plumber", "Photographer", "Caterer", "Developer"];
+const directoryTerms = new Set(["provider", "providers", "service", "services", "all", "everyone"]);
 
 export default function SearchPage({ area = "", initialTab = "all", onOpenProvider }) {
   const [query, setQuery] = useState("");
   const [tab, setTab] = useState(initialTab);
   const [onlyArea, setOnlyArea] = useState(false);
   const [providers, setProviders] = useState([]);
+  const [directoryCount, setDirectoryCount] = useState(null);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState([]);
+  const [error, setError] = useState("");
+  const [refresh, setRefresh] = useState(0);
 
   useEffect(() => { setTab(initialTab); }, [initialTab]);
 
+  // Fetch the real directory so "Providers" is useful without typing.
+  useEffect(() => {
+    let cancelled = false;
+    api("/api/providers")
+      .then((data) => { if (!cancelled) setDirectoryCount((data.providers || []).length); })
+      .catch(() => { if (!cancelled) setDirectoryCount(null); });
+    return () => { cancelled = true; };
+  }, [refresh]);
+
   useEffect(() => {
     const q = query.trim();
-    if (q.length < 2) {
-      setProviders([]);
-      setPosts([]);
-      setErrors([]);
-      setLoading(false);
-      return undefined;
-    }
-    const controller = new AbortController();
+    const browse = !q || directoryTerms.has(q.toLowerCase());
+    const abort = new AbortController();
     const timer = setTimeout(async () => {
       setLoading(true);
-      setErrors([]);
+      setError("");
       const jobs = [];
       if (tab !== "community") {
-        const params = new URLSearchParams({ search: q });
-        // State + city when provided; otherwise match a city or state.
+        const params = new URLSearchParams();
+        if (!browse) params.set("search", q);
         if (onlyArea && area) {
-          const parts = area.split(",").map((item) => item.trim()).filter(Boolean);
+          const parts = area.split(",").map((part) => part.trim()).filter(Boolean);
           if (parts.length > 1) {
-            params.set("state", parts[parts.length - 1]);
+            params.set("state", parts.at(-1));
             params.set("location", parts[0]);
-          } else {
-            params.set("location", parts[0]);
-          }
+          } else if (parts.length) params.set("location", parts[0]);
         }
-        jobs.push(api("/api/providers?" + params, { signal: controller.signal })
-          .then((result) => { if (!controller.signal.aborted) setProviders(result.providers || []); })
-          .catch((error) => { if (!controller.signal.aborted) { setProviders([]); setErrors((prev) => [...prev, "Providers: " + error.message]); } }));
+        jobs.push(api("/api/providers" + (params.size ? "?" + params : ""), { signal: abort.signal })
+          .then((data) => { if (!abort.signal.aborted) setProviders(data.providers || []); })
+          .catch((cause) => { if (!abort.signal.aborted) { setProviders([]); setError((prev) => prev ? prev + " " + cause.message : "Providers: " + cause.message); } }));
       } else setProviders([]);
 
-      if (tab !== "providers") {
+      if (tab !== "providers" && q.length >= 2 && !directoryTerms.has(q.toLowerCase())) {
         const params = new URLSearchParams({ q, limit: "20" });
         if (onlyArea && area) params.set("area", area);
-        jobs.push(api("/api/community/search?" + params, { signal: controller.signal })
-          .then((result) => { if (!controller.signal.aborted) setPosts(result.posts || []); })
-          .catch((error) => { if (!controller.signal.aborted) { setPosts([]); setErrors((prev) => [...prev, "Community: " + error.message]); } }));
+        jobs.push(api("/api/community/search?" + params, { signal: abort.signal })
+          .then((data) => { if (!abort.signal.aborted) setPosts(data.posts || []); })
+          .catch((cause) => { if (!abort.signal.aborted) { setPosts([]); setError((prev) => prev ? prev + " " + cause.message : "Community: " + cause.message); } }));
       } else setPosts([]);
 
       await Promise.all(jobs);
-      if (!controller.signal.aborted) setLoading(false);
-    }, 350);
-    return () => { clearTimeout(timer); controller.abort(); };
-  }, [query, tab, onlyArea, area]);
+      if (!abort.signal.aborted) setLoading(false);
+    }, query.trim().length >= 2 ? 300 : 0);
+    return () => { clearTimeout(timer); abort.abort(); };
+  }, [query, tab, onlyArea, area, refresh]);
 
-  const ready = query.trim().length >= 2;
-  const count = (tab === "community" ? 0 : providers.length) + (tab === "providers" ? 0 : posts.length);
+  const hasQuery = query.trim().length >= 2;
+  const count = providers.length + posts.length;
+  const directoryEmpty = directoryCount === 0;
 
   return (
     <div className="discovery-search">
       <label className="discovery-search-field">
-        <Search size={20} aria-hidden="true" />
-        <span className="sr-only">Search providers and community posts</span>
+        <Search size={19} aria-hidden="true" />
+        <span className="sr-only">Search VerifiedNG</span>
         <input
           type="search"
-          autoFocus
-          maxLength={80}
           value={query}
-          placeholder="Search services, providers or community updates..."
+          maxLength={80}
+          placeholder={tab === "providers" ? "Search a service, skill or provider…" : "Search services and community posts…"}
           onChange={(event) => setQuery(event.target.value)}
         />
       </label>
@@ -95,36 +101,36 @@ export default function SearchPage({ area = "", initialTab = "all", onOpenProvid
         </div>
         <label className="discovery-area-filter">
           <input type="checkbox" checked={onlyArea} disabled={!area} onChange={(event) => setOnlyArea(event.target.checked)} />
-          <MapPin size={15} /> {area ? "Filter to " + area : "Choose an area to filter"}
+          <MapPin size={14} /> {area ? "Only " + area : "All areas"}
         </label>
       </div>
-      {!ready ? (
-        <div className="discovery-state">
-          <Search size={28} />
-          <h2>What are you looking for?</h2>
-          <p>Try “electrician”, “plumber”, “photographer”, “road closure”, or a provider’s name.</p>
-          <p className="muted small">Search results come from real VerifiedNG accounts and community posts.</p>
+
+      {!hasQuery && tab !== "community" && (
+        <div className="discovery-quick-searches" aria-label="Popular service searches">
+          {quickSearches.map((service) => (
+            <button key={service} type="button" onClick={() => setQuery(service)}>{service}</button>
+          ))}
         </div>
-      ) : (
+      )}
+
+      {loading && <p className="discovery-count" role="status"><RefreshCw size={14} /> Searching VerifiedNG…</p>}
+      {error && <div className="notice error-notice" role="alert">{error} Check that the backend is running on port 5000.</div>}
+      {!loading && !error && (
         <>
-          <p className="discovery-count" role="status">
-            {loading ? "Searching…" : count + " result" + (count === 1 ? "" : "s") + " for “" + query.trim() + "”"}
-          </p>
-          {errors.map((error) => <p className="notice error-notice" role="alert" key={error}>{error}</p>)}
-          {!loading && count === 0 && errors.length === 0 && (
-            <div className="discovery-state"><Search size={28} /><h2>No matching results yet</h2><p>Try a different word or turn off the area filter.</p></div>
+          {tab === "community" && !hasQuery && (
+            <div className="discovery-state"><MessageCircle size={27} /><h2>Search community posts</h2><p>Type a topic, place or keyword to find conversations you can access.</p></div>
           )}
           {tab !== "community" && providers.length > 0 && (
             <section className="discovery-results" aria-label="Provider results">
-              <h2><Users size={19} /> Providers <span>{providers.length}</span></h2>
+              <h2><Users size={18} /> {hasQuery ? "Matching providers" : "Browse providers"} <span>{providers.length}</span></h2>
               <div className="discovery-card-grid">
-                {providers.slice(0, 30).map((provider) => (
+                {providers.slice(0, 40).map((provider) => (
                   <button key={provider._id} type="button" className="discovery-result-card" onClick={() => onOpenProvider(provider._id)}>
-                    <span className="discovery-result-icon"><Users size={21} /></span>
+                    <span className="discovery-result-icon"><Users size={20} /></span>
                     <span className="discovery-result-info">
                       <strong>{provider.fullName || "Service provider"} {provider.isVerified && <ShieldCheck size={15} aria-label="Verified" />}</strong>
                       <small>{provider.category || "Services"} · {[provider.city, provider.state].filter(Boolean).join(", ") || "Nigeria"}</small>
-                      <span>{(provider.bio || provider.skills?.join(", ") || "View provider profile").slice(0, 120)}</span>
+                      <span>{(provider.bio || provider.skills?.join(", ") || "View provider profile").slice(0, 130)}</span>
                     </span>
                     <ArrowRight size={17} />
                   </button>
@@ -134,14 +140,14 @@ export default function SearchPage({ area = "", initialTab = "all", onOpenProvid
           )}
           {tab !== "providers" && posts.length > 0 && (
             <section className="discovery-results" aria-label="Community post results">
-              <h2><MessageCircle size={19} /> Community posts <span>{posts.length}</span></h2>
+              <h2><MessageCircle size={18} /> Matching posts <span>{posts.length}</span></h2>
               <div className="discovery-card-grid">
                 {posts.map((post) => (
                   <article className="discovery-result-card" key={post._id}>
-                    <span className="discovery-result-icon"><MessageCircle size={21} /></span>
+                    <span className="discovery-result-icon"><MessageCircle size={20} /></span>
                     <span className="discovery-result-info">
                       <strong>{post.category || "Community"} · {post.author?.fullName || "Member"}</strong>
-                      <small>{[post.location?.city, post.location?.state].filter(Boolean).join(", ") || "Nigeria"} · {post.audience === "local" ? "Local audience" : "Across Nigeria"}</small>
+                      <small>{[post.location?.city, post.location?.state].filter(Boolean).join(", ") || "Nigeria"}</small>
                       <span>{post.text || (post.imageUrl || post.videoUrl ? "Media post" : "Community update")}</span>
                     </span>
                   </article>
@@ -149,6 +155,18 @@ export default function SearchPage({ area = "", initialTab = "all", onOpenProvid
               </div>
             </section>
           )}
+          {count === 0 && (tab !== "community" || hasQuery) && (
+            <div className="discovery-state">
+              <Search size={27} />
+              <h2>{directoryEmpty && tab !== "community" ? "No providers registered yet" : hasQuery ? "Nothing matched your search" : "No providers available yet"}</h2>
+              <p>{directoryEmpty && tab !== "community"
+                ? "This connected VerifiedNG database has no provider accounts at the moment. Search can only display real registered providers."
+                : "Try another service name or remove the location filter. Results only include data currently saved in VerifiedNG."}</p>
+              {hasQuery && <button type="button" className="secondary-button" onClick={() => { setQuery(""); setOnlyArea(false); setTab("providers"); }}>Browse all providers <ArrowRight size={15} /></button>}
+              <button type="button" className="discovery-retry" onClick={() => setRefresh((v) => v + 1)}><RefreshCw size={14} /> Retry</button>
+            </div>
+          )}
+          {count > 0 && <p className="discovery-count">{hasQuery ? count + " result(s) for “" + query.trim() + "”" : "Showing available listings from your connected database"}</p>}
         </>
       )}
     </div>
