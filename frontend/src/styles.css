@@ -48,7 +48,7 @@ select {
   font: inherit;
 }
 button {
-  cursor: poDM Sans;
+  cursor: pointer;
 }
 button:disabled {
   opacity: 0.6;
@@ -2625,15 +2625,24 @@ h6,
   overflow-wrap: anywhere;
 }
 
-.composer-media-preview button {
-  justify-self: start;
-  border: 0;
-  border-radius: 7px;
-  padding: 7px 10px;
-  background: #fff0ee;
-  color: #a42d22;
-  font-size: 12px;
-  font-weight: 700;
+.composer-media-remove {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid #ffffffaa;
+  border-radius: 50%;
+  background: #17221ce8;
+  color: #fff;
+  cursor: pointer;
+}
+.composer-media-remove:hover {
+  background: #b43a2b;
 }
 .media-notice {
   margin: 10px 0 0;
