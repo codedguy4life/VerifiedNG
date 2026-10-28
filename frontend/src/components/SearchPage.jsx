@@ -35,8 +35,16 @@ export default function SearchPage({ area = "", initialTab = "all", onOpenProvid
       const jobs = [];
       if (tab !== "community") {
         const params = new URLSearchParams({ search: q });
-        // The provider API filters by state, not arbitrary neighbourhood.
-        if (onlyArea && area.includes(",")) params.set("state", area.split(",").at(-1).trim());
+        // State + city when provided; otherwise match a city or state.
+        if (onlyArea && area) {
+          const parts = area.split(",").map((item) => item.trim()).filter(Boolean);
+          if (parts.length > 1) {
+            params.set("state", parts[parts.length - 1]);
+            params.set("location", parts[0]);
+          } else {
+            params.set("location", parts[0]);
+          }
+        }
         jobs.push(api("/api/providers?" + params, { signal: controller.signal })
           .then((result) => { if (!controller.signal.aborted) setProviders(result.providers || []); })
           .catch((error) => { if (!controller.signal.aborted) { setProviders([]); setErrors((prev) => [...prev, "Providers: " + error.message]); } }));
