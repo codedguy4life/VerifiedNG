@@ -9,7 +9,7 @@ const escapeRegex = (value) =>
 
 const getProviders = async (req, res) => {
   try {
-    const { category, state, search } = req.query;
+    const { category, state, search, location } = req.query;
 
     let query = { role: "provider" };
 
@@ -21,13 +21,24 @@ const getProviders = async (req, res) => {
       query.state = { $regex: escapeRegex(state), $options: "i" };
     }
 
+    if (typeof location === "string" && location.trim()) {
+      if (location.length > 80) return res.status(400).json({ message: "Location is too long." });
+      const safeLocation = escapeRegex(location.trim());
+      query.$or = [
+        { city: { $regex: safeLocation, $options: "i" } },
+        { state: { $regex: safeLocation, $options: "i" } },
+      ];
+    }
+
     if (search) {
       const safeSearch = escapeRegex(search);
-      query.$or = [
+      query.$and = [
+        { $or: [
         { fullName: { $regex: safeSearch, $options: "i" } },
         { category: { $regex: safeSearch, $options: "i" } },
         { bio: { $regex: safeSearch, $options: "i" } },
         { skills: { $regex: safeSearch, $options: "i" } },
+        ] },
       ];
     }
 
