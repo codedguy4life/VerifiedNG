@@ -47,23 +47,41 @@ const getFeed = async (req, res) => {
     const limit = Math.min(30, Math.max(1, Number.parseInt(req.query.limit, 10) || 10));
     const scope = ["nearby", "nigeria", "for-you"].includes(req.query.scope) ? req.query.scope : "for-you";
     const selectedArea = typeof req.query.area === "string" ? req.query.area.trim() : "";
+    if (selectedArea.length > 100) return res.status(400).json({ message: "Area is too long." });
     const areaParts = selectedArea.split(",").map((part) => part.trim()).filter(Boolean);
-    const escapeRegex = (value) => value.replaceAll("\\", "\\\\").replaceAll(".", "\\.").replaceAll("$", "\\$").replaceAll("*", "\\*").replaceAll("+", "\\+").replaceAll("?", "\\?").replaceAll("^", "\\^").replaceAll("{", "\\{").replaceAll("}", "\\}").replaceAll("(", "\\(").replaceAll(")", "\\)").replaceAll("|", "\\|").replaceAll("[", "\\[").replaceAll("]", "\\]");
-    const city = areaParts.length > 1 ? areaParts[0] : (selectedArea || viewer.city || "");
-    const state = areaParts.length > 1 ? areaParts[areaParts.length - 1] : (selectedArea || viewer.state || "");
-    const locationMatches = [];
-    if (city) locationMatches.push({ "location.city": new RegExp("^" + escapeRegex(city) + "$", "i") });
-    if (state) locationMatches.push({ "location.state": new RegExp("^" + escapeRegex(state) + "$", "i") });
-    const selectedLocation = areaParts.length > 1
-      ? { "location.city": new RegExp("^" + escapeRegex(city) + "$", "i"), "location.state": new RegExp("^" + escapeRegex(state) + "$", "i") }
-      : { $or: locationMatches };
-    let visibility = { isHidden: false };
+    const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const viewerLocal = [];
+    if (viewer.city) viewerLocal.push({ "location.city": new RegExp("^" + escapeRegex(viewer.city) + "$", "i") });
+    if (viewer.state) viewerLocal.push({ "location.state": new RegExp("^" + escapeRegex(viewer.state) + "$", "i") });
+    const allowedLocal = viewerLocal.length ? { $or: viewerLocal } : { _id: null };
+
+    // The requested area may narrow results, but it must not grant access to
+    // another neighbourhood's local-only posts.
+    let selectedLocation = null;
+    if (areaParts.length > 1) {
+      selectedLocation = {
+        "location.city": new RegExp("^" + escapeRegex(areaParts[0]) + "$", "i"),
+        "location.state": new RegExp("^" + escapeRegex(areaParts[areaParts.length - 1]) + "$", "i"),
+      };
+    } else if (areaParts.length === 1) {
+      const match = new RegExp("^" + escapeRegex(areaParts[0]) + "$", "i");
+      selectedLocation = { $or: [{ "location.city": match }, { "location.state": match }] };
+    }
+
+    let visibility;
     if (scope === "nigeria") {
       visibility = { isHidden: false, audience: "national" };
     } else if (scope === "nearby") {
-      visibility = locationMatches.length ? { isHidden: false, audience: "local", ...selectedLocation } : { isHidden: false, audience: "local", _id: null };
+      visibility = {
+        isHidden: false,
+        audience: "local",
+        $and: selectedLocation ? [allowedLocal, selectedLocation] : [allowedLocal],
+      };
     } else {
-      visibility = locationMatches.length ? { isHidden: false, $or: [{ audience: "national" }, { audience: "local", ...selectedLocation }] } : { isHidden: false, audience: "national" };
+      visibility = {
+        isHidden: false,
+        $or: [{ audience: "national" }, { audience: "local", ...allowedLocal }],
+      };
     }
     const [posts, total] = await Promise.all([
       CommunityPost.find(visibility)
