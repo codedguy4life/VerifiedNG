@@ -975,7 +975,7 @@ export default function App() {
                 onClick={() => openProfileItem("Local news")}
               >
                 <Newspaper size={18} />
-                <span>Local news</span>
+                <span>Local news &amp; alerts</span>
               </button>
               <button type="button" onClick={() => openProfileItem("Events")}>
                 <CalendarDays size={18} />
