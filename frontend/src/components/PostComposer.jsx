@@ -75,10 +75,18 @@ export default function PostComposer({ user, onPublish, busy }) {
   async function uploadSelectedMedia() {
     const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
     const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
-    if (!cloudName || !uploadPreset)
+    const invalidCloud = !cloudName || cloudName.startsWith("your_");
+    const invalidPreset = !uploadPreset || uploadPreset.startsWith("your_");
+    if (invalidCloud || invalidPreset) {
+      const missing = [
+        invalidCloud ? "VITE_CLOUDINARY_CLOUD_NAME" : null,
+        invalidPreset ? "VITE_CLOUDINARY_UPLOAD_PRESET" : null,
+      ].filter(Boolean).join(" and ");
       throw new Error(
-        "Media storage is not configured yet. Add the Cloudinary settings before uploading.",
+        "Cloudinary setting missing: " + missing +
+        ". Add real values to frontend/.env.local, then stop and restart Vite (npm run dev)."
       );
+    }
     const resourceType = selectedFile.type.startsWith("video/")
       ? "video"
       : "image";
