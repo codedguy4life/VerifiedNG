@@ -46,6 +46,7 @@ function timeLabel(value) {
 
 export default function LocalNewsPage({ area, onChangeArea }) {
   const [section, setSection] = useState("latest");
+  const [coverage, setCoverage] = useState(() => area?.trim() ? "local" : "nigeria");
   const [sheetOpen, setSheetOpen] = useState(true);
   const touchStartY = useRef(null);
   const wasSwiped = useRef(false);
@@ -59,28 +60,41 @@ export default function LocalNewsPage({ area, onChangeArea }) {
   const centre = useMemo(() => getCentre(area), [area]);
   const iframeSrc = useMemo(() => mapUrl(centre), [centre]);
   const safetyWords = /\b(fire|flood|accident|road closure|security alert|evacuation|outage|emergency|police warning)\b/i;
+  const effectiveCoverage = coverage === "local" && area?.trim() ? "local" : "nigeria";
+  const chosenArea = effectiveCoverage === "local" ? area.trim() : "";
+
+  useEffect(() => {
+    setCoverage(area?.trim() ? "local" : "nigeria");
+  }, [area]);
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
     setErrors([]);
 
-    // The map follows the chosen area; news and alerts cover Nigeria by default.
-    // Local-only community posts still obey the viewer's server-side permissions.
+    // Coverage filters published headlines and accessible community updates.
+    // A selected map area is not permission to see another area's local-only posts.
+    const postParams = new URLSearchParams({ limit: "20" });
+    if (chosenArea) postParams.set("area", chosenArea);
+    const alertParams = new URLSearchParams({ category: "Safety Alert", limit: "20" });
+    if (chosenArea) alertParams.set("area", chosenArea);
+    const newsParams = new URLSearchParams({ mode: effectiveCoverage });
+    if (chosenArea) newsParams.set("area", chosenArea);
+
     const jobs = [
-      api("/api/local-news?mode=nigeria")
+      api("/api/local-news?" + newsParams)
         .then((data) => { if (!cancelled) { setArticles(data.articles || []); setNewsStatus(data.status || ""); } })
         .catch((error) => { if (!cancelled) { setArticles([]); setNewsStatus("unavailable"); setErrors((all) => [...all, "Publisher news: " + error.message]); } }),
-      api("/api/community/search?limit=20")
+      api("/api/community/search?" + postParams)
         .then((data) => { if (!cancelled) setCommunity(data.posts || []); })
         .catch((error) => { if (!cancelled) { setCommunity([]); setErrors((all) => [...all, "Community: " + error.message]); } }),
-      api("/api/community/search?category=Safety%20Alert&limit=20")
+      api("/api/community/search?" + alertParams)
         .then((data) => { if (!cancelled) setAlerts(data.posts || []); })
         .catch((error) => { if (!cancelled) { setAlerts([]); setErrors((all) => [...all, "Alerts: " + error.message]); } }),
     ];
     Promise.allSettled(jobs).then(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
-  }, [refreshCount]);
+  }, [chosenArea, effectiveCoverage, refreshCount]);
 
   const publisherSafety = articles.filter((item) => safetyWords.test(item.title || ""));
   const latestItems = useMemo(() => [
@@ -96,7 +110,7 @@ export default function LocalNewsPage({ area, onChangeArea }) {
   return (
     <div className="local-news-experience">
       <div className="local-map-toolbar">
-        <p>Explore an area on the map. Latest updates below cover Nigeria.</p>
+        <p>Explore the map and see news from {effectiveCoverage === "local" ? area : "across Nigeria"}.</p>
         <button type="button" className="local-change-area" onClick={onChangeArea}>
           <MapPin size={15} /> Change map area <ChevronDown size={14} />
         </button>
@@ -141,9 +155,26 @@ export default function LocalNewsPage({ area, onChangeArea }) {
                 <button type="button" className={section === "latest" ? "active" : ""} aria-pressed={section === "latest"} onClick={() => setSection("latest")}><Newspaper size={15} /> Latest</button>
                 <button type="button" className={section === "alerts" ? "active" : ""} aria-pressed={section === "alerts"} onClick={() => setSection("alerts")}><ShieldAlert size={15} /> Alerts</button>
               </div>
-              <button type="button" className="local-refresh-button" onClick={() => setRefreshCount((v) => v + 1)} disabled={loading}><RefreshCw size={14} /> Refresh</button>
+              <div className="local-news-utilities">
+                <label className="local-news-coverage">
+                  <span>Coverage</span>
+                  <select
+                    value={effectiveCoverage}
+                    onChange={(event) => setCoverage(event.target.value)}
+                    aria-label="News coverage"
+                  >
+                    {area?.trim() && <option value="local">{area}</option>}
+                    <option value="nigeria">Across Nigeria</option>
+                  </select>
+                </label>
+                <button type="button" className="local-refresh-button" onClick={() => setRefreshCount((v) => v + 1)} disabled={loading}><RefreshCw size={14} /> Refresh</button>
+              </div>
             </div>
-            <p className="local-news-caption">Recent publisher headlines and community updates from across Nigeria</p>
+            <p className="local-news-caption">
+              {effectiveCoverage === "local"
+                ? "Published news and available community updates matching " + area + ". Some local headlines may not be covered."
+                : "Recent publisher headlines and accessible community updates from across Nigeria."}
+            </p>
             {errors.length > 0 && <p className="local-news-hint" role="status">{errors[0]}</p>}
             {newsStatus === "not_configured" && (
               <p className="local-news-hint">Publisher news is not connected yet. Add a GNews API key to the backend to see real headlines. Community updates still show when available.</p>
@@ -169,8 +200,10 @@ export default function LocalNewsPage({ area, onChangeArea }) {
                   {activeItems.length === 0 && (
                     <div className="local-news-empty">
                       {section === "alerts" ? <ShieldAlert size={23} /> : <Newspaper size={23} />}
-                      <strong>{section === "alerts" ? "No safety reports available yet" : "No recent updates available yet"}</strong>
-                      <p>{section === "alerts" ? "There are no accessible member safety reports or safety-related publisher headlines in the connected sources." : "No publisher articles or community updates were returned. A news API key is required for publisher headlines."}</p>
+                      <strong>{effectiveCoverage === "local" ? "No updates found for " + area : section === "alerts" ? "No safety reports available yet" : "No recent updates available yet"}</strong>
+                      <p>{effectiveCoverage === "local"
+                        ? "No matching " + (section === "alerts" ? "alerts" : "headlines or posts") + " were returned for this area. Try Across Nigeria in the Coverage menu, or check again later."
+                        : "The connected sources have no matching updates at the moment. Publisher news requires a configured news API."}</p>
                     </div>
                   )}
                 </>
