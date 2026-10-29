@@ -8,6 +8,14 @@ const authorFields = "fullName profilePhoto role isVerified state city";
 
 const currentUser = async (req) => User.findById(req.user.id).select("fullName profilePhoto role isVerified state city");
 
+// A known post ID must never bypass the local-only visibility rules used by feeds/search.
+function canViewPost(post, viewer) {
+  if (!post || post.isHidden || !viewer) return false;
+  if (post.audience !== "local") return true;
+  const same = (a, b) => Boolean(a && b && String(a).trim().toLowerCase() === String(b).trim().toLowerCase());
+  return same(post.location?.state, viewer.state) || same(post.location?.city, viewer.city);
+}
+
 const createPost = async (req, res) => {
   try {
     const author = await currentUser(req);
@@ -113,8 +121,11 @@ const addComment = async (req, res) => {
     const text = typeof req.body.text === "string" ? req.body.text.trim() : "";
     if (!text) return res.status(400).json({ message: "Write a comment first." });
     if (text.length > 1000) return res.status(400).json({ message: "Comments must be 1,000 characters or fewer." });
-    const post = await CommunityPost.findOne({ _id: req.params.postId, isHidden: false });
-    if (!post) return res.status(404).json({ message: "Post not found." });
+    const [post, viewer] = await Promise.all([
+      CommunityPost.findOne({ _id: req.params.postId, isHidden: false }),
+      currentUser(req),
+    ]);
+    if (!canViewPost(post, viewer)) return res.status(404).json({ message: "Post not found." });
     post.comments.push({ author: req.user.id, text });
     await post.save();
     await post.populate("comments.author", "fullName profilePhoto role isVerified");
@@ -128,8 +139,11 @@ const addComment = async (req, res) => {
 
 const toggleReaction = async (req, res) => {
   try {
-    const post = await CommunityPost.findOne({ _id: req.params.postId, isHidden: false });
-    if (!post) return res.status(404).json({ message: "Post not found." });
+    const [post, viewer] = await Promise.all([
+      CommunityPost.findOne({ _id: req.params.postId, isHidden: false }),
+      currentUser(req),
+    ]);
+    if (!canViewPost(post, viewer)) return res.status(404).json({ message: "Post not found." });
     const alreadyReacted = post.reactions.some((id) => String(id) === String(req.user.id));
     if (alreadyReacted) post.reactions = post.reactions.filter((id) => String(id) !== String(req.user.id));
     else post.reactions.push(req.user.id);
@@ -182,8 +196,11 @@ const reportPost = async (req, res) => {
     const reason = reportReasons.includes(req.body.reason) ? req.body.reason : "";
     const details = typeof req.body.details === "string" ? req.body.details.trim() : "";
     if (!reason) return res.status(400).json({ message: "Choose a report reason." });
-    const post = await CommunityPost.findOne({ _id: req.params.postId, isHidden: false });
-    if (!post) return res.status(404).json({ message: "Post not found." });
+    const [post, viewer] = await Promise.all([
+      CommunityPost.findOne({ _id: req.params.postId, isHidden: false }),
+      currentUser(req),
+    ]);
+    if (!canViewPost(post, viewer)) return res.status(404).json({ message: "Post not found." });
     if (String(post.author) === String(req.user.id)) return res.status(400).json({ message: "You cannot report your own post." });
     if (post.reports.some((report) => String(report.reporter) === String(req.user.id))) {
       return res.status(409).json({ message: "You have already reported this post." });
