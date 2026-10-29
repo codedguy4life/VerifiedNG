@@ -18,7 +18,7 @@ const categories = [
   "Safety Alert",
 ];
 
-export default function PostComposer({ user, onPublish, busy }) {
+export default function PostComposer({ user, onPublish, onRequireLocation, busy }) {
   const [expanded, setExpanded] = useState(false);
   const [text, setText] = useState("");
   const [category, setCategory] = useState("General");
@@ -116,6 +116,11 @@ export default function PostComposer({ user, onPublish, busy }) {
     event.preventDefault();
     if ((!text.trim() && !selectedFile) || busy || uploadingMedia) return;
     setMediaNotice("");
+    if (audience === "local" && !user?.state?.trim() && !user?.city?.trim()) {
+      setMediaNotice("Save your state or city before publishing a neighbourhood post. Your draft and attachment will be kept.");
+      onRequireLocation?.();
+      return;
+    }
     let media = {};
     if (selectedFile) {
       setUploadingMedia(true);
