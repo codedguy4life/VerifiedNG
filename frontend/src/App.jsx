@@ -33,6 +33,7 @@ import {
 } from "lucide-react";
 import { api, getToken } from "./lib/api.js";
 import PostComposer from "./components/PostComposer.jsx";
+import ProfileEditor from "./components/ProfileEditor.jsx";
 import PostCard from "./components/PostCard.jsx";
 import SearchPage from "./components/SearchPage.jsx";
 import LocalNewsPage from "./components/LocalNewsPage.jsx";
@@ -66,6 +67,8 @@ export default function App() {
   const [currentView, setCurrentView] = useState("home");
   const [notificationFilter, setNotificationFilter] = useState("all");
   const [profileDrawerOpen, setProfileDrawerOpen] = useState(false);
+  const [profileEditorOpen, setProfileEditorOpen] = useState(false);
+  const [postingBlocked, setPostingBlocked] = useState(false);
   const [area, setArea] = useState(
     () => localStorage.getItem("verifiedng-area") || "",
   );
@@ -124,6 +127,40 @@ export default function App() {
     window.addEventListener("storage", onStorage);
     return () => window.removeEventListener("storage", onStorage);
   }, []);
+
+  useEffect(() => {
+    if (!token) return;
+    let active = true;
+    api("/api/user/profile")
+      .then((result) => {
+        if (!active || !result?.user) return;
+        localStorage.setItem("user", JSON.stringify(result.user));
+        setUser(result.user);
+      })
+      .catch(() => {
+        // Keep the current session and let the normal API requests report auth errors.
+      });
+    return () => { active = false; };
+  }, [token]);
+
+  function requestProfileLocation() {
+    setPostingBlocked(true);
+    setProfileEditorOpen(true);
+  }
+
+  function saveProfileChanges(updatedUser) {
+    localStorage.setItem("user", JSON.stringify(updatedUser));
+    setUser(updatedUser);
+    const updatedArea = [updatedUser.city, updatedUser.state].filter(Boolean).join(", ");
+    if (updatedArea) {
+      localStorage.setItem("verifiedng-area", updatedArea);
+      setArea(updatedArea);
+    }
+    setProfileEditorOpen(false);
+    setPostingBlocked(false);
+    setMessage("Profile saved. You can now publish your local post.");
+    setError("");
+  }
 
   async function publishPost(payload) {
     setPublishing(true);
@@ -241,6 +278,8 @@ export default function App() {
     setToken(null);
     setUser(null);
     setPosts([]);
+    setProfileEditorOpen(false);
+    setPostingBlocked(false);
   }
   function chooseArea() {
     const nextArea = window.prompt(
@@ -317,7 +356,8 @@ export default function App() {
       "Help centre": "help",
     };
     if (label === "My profile") {
-      openLegacyPage("dashboard.html");
+      setPostingBlocked(false);
+      setProfileEditorOpen(true);
       return;
     }
     if (label === "Become a provider") {
@@ -799,6 +839,7 @@ export default function App() {
             <PostComposer
               user={user}
               onPublish={publishPost}
+              onRequireLocation={requestProfileLocation}
               busy={publishing}
             />
             {message && (
@@ -921,6 +962,17 @@ export default function App() {
         ))}
       </nav>
 
+      {profileEditorOpen && (
+        <ProfileEditor
+          user={user}
+          postingBlocked={postingBlocked}
+          onClose={() => {
+            setProfileEditorOpen(false);
+            setPostingBlocked(false);
+          }}
+          onSaved={saveProfileChanges}
+        />
+      )}
       {profileDrawerOpen && (
         <div className="profile-drawer-layer">
           <button
