@@ -82,6 +82,53 @@ describe("Community discovery and local news", () => {
     expect(response.body.posts.map((post) => post.text)).not.toContain("Private bridge report");
   });
 
+  test("a guessed local-only post ID cannot be commented on, reacted to or reported from another area", async () => {
+    const hiddenId = String(createdPosts[1]._id);
+    const auth = { Authorization: "Bearer " + token };
+    const [comment, reaction, report] = await Promise.all([
+      request(app).post("/api/community/posts/" + hiddenId + "/comments").set(auth).send({ text: "Trying to read this" }),
+      request(app).post("/api/community/posts/" + hiddenId + "/reactions").set(auth).send({}),
+      request(app).post("/api/community/posts/" + hiddenId + "/reports").set(auth).send({ reason: "spam" }),
+    ]);
+    expect(comment.statusCode).toBe(404);
+    expect(reaction.statusCode).toBe(404);
+    expect(report.statusCode).toBe(404);
+  });
+
+  test("a user can save state and city before publishing a neighbourhood post", async () => {
+    const member = await createMember("Location Onboarding", "", "");
+    let postId;
+    try {
+      const login = await request(app).post("/api/auth/login").send({
+        identifier: member.email,
+        password: "TestPass123!",
+      });
+      expect(login.statusCode).toBe(200);
+      const auth = { Authorization: "Bearer " + login.body.token };
+      const before = await request(app).post("/api/community/posts").set(auth).send({
+        text: "Before location",
+        audience: "local",
+      });
+      expect(before.statusCode).toBe(400);
+      const profile = await request(app).put("/api/user/profile").set(auth).send({
+        state: "Lagos",
+        city: "Ikeja",
+      });
+      expect(profile.statusCode).toBe(200);
+      expect(profile.body.user.state).toBe("Lagos");
+      const after = await request(app).post("/api/community/posts").set(auth).send({
+        text: "After location",
+        audience: "local",
+      });
+      expect(after.statusCode).toBe(201);
+      expect(after.body.post.location.state).toBe("Lagos");
+      postId = after.body.post._id;
+    } finally {
+      if (postId) await CommunityPost.deleteOne({ _id: postId });
+      await User.deleteOne({ _id: member._id });
+    }
+  });
+
   test("provider search understands electrician as Electrical", async () => {
     const response = await request(app).get("/api/providers?search=electrician");
     expect(response.statusCode).toBe(200);
