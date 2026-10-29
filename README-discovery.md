@@ -81,3 +81,27 @@ The new `tests/community-discovery.test.js` exercises privacy and the missing-ke
   Replace these example placeholders with actual settings. Stop Vite using Ctrl+C and run `npm run dev` again; Vite does not automatically reload environment files during a running dev server.
 - Do not put Cloudinary API secrets in the Vite frontend. For an online GitHub Pages build, frontend `VITE_*` variables must be supplied to the **build/deployment environment** and the site rebuilt; a local `.env.local` won't change a previously published build.
 - Unsigned direct uploads should be constrained by Cloudinary upload preset policies and replaced with authenticated backend-issued upload signatures for public, abuse-resistant production use.
+
+## Profile onboarding and posting fix
+
+The community app now provides a **My profile** editor directly in the React interface (Options → My profile). You can save your full name, Nigerian state/FCT, city or neighbourhood, and bio. It uses the existing authenticated `PUT /api/user/profile` endpoint and updates the cached account and selected map/feed area after saving.
+
+When a user tries to publish a **My neighbourhood** post without a saved state or city, the composer opens the location editor **before uploading any media**. The post draft and selected image/video stay in the composer while the editor is open. Save the state and retry **Post**. This avoids uploading a file to Cloudinary only to have the API reject the post for missing location.
+
+The profile location is a server-side user setting, distinct from the map's temporary area selector. Choosing an area on the map does not grant access to another neighbourhood's private posts.
+
+### Quick manual acceptance test
+
+1. Pull `feature/community-home-redesign`, then restart the backend and frontend.
+2. Sign in with a test account missing state/city. Start a local post and attach an image.
+3. Click Post: the location editor should appear without uploading the file.
+4. Choose your state (e.g. Lagos), enter a city (e.g. Ikeja), save; confirm the post draft and attachment remain.
+5. Click Post again; the media should upload, and the post should publish to the selected local area.
+6. Open Options → My profile, edit your location, save and refresh; changes should persist.
+7. Check that an unrelated user's local-only post cannot be commented on, reacted to or reported using a guessed post ID.
+
+A GitHub Actions workflow in `.github/workflows/quality.yml` now attempts a frontend production build and backend integration tests against an isolated MongoDB service on branch pushes and pull requests. A committed workflow is **not proof that CI has passed**; check the Actions tab for results. No full browser/production end-to-end test has been executed in this environment.
+
+## Remaining launch blockers
+
+The app is **not yet a finished production platform**. Notably, the React For Sale and Local Faves tabs still have placeholder behaviour, Events and Groups are placeholders, the messages inbox is a placeholder, notifications lack a persisted personal activity feed, the provider onboarding workflow is gated and needs admin operations, and unsigned Cloudinary uploads need stronger production controls. These require separate implementation and validation, plus real account and deployment testing. Never represent placeholders as complete features.
