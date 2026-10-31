@@ -78,7 +78,7 @@ async function trending(req, res) {
       ]),
     ]);
     const ranked = [...providers, ...sale]
-      .filter((entry) => typeof entry._id === "string" && entry._id.trim().length > 1)
+      .filter((entry) => typeof entry._id === "string" && entry._id.trim().length > 1 && entry._id.trim().length <= 80)
       .sort((a, b) => b.count - a.count);
     const terms = [...new Set(ranked.map((item) => item._id.trim()))].slice(0, 4);
     res.json({ terms, basis: "number_of_registered_provider_and_sale_listings" });
