@@ -54,6 +54,7 @@ const providerRoutes = require("./routes/providerRoutes");
 const hireRoutes = require("./routes/hireRoutes");
 const communityRoutes = require("./routes/communityRoutes");
 const localNewsRoutes = require("./routes/localNewsRoutes");
+const saleRoutes = require("./routes/saleRoutes");
 
 app.get("/api/health", (req, res) => {
   res.json({ message: "VerifiedNG Backend is running!" });
@@ -65,6 +66,7 @@ app.use("/api/providers", providerRoutes);
 app.use("/api/hire", hireRoutes);
 app.use("/api/community", communityRoutes);
 app.use("/api/local-news", localNewsRoutes);
+app.use("/api/sales", saleRoutes);
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(frontendRoot, "index.html"));
