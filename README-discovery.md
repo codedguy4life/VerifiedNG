@@ -105,3 +105,28 @@ A GitHub Actions workflow in `.github/workflows/quality.yml` now attempts a fron
 ## Remaining launch blockers
 
 The app is **not yet a finished production platform**. Notably, the React For Sale and Local Faves tabs still have placeholder behaviour, Events and Groups are placeholders, the messages inbox is a placeholder, notifications lack a persisted personal activity feed, the provider onboarding workflow is gated and needs admin operations, and unsigned Cloudinary uploads need stronger production controls. These require separate implementation and validation, plus real account and deployment testing. Never represent placeholders as complete features.
+
+## For Sale — first functional marketplace version
+
+The floating **For Sale** tab now opens `frontend/src/components/ForSalePage.jsx` instead of the previous placeholder.
+
+- Compact `Search all listings` field, expandable category/subcategory filters, Free toggle, distance selection in kilometres/miles, and Most relevant/Newest/Price/Nearest sorting.
+- Two responsive product cards per row with real images (when provided), naira price, brief description, posting time and saved city/state; approximate distance appears only with seller opt-in coordinates and buyer location consent.
+- **Sell** opens a listing form and stores items via authenticated MongoDB endpoints. Seller must save a city or state in My profile first. Photos use the same existing Cloudinary unsigned upload configuration as community posts; without a configured preset, listings can still be created without photos.
+- Only actual active listings are displayed: no fabricated seed products. Sellers can open their own item and mark it sold. An empty list means no matching active listings were returned.
+
+API: `GET /api/sales/categories`, `GET /api/sales`, `POST /api/sales`, `PATCH /api/sales/:id/status`. The list endpoint accepts `search`, `category`, `subcategory`, `free=true`, `sort=relevant|newest|price_low|price_high|nearest`, `page`, `limit`, and optional `lat`, `lng`, `distanceKm` (up to 250 km). Distance queries use a MongoDB geospatial index, require browser location consent, and return only items with seller-supplied approximate coordinates. Geolocation is rounded to 2 decimals **before saving**; precise buyer location is used only to perform the request and is not stored on their profile.
+
+**Important limitations:** Buyer/seller chat and payments are not built; no payment is requested by this feature. There are no production seller-verification or marketplace moderation/admin tools yet. Approximate coordinates can expose an approximate listing area, so sellers should not share their exact home address or location without considering privacy. Add `CLOUDINARY_CLOUD_NAME` to the server environment in production to restrict marketplace listing photo URLs to the intended Cloudinary account; the browser Cloudinary settings remain in `frontend/.env.local`.
+
+### Test this feature
+1. Pull the feature branch and restart backend and Vite frontend.
+2. Open For Sale; verify that the list is empty until real products have been created.
+3. Click Sell. Fill item name, category, price (0 means Free), and your description. Save location in My profile if prompted.
+4. Publish and confirm it appears as a compact card in the two-column grid. Add a photo if Cloudinary is configured.
+5. Search for the item, choose Free or a category, and compare sorting options. Click a card to see its details.
+6. For distance filtering, sellers must explicitly add approximate item location, and buyers must allow browser location. Without either, distance is unavailable rather than invented.
+7. Test marking your own item sold, and confirm it disappears from active listings.
+8. With `MONGO_TEST_URI` pointed to a **dedicated, disposable test database**, run `npm test` and `cd frontend && npm run build` separately. Do not point automated tests at your main application database.
+
+The backend JS syntax has been checked, but the full Vite build and database tests still need to run and pass in your environment/CI.
