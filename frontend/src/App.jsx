@@ -35,6 +35,8 @@ import { api, getToken } from "./lib/api.js";
 import PostComposer from "./components/PostComposer.jsx";
 import ProfileEditor from "./components/ProfileEditor.jsx";
 import ForSalePage from "./components/ForSalePage.jsx";
+import GroupsPage from "./components/GroupsPage.jsx";
+import VerificationPage from "./components/VerificationPage.jsx";
 import PostCard from "./components/PostCard.jsx";
 import SearchPage from "./components/SearchPage.jsx";
 import LocalNewsPage from "./components/LocalNewsPage.jsx";
@@ -143,6 +145,12 @@ export default function App() {
       });
     return () => { active = false; };
   }, [token]);
+
+  const syncUserProfile = useCallback((updated) => {
+    if (!updated) return;
+    localStorage.setItem("user", JSON.stringify(updated));
+    setUser(updated);
+  }, []);
 
   function requestProfileLocation() {
     setPostingBlocked(true);
@@ -351,6 +359,7 @@ export default function App() {
       "Local news": "local-news",
       Events: "events",
       Groups: "groups",
+      Verification: "verification",
       "Saved posts": "saved-posts",
       Settings: "settings",
       "Invite neighbours": "invite",
@@ -543,6 +552,7 @@ export default function App() {
                 search: "Explore VerifiedNG",
                 providers: "Find service providers",
                 sale: "For Sale",
+                verification: "Account verification",
                 events: "Neighbourhood events",
                 groups: "Community groups",
                 "saved-posts": "Saved posts",
@@ -558,6 +568,7 @@ export default function App() {
                 search: "Search your community, discover trending services and explore what is happening nearby.",
                 providers: "Browse service professionals, explore skills and find someone to help.",
                 sale: "Discover items offered by neighbours.",
+                verification: "Request a manual review to unlock members-only features.",
                 events:
                   "Find and share things happening around your neighbourhood.",
                 groups: "Connect with neighbours who share your interests.",
@@ -589,6 +600,7 @@ export default function App() {
               key={currentView}
               mode={currentView}
               area={area}
+              user={user}
               initialTab={currentView === "providers" ? "providers" : "all"}
               onExplore={(destination) => {
                 if (destination === "providers") chooseTab("providers");
@@ -612,6 +624,17 @@ export default function App() {
                 setPostingBlocked(false);
                 setProfileEditorOpen(true);
               }}
+            />
+          )}
+          {currentView === "groups" && (
+            <GroupsPage user={user} onOpenVerification={() => { setCurrentView("verification"); setMessage(""); }} />
+          )}
+          {currentView === "verification" && (
+            <VerificationPage
+              user={user}
+              onUpdated={syncUserProfile}
+              onEditProfile={() => { setPostingBlocked(false); setProfileEditorOpen(true); }}
+              onOpenGroups={() => setCurrentView("groups")}
             />
           )}
           {currentView === "events" && (
