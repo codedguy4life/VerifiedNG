@@ -35,12 +35,13 @@ export default function SearchPage({ area = "", initialTab = "all", mode = "sear
 
   // Fetch the real directory so "Providers" is useful without typing.
   useEffect(() => {
+    if (isSearchHub) return;
     let cancelled = false;
     api("/api/providers")
       .then((data) => { if (!cancelled) setDirectoryCount((data.providers || []).length); })
       .catch(() => { if (!cancelled) setDirectoryCount(null); });
     return () => { cancelled = true; };
-  }, [refresh]);
+  }, [refresh, isSearchHub]);
 
   useEffect(() => {
     const q = query.trim();
@@ -82,7 +83,7 @@ export default function SearchPage({ area = "", initialTab = "all", mode = "sear
   const hasQuery = query.trim().length >= 2;
   const count = providers.length + posts.length;
   const directoryEmpty = directoryCount === 0;
-  const showHub = isSearchHub && !query.trim();
+  const showHub = isSearchHub && !query.trim() && tab !== "community";
   function chooseExplore(id) {
     if (id === "community") {
       setTab("community");
