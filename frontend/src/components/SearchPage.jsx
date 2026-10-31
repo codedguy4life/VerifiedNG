@@ -112,7 +112,7 @@ export default function SearchPage({ area = "", user, initialTab = "all", mode =
       {showHub && (
         <>
           <AskArea
-            area={area || [user?.city, user?.state].filter(Boolean).join(", ")}
+            area={[user?.city, user?.state].filter(Boolean).join(", ") || area}
             onOpenProvider={onOpenProvider}
             onExplore={onExplore}
           />
