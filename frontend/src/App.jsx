@@ -69,6 +69,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState("home");
   const [currentView, setCurrentView] = useState("home");
   const [notificationFilter, setNotificationFilter] = useState("all");
+  const [recommendedItem, setRecommendedItem] = useState(null);
   const [profileDrawerOpen, setProfileDrawerOpen] = useState(false);
   const [profileEditorOpen, setProfileEditorOpen] = useState(false);
   const [postingBlocked, setPostingBlocked] = useState(false);
@@ -310,6 +311,7 @@ export default function App() {
   function chooseTab(id) {
     window.scrollTo({ top: 0, behavior: "smooth" });
     setActiveTab(id);
+    setRecommendedItem(null);
     setProfileDrawerOpen(false);
     setError("");
     if (id === "search" || id === "providers" || id === "sale") {
@@ -602,10 +604,13 @@ export default function App() {
               area={area}
               user={user}
               initialTab={currentView === "providers" ? "providers" : "all"}
-              onExplore={(destination) => {
+              onExplore={(destination, item) => {
                 if (destination === "providers") chooseTab("providers");
-                else if (destination === "sale") chooseTab("sale");
-                else {
+                else if (destination === "sale") {
+                  chooseTab("sale");
+                  setRecommendedItem(item || null);
+                } else {
+                  setRecommendedItem(item || null);
                   setCurrentView(destination);
                   setActiveTab("search");
                   setMessage("");
@@ -620,6 +625,7 @@ export default function App() {
           {currentView === "sale" && (
             <ForSalePage
               user={user}
+              initialListingId={recommendedItem?.type === "sale" ? recommendedItem._id : null}
               onEditProfile={() => {
                 setPostingBlocked(false);
                 setProfileEditorOpen(true);
@@ -627,7 +633,7 @@ export default function App() {
             />
           )}
           {currentView === "groups" && (
-            <GroupsPage user={user} onOpenVerification={() => { setCurrentView("verification"); setMessage(""); }} />
+            <GroupsPage user={user} initialGroupId={recommendedItem?.type === "groups" ? recommendedItem._id : null} onOpenVerification={() => { setCurrentView("verification"); setMessage(""); }} />
           )}
           {currentView === "verification" && (
             <VerificationPage
