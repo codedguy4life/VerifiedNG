@@ -23,8 +23,18 @@ export default function SearchPage({ area = "", user, initialTab = "all", mode =
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [refresh, setRefresh] = useState(0);
+  const [trending, setTrending] = useState([]);
 
   useEffect(() => { setTab(initialTab); }, [initialTab]);
+
+  useEffect(() => {
+    if (!isSearchHub) return;
+    let active = true;
+    api("/api/discovery/trending").then((result) => {
+      if (active) setTrending((result.terms || []).slice(0, 4));
+    }).catch(() => {});
+    return () => { active = false; };
+  }, [isSearchHub]);
 
   // Fetch the real directory so "Providers" is useful without typing.
   useEffect(() => {
@@ -107,9 +117,9 @@ export default function SearchPage({ area = "", user, initialTab = "all", mode =
             onExplore={onExplore}
           />
           <section className="discovery-trending" aria-label="Trending search suggestions">
-            <h3><TrendingUp size={16} /> Trending</h3>
+            <h3><TrendingUp size={16} /> {trending.length ? "Trending" : "Suggested searches"}</h3>
             <div className="discovery-quick-searches">
-              {quickSearches.map((service) => <button key={service} type="button" onClick={() => setQuery(service)}>{service}</button>)}
+              {(trending.length ? trending : quickSearches).map((service) => <button key={service} type="button" onClick={() => setQuery(service)}>{service}</button>)}
             </div>
           </section>
           <div className="discovery-shortcuts" aria-label="Explore nearby">
@@ -136,14 +146,6 @@ export default function SearchPage({ area = "", user, initialTab = "all", mode =
           <MapPin size={14} /> {area ? "Only " + area : "All areas"}
         </label>
       </div>
-
-      {false && !isSearchHub && !hasQuery && tab !== "community" && (
-        <div className="discovery-quick-searches" aria-label="Popular service searches">
-          {quickSearches.map((service) => (
-            <button key={service} type="button" onClick={() => setQuery(service)}>{service}</button>
-          ))}
-        </div>
-      )}
 
       {loading && <p className="discovery-count" role="status"><RefreshCw size={14} /> Searching VerifiedNG…</p>}
       {error && <div className="notice error-notice" role="alert">{error} Check that the backend is running on port 5000.</div>}
