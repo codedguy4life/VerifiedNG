@@ -165,7 +165,7 @@ export default function PostCard({
             <span className="post-meta-separator" aria-hidden="true">·</span>
             <span className="post-meta-chip post-audience-chip">
               {post.audience === "local" ? <MapPin size={11} /> : <Globe2 size={11} />}
-              {post.audience === "local" ? (post.location?.neighborhood || post.location?.area || "My neighbourhood") : "Across Nigeria"}
+              {post.audience === "group" ? "Group members" : post.audience === "local" ? (post.location?.neighborhood || post.location?.area || "My neighbourhood") : "Across Nigeria"}
             </span>
           </div>
         </div>
