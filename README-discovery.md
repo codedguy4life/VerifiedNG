@@ -149,13 +149,13 @@ Signed-in users may browse the group directory and read basic group descriptions
 
 The in-app **Get verified** page shows status, a manual review request form and (for authorized administrators) a pending-review queue. Users cannot set `isVerified` through profile editing or approve themselves. Requests do not contain ID documents or passwords. An account must first save a state or city. A pending request cannot be repeatedly resubmitted; rejected requests may be resubmitted after 24 hours.
 
-**You must configure `VERIFICATION_ADMIN_EMAILS` in the backend's own `.env` / Render environment**, as a comma-separated list of emails belonging to authorized VerifiedNG administrators. Example:
+**You must configure `VERIFICATION_ADMIN_USER_IDS` in the backend's own `.env` / Render environment**, as a comma-separated list of MongoDB User _id values belonging to authorized VerifiedNG administrators. Example:
 
 ```env
-VERIFICATION_ADMIN_EMAILS=admin@example.com
+VERIFICATION_ADMIN_USER_IDS=64f000000000000000000000
 ```
 
-Replace the example with an actual existing administrator account and keep this setting on the backend only. The server compares the signed-in user's database email to the allowlist on every admin request. Admins can open **Get verified** to review/approve/reject requests. Verified badges and group access are enabled **only after an admin approves** the request. This is a manual account review, not an independently verified national-ID check, a licence check or a guarantee of safety. Build stronger evidence collection, anti-fraud checks, moderation, revocation and audit tooling before claiming high-assurance identity verification.
+Replace the example with an actual existing administrator's MongoDB user _id and keep this setting on the backend only. The server compares the signed-in user's immutable database _id to the allowlist on every admin request. Admins can open **Get verified** to review/approve/reject requests. Verified badges and group access are enabled **only after an admin approves** the request. This is a manual account review, not an independently verified national-ID check, a licence check or a guarantee of safety. Build stronger evidence collection, anti-fraud checks, moderation, revocation and audit tooling before claiming high-assurance identity verification.
 
 ### Suggested checks
 
