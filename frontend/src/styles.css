@@ -3027,3 +3027,59 @@ a.notification-story:hover { border-color: #b7d8c5; }
   .profile-editor-form { padding: 16px 16px max(20px, env(safe-area-inset-bottom)); }
   .profile-editor-fields { grid-template-columns: 1fr; }
 }
+
+
+/* Separate Search discovery hub and Providers directory */
+.discovery-hero {
+  padding: 22px 22px 20px;
+  border: 1px solid #d9eadd;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #eaf8ef 0%, #f8fcf9 75%);
+}
+.discovery-provider-hero { background: #f8faf9; border-color: var(--line); }
+.discovery-eyebrow { display: inline-flex; align-items: center; gap: 6px; color: var(--green-dark); font-size: 10px; font-weight: 850; letter-spacing: 1px; }
+.discovery-hero h2 { margin: 9px 0 6px; font-size: clamp(20px, 3vw, 26px); line-height: 1.25; letter-spacing: -.6px; }
+.discovery-hero p { margin: 0; font-size: 12px; line-height: 1.6; color: var(--muted); }
+.discovery-search-hub .discovery-search-field { border-color: #c5e2cf; box-shadow: 0 3px 12px rgba(10, 84, 45, .04); }
+.discovery-trending, .discovery-explore { display: grid; gap: 11px; margin-top: 5px; }
+.discovery-trending h3, .discovery-explore h3 { margin: 0; display: flex; align-items: center; gap: 7px; font: 750 15px var(--font-heading); }
+.discovery-trending h3 svg { color: var(--green); }
+.discovery-trending .discovery-quick-searches button { display: inline-flex; align-items: center; gap: 8px; padding: 9px 12px; background: #fff; }
+.discovery-trending .discovery-quick-searches button:hover { background: var(--green-pale); }
+.discovery-explore-heading p { margin: 4px 0 0; font-size: 11px; color: var(--muted); }
+.discovery-explore-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.discovery-explore-card {
+  position: relative; min-height: 135px; display: flex; flex-direction: column;
+  align-items: flex-start; text-align: left; gap: 5px; padding: 15px;
+  border: 1px solid var(--line); border-radius: 14px; background: #fff;
+  color: var(--ink); transition: border-color .18s ease, background .18s ease, transform .18s ease;
+}
+.discovery-explore-card:hover { background: #f6fcf8; border-color: #a9d4b9; transform: translateY(-2px); }
+.discovery-explore-icon { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 11px; background: var(--green-pale); color: var(--green-dark); margin-bottom: 5px; }
+.discovery-explore-card strong { font-size: 12px; }
+.discovery-explore-card small { max-width: 90%; font-size: 10px; color: var(--muted); line-height: 1.4; }
+.discovery-explore-arrow { position: absolute; right: 12px; bottom: 12px; color: var(--green); }
+.discovery-search-hub .discovery-search-controls { margin-top: 5px; }
+
+/* Real weather data in Local News, not a placeholder forecast */
+.local-weather-panel { padding: 13px 3px 8px; }
+.local-weather-location { display: inline-flex; align-items: center; gap: 5px; color: var(--muted); font-size: 11px; }
+.local-weather-main { display: flex; align-items: center; gap: 16px; padding: 14px 4px 18px; color: var(--green-dark); }
+.local-weather-main > svg { flex: 0 0 auto; width: 48px; height: 48px; }
+.local-weather-main > div { display: flex; flex-direction: column; gap: 2px; }
+.local-weather-main strong { font: 800 35px/1.1 var(--font-heading); letter-spacing: -1px; }
+.local-weather-main span { font-size: 12px; color: var(--muted); }
+.local-weather-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.local-weather-stats > span { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: #f9fcfa; font-size: 10px; color: var(--muted); }
+.local-weather-stats svg { color: var(--green); }
+.local-weather-stats strong { color: var(--ink); font-size: 13px; }
+.local-weather-credit { margin: 12px 0 0; font-size: 10px; color: var(--muted); line-height: 1.5; }
+@media (max-width: 600px) {
+  .discovery-hero { padding: 18px; }
+  .discovery-explore-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .discovery-explore-card { min-height: 128px; padding: 12px; }
+  .local-news-tabs button { padding: 7px 8px; font-size: 11px; }
+  .local-weather-stats { gap: 5px; }
+  .local-weather-stats > span { padding: 9px 7px; }
+}
+@media (prefers-reduced-motion: reduce) { .discovery-explore-card { transition: none; } }
