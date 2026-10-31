@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowUpRight, ChevronDown, ChevronUp, MapPin, Newspaper, RefreshCw, ShieldAlert, Users } from "lucide-react";
+import { ArrowUpRight, ChevronDown, ChevronUp, MapPin, Newspaper, RefreshCw, ShieldAlert, Users, CloudSun, Droplets, Wind, Thermometer } from "lucide-react";
 import { api } from "../lib/api.js";
 
 // Approximate city/neighbourhood centres, NOT coordinates of reported incidents.
@@ -38,6 +38,17 @@ function mapUrl(centre) {
   return "https://www.openstreetmap.org/export/embed.html?" + params;
 }
 
+function describeWeather(code) {
+  if (code === 0) return "Clear skies";
+  if ([1, 2, 3].includes(code)) return "Partly cloudy";
+  if ([45, 48].includes(code)) return "Foggy";
+  if ([51, 53, 55, 56, 57].includes(code)) return "Drizzle";
+  if ([61, 63, 65, 66, 67, 80, 81, 82].includes(code)) return "Rainy";
+  if ([71, 73, 75, 77, 85, 86].includes(code)) return "Snow";
+  if ([95, 96, 99].includes(code)) return "Thunderstorms";
+  return "Current conditions";
+}
+
 function timeLabel(value) {
   if (!value) return "Date not available";
   const date = new Date(value);
@@ -57,11 +68,34 @@ export default function LocalNewsPage({ area, onChangeArea }) {
   const [errors, setErrors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshCount, setRefreshCount] = useState(0);
+  const [weather, setWeather] = useState(null);
+  const [weatherError, setWeatherError] = useState("");
+  const [weatherLoading, setWeatherLoading] = useState(false);
   const centre = useMemo(() => getCentre(area), [area]);
   const iframeSrc = useMemo(() => mapUrl(centre), [centre]);
   const safetyWords = /\b(fire|flood|accident|road closure|security alert|evacuation|outage|emergency|police warning)\b/i;
   const effectiveCoverage = coverage === "local" && area?.trim() ? "local" : "nigeria";
   const chosenArea = effectiveCoverage === "local" ? area.trim() : "";
+
+  useEffect(() => {
+    if (section !== "weather" || !centre.known) return;
+    const controller = new AbortController();
+    setWeatherLoading(true);
+    setWeatherError("");
+    setWeather(null);
+    const params = new URLSearchParams({
+      latitude: String(centre.lat),
+      longitude: String(centre.lng),
+      current: "temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m",
+      timezone: "Africa/Lagos",
+    });
+    fetch("https://api.open-meteo.com/v1/forecast?" + params, { signal: controller.signal })
+      .then((response) => { if (!response.ok) throw new Error("Weather service is unavailable."); return response.json(); })
+      .then((data) => { if (!controller.signal.aborted) { if (!data.current) throw new Error("No weather data returned."); setWeather(data.current); } })
+      .catch((error) => { if (!controller.signal.aborted) setWeatherError(error.message || "Could not load the weather."); })
+      .finally(() => { if (!controller.signal.aborted) setWeatherLoading(false); });
+    return () => controller.abort();
+  }, [section, centre, refreshCount]);
 
   useEffect(() => {
     setCoverage(area?.trim() ? "local" : "nigeria");
@@ -154,6 +188,7 @@ export default function LocalNewsPage({ area, onChangeArea }) {
               <div className="local-news-tabs" role="group" aria-label="Choose updates">
                 <button type="button" className={section === "latest" ? "active" : ""} aria-pressed={section === "latest"} onClick={() => setSection("latest")}><Newspaper size={15} /> Latest</button>
                 <button type="button" className={section === "alerts" ? "active" : ""} aria-pressed={section === "alerts"} onClick={() => setSection("alerts")}><ShieldAlert size={15} /> Alerts</button>
+                <button type="button" className={section === "weather" ? "active" : ""} aria-pressed={section === "weather"} onClick={() => setSection("weather")}><CloudSun size={15} /> Weather</button>
               </div>
               <div className="local-news-utilities">
                 <label className="local-news-coverage">
@@ -170,6 +205,28 @@ export default function LocalNewsPage({ area, onChangeArea }) {
                 <button type="button" className="local-refresh-button" onClick={() => setRefreshCount((v) => v + 1)} disabled={loading}><RefreshCw size={14} /> Refresh</button>
               </div>
             </div>
+            {section === "weather" ? (
+              <div className="local-weather-panel" aria-live="polite">
+                {!centre.known ? (
+                  <div className="local-news-empty"><CloudSun size={25} /><strong>Choose a supported city or area</strong><p>Weather needs a recognised location. Change your map area to Lagos, Abuja, Port Harcourt or another listed city to view nearby conditions.</p><button type="button" className="local-change-area" onClick={onChangeArea}><MapPin size={14} /> Change area</button></div>
+                ) : weatherLoading ? (
+                  <p className="muted small"><RefreshCw size={14} /> Loading weather for {area}…</p>
+                ) : weatherError ? (
+                  <div className="local-news-empty"><CloudSun size={24} /><strong>Weather unavailable</strong><p>{weatherError}</p><button type="button" className="local-refresh-button" onClick={() => setRefreshCount((v) => v + 1)}>Try again</button></div>
+                ) : weather ? (
+                  <>
+                    <span className="local-weather-location"><MapPin size={14} /> Approximate conditions near {area}</span>
+                    <div className="local-weather-main"><CloudSun size={34} /><div><strong>{Math.round(weather.temperature_2m)}°C</strong><span>{describeWeather(weather.weather_code)}</span></div></div>
+                    <div className="local-weather-stats">
+                      <span><Thermometer size={17} /> Feels like <strong>{Math.round(weather.apparent_temperature)}°C</strong></span>
+                      <span><Droplets size={17} /> Humidity <strong>{weather.relative_humidity_2m}%</strong></span>
+                      <span><Wind size={17} /> Wind <strong>{Math.round(weather.wind_speed_10m)} km/h</strong></span>
+                    </div>
+                    <p className="local-weather-credit">Current model-based weather from Open-Meteo, using an approximate area centre. Not an official severe-weather warning.</p>
+                  </>
+                ) : null}
+              </div>
+            ) : <>
             <p className="local-news-caption">
               {effectiveCoverage === "local"
                 ? "Published news and available community updates matching " + area + ". Some local headlines may not be covered."
@@ -210,6 +267,7 @@ export default function LocalNewsPage({ area, onChangeArea }) {
               )}
             </div>
             <p className="local-news-disclaimer">Publisher stories can be delayed. Member alerts are unverified reports, not confirmed official emergency warnings.</p>
+            </>}
           </div>
         </section>
       </div>
