@@ -1,0 +1,10 @@
+const express = require("express");
+const { protect } = require("../middleware/authMiddleware");
+const controller = require("../controllers/verificationController");
+const router = express.Router();
+router.use(protect);
+router.get("/status", controller.status);
+router.post("/requests", controller.submit);
+router.get("/admin/pending", controller.pending);
+router.patch("/admin/requests/:id", controller.review);
+module.exports = router;
