@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ArrowRight, MapPin, Search, ShieldCheck, Users, MessageCircle, RefreshCw } from "lucide-react";
+import { ArrowRight, CalendarDays, MapPin, Search, ShieldCheck, Users, MessageCircle, RefreshCw, Newspaper, ShoppingBag, Compass, TrendingUp } from "lucide-react";
 import { api } from "../lib/api.js";
 
 const tabs = [
@@ -8,10 +8,19 @@ const tabs = [
   { id: "community", label: "Posts" },
 ];
 
-const quickSearches = ["Electrician", "Plumber", "Photographer", "Caterer", "Developer"];
+const quickSearches = ["Electrician", "Plumber", "Hair stylist", "Photographer", "Caterer", "Cleaner", "Developer"];
+const exploreCards = [
+  { id: "local-news", label: "News & alerts", detail: "Local headlines and updates", icon: Newspaper },
+  { id: "events", label: "Events", detail: "What is happening nearby", icon: CalendarDays },
+  { id: "groups", label: "Groups", detail: "Meet your community", icon: Users },
+  { id: "sale", label: "For Sale", detail: "Neighbourhood marketplace", icon: ShoppingBag },
+  { id: "providers", label: "Providers", detail: "Find a local professional", icon: ShieldCheck },
+  { id: "community", label: "Other posts", detail: "Explore community discussions", icon: MessageCircle },
+];
 const directoryTerms = new Set(["provider", "providers", "povider", "poviders", "service", "services", "all", "everyone"]);
 
-export default function SearchPage({ area = "", initialTab = "all", onOpenProvider }) {
+export default function SearchPage({ area = "", initialTab = "all", mode = "search", onOpenProvider, onExplore }) {
+  const isSearchHub = mode === "search";
   const [query, setQuery] = useState("");
   const [tab, setTab] = useState(initialTab);
   const [onlyArea, setOnlyArea] = useState(false);
@@ -41,7 +50,7 @@ export default function SearchPage({ area = "", initialTab = "all", onOpenProvid
       setLoading(true);
       setError("");
       const jobs = [];
-      if (tab !== "community") {
+      if (tab !== "community" && (!isSearchHub || q.length >= 2)) {
         const params = new URLSearchParams();
         if (!browse) params.set("search", q);
         if (onlyArea && area) {
@@ -68,14 +77,36 @@ export default function SearchPage({ area = "", initialTab = "all", onOpenProvid
       if (!abort.signal.aborted) setLoading(false);
     }, query.trim().length >= 2 ? 300 : 0);
     return () => { clearTimeout(timer); abort.abort(); };
-  }, [query, tab, onlyArea, area, refresh]);
+  }, [query, tab, onlyArea, area, refresh, isSearchHub]);
 
   const hasQuery = query.trim().length >= 2;
   const count = providers.length + posts.length;
   const directoryEmpty = directoryCount === 0;
+  const showHub = isSearchHub && !query.trim();
+  function chooseExplore(id) {
+    if (id === "community") {
+      setTab("community");
+      document.querySelector(".discovery-search-field input")?.focus();
+      return;
+    }
+    onExplore?.(id);
+  }
 
   return (
-    <div className="discovery-search">
+    <div className={isSearchHub ? "discovery-search discovery-search-hub" : "discovery-search discovery-provider-directory"}>
+      {isSearchHub ? (
+        <div className="discovery-hero">
+          <span className="discovery-eyebrow"><Compass size={15} /> DISCOVER YOUR COMMUNITY</span>
+          <h2>What are you looking for?</h2>
+          <p>Search for a service, skill, business or conversation across VerifiedNG.</p>
+        </div>
+      ) : (
+        <div className="discovery-hero discovery-provider-hero">
+          <span className="discovery-eyebrow"><Users size={15} /> PROVIDER DIRECTORY</span>
+          <h2>Find the right person for the job.</h2>
+          <p>Browse registered providers or search by service, skill or name.</p>
+        </div>
+      )}
       <label className="discovery-search-field">
         <Search size={19} aria-hidden="true" />
         <span className="sr-only">Search VerifiedNG</span>
@@ -83,10 +114,31 @@ export default function SearchPage({ area = "", initialTab = "all", onOpenProvid
           type="search"
           value={query}
           maxLength={80}
-          placeholder={tab === "providers" ? "Search a service, skill or provider…" : "Search services and community posts…"}
+          placeholder={!isSearchHub ? "Search a service, skill or provider…" : "Try plumber, jobs, neighbourhood news…"}
           onChange={(event) => setQuery(event.target.value)}
         />
       </label>
+      {showHub && (
+        <>
+          <section className="discovery-trending" aria-label="Trending search suggestions">
+            <h3><TrendingUp size={17} /> Popular searches</h3>
+            <div className="discovery-quick-searches">
+              {quickSearches.map((service) => <button key={service} type="button" onClick={() => setQuery(service)}>{service} <ArrowRight size={13} /></button>)}
+            </div>
+          </section>
+          <section className="discovery-explore" aria-label="Explore VerifiedNG categories">
+            <div className="discovery-explore-heading"><h3>Explore more</h3><p>Jump into what matters to you.</p></div>
+            <div className="discovery-explore-grid">
+              {exploreCards.map(({ id, label, detail, icon: Icon }) => (
+                <button key={id} className="discovery-explore-card" type="button" onClick={() => chooseExplore(id)}>
+                  <span className="discovery-explore-icon"><Icon size={21} /></span>
+                  <strong>{label}</strong><small>{detail}</small><ArrowRight className="discovery-explore-arrow" size={16} />
+                </button>
+              ))}
+            </div>
+          </section>
+        </>
+      )}
       <div className="discovery-search-controls">
         <div className="discovery-switches" role="group" aria-label="Search categories">
           {tabs.map((item) => (
@@ -105,7 +157,7 @@ export default function SearchPage({ area = "", initialTab = "all", onOpenProvid
         </label>
       </div>
 
-      {!hasQuery && tab !== "community" && (
+      {!isSearchHub && !hasQuery && tab !== "community" && (
         <div className="discovery-quick-searches" aria-label="Popular service searches">
           {quickSearches.map((service) => (
             <button key={service} type="button" onClick={() => setQuery(service)}>{service}</button>
@@ -117,7 +169,7 @@ export default function SearchPage({ area = "", initialTab = "all", onOpenProvid
       {error && <div className="notice error-notice" role="alert">{error} Check that the backend is running on port 5000.</div>}
       {!loading && !error && (
         <>
-          {tab === "community" && !hasQuery && (
+          {!showHub && tab === "community" && !hasQuery && (
             <div className="discovery-state"><MessageCircle size={27} /><h2>Search community posts</h2><p>Type a topic, place or keyword to find conversations you can access.</p></div>
           )}
           {tab !== "community" && providers.length > 0 && (
@@ -155,7 +207,7 @@ export default function SearchPage({ area = "", initialTab = "all", onOpenProvid
               </div>
             </section>
           )}
-          {count === 0 && (tab !== "community" || hasQuery) && (
+          {!showHub && count === 0 && (tab !== "community" || hasQuery) && (
             <div className="discovery-state">
               <Search size={27} />
               <h2>{directoryEmpty && tab !== "community" ? "No providers registered yet" : hasQuery ? "Nothing matched your search" : "No providers available yet"}</h2>
@@ -166,7 +218,7 @@ export default function SearchPage({ area = "", initialTab = "all", onOpenProvid
               <button type="button" className="discovery-retry" onClick={() => setRefresh((v) => v + 1)}><RefreshCw size={14} /> Retry</button>
             </div>
           )}
-          {count > 0 && <p className="discovery-count">{hasQuery ? count + " result(s) for “" + query.trim() + "”" : "Showing available listings from your connected database"}</p>}
+          {!showHub && count > 0 && <p className="discovery-count">{hasQuery ? count + " result(s) for “" + query.trim() + "”" : "Showing available listings from your connected database"}</p>}
         </>
       )}
     </div>
