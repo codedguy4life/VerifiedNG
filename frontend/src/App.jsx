@@ -303,8 +303,8 @@ export default function App() {
     setActiveTab(id);
     setProfileDrawerOpen(false);
     setError("");
-    if (id === "search" || id === "providers") {
-      setCurrentView("search");
+    if (id === "search" || id === "providers" || id === "sale") {
+      setCurrentView(id);
       setMessage("");
       return;
     }
@@ -539,7 +539,9 @@ export default function App() {
             <h1>
               {{
                 "local-news": "Local news & alerts",
-                search: activeTab === "providers" ? "Find service providers" : "Search VerifiedNG",
+                search: "Explore VerifiedNG",
+                providers: "Find service providers",
+                sale: "For Sale",
                 events: "Neighbourhood events",
                 groups: "Community groups",
                 "saved-posts": "Saved posts",
@@ -552,7 +554,9 @@ export default function App() {
               {{
                 "local-news":
                   "Explore your area map, publisher news, community updates and safety reports.",
-                search: "Find providers and community posts using real VerifiedNG data.",
+                search: "Search your community, discover trending services and explore what is happening nearby.",
+                providers: "Browse service professionals, explore skills and find someone to help.",
+                sale: "Discover items offered by neighbours.",
                 events:
                   "Find and share things happening around your neighbourhood.",
                 groups: "Connect with neighbours who share your interests.",
@@ -579,14 +583,34 @@ export default function App() {
           {currentView === "local-news" && (
             <LocalNewsPage area={area} onChangeArea={chooseArea} />
           )}
-          {currentView === "search" && (
+          {(currentView === "search" || currentView === "providers") && (
             <SearchPage
+              key={currentView}
+              mode={currentView}
               area={area}
-              initialTab={activeTab === "providers" ? "providers" : "all"}
+              initialTab={currentView === "providers" ? "providers" : "all"}
+              onExplore={(destination) => {
+                if (destination === "providers") chooseTab("providers");
+                else if (destination === "sale") chooseTab("sale");
+                else {
+                  setCurrentView(destination);
+                  setActiveTab("search");
+                  setMessage("");
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }
+              }}
               onOpenProvider={(providerId) =>
                 openLegacyPage("all-providers-profile.html?id=db_" + encodeURIComponent(providerId))
               }
             />
+          )}
+          {currentView === "sale" && (
+            <section className="section-card">
+              <div className="section-icon"><ShoppingBag size={24} /></div>
+              <h2>Neighbourhood marketplace</h2>
+              <p>Buy and sell listings are not connected to the VerifiedNG backend yet. This section will show real local listings when marketplace features are ready.</p>
+              <button className="primary-button" type="button" onClick={() => chooseTab("search")}>Explore community search <Search size={16} /></button>
+            </section>
           )}
           {currentView === "events" && (
             <section className="section-card">
