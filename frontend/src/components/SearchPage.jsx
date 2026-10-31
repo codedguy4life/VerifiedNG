@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { ArrowRight, CalendarDays, MapPin, Search, ShieldCheck, Users, MessageCircle, RefreshCw, Newspaper, ShoppingBag, Compass, TrendingUp } from "lucide-react";
 import { api } from "../lib/api.js";
+import AskArea from "./AskArea.jsx";
 
 const tabs = [
   { id: "all", label: "All" },
@@ -8,18 +9,10 @@ const tabs = [
   { id: "community", label: "Posts" },
 ];
 
-const quickSearches = ["Electrician", "Plumber", "Hair stylist", "Photographer", "Caterer", "Cleaner", "Developer"];
-const exploreCards = [
-  { id: "local-news", label: "News & alerts", detail: "Local headlines and updates", icon: Newspaper },
-  { id: "events", label: "Events", detail: "What is happening nearby", icon: CalendarDays },
-  { id: "groups", label: "Groups", detail: "Meet your community", icon: Users },
-  { id: "sale", label: "For Sale", detail: "Neighbourhood marketplace", icon: ShoppingBag },
-  { id: "providers", label: "Providers", detail: "Find a local professional", icon: ShieldCheck },
-  { id: "community", label: "Other posts", detail: "Explore community discussions", icon: MessageCircle },
-];
+const quickSearches = ["Electrician", "Plumber", "Caterer", "Cleaner"];
 const directoryTerms = new Set(["provider", "providers", "povider", "poviders", "service", "services", "all", "everyone"]);
 
-export default function SearchPage({ area = "", initialTab = "all", mode = "search", onOpenProvider, onExplore }) {
+export default function SearchPage({ area = "", user, initialTab = "all", mode = "search", onOpenProvider, onExplore }) {
   const isSearchHub = mode === "search";
   const [query, setQuery] = useState("");
   const [tab, setTab] = useState(initialTab);
@@ -95,19 +88,6 @@ export default function SearchPage({ area = "", initialTab = "all", mode = "sear
 
   return (
     <div className={isSearchHub ? "discovery-search discovery-search-hub" : "discovery-search discovery-provider-directory"}>
-      {isSearchHub ? (
-        <div className="discovery-hero">
-          <span className="discovery-eyebrow"><Compass size={15} /> DISCOVER YOUR COMMUNITY</span>
-          <h2>What are you looking for?</h2>
-          <p>Search for a service, skill, business or conversation across VerifiedNG.</p>
-        </div>
-      ) : (
-        <div className="discovery-hero discovery-provider-hero">
-          <span className="discovery-eyebrow"><Users size={15} /> PROVIDER DIRECTORY</span>
-          <h2>Find the right person for the job.</h2>
-          <p>Browse registered providers or search by service, skill or name.</p>
-        </div>
-      )}
       <label className="discovery-search-field">
         <Search size={19} aria-hidden="true" />
         <span className="sr-only">Search VerifiedNG</span>
@@ -121,23 +101,22 @@ export default function SearchPage({ area = "", initialTab = "all", mode = "sear
       </label>
       {showHub && (
         <>
+          <AskArea
+            area={area || [user?.city, user?.state].filter(Boolean).join(", ")}
+            onOpenProvider={onOpenProvider}
+            onExplore={onExplore}
+          />
           <section className="discovery-trending" aria-label="Trending search suggestions">
-            <h3><TrendingUp size={17} /> Popular searches</h3>
+            <h3><TrendingUp size={16} /> Trending</h3>
             <div className="discovery-quick-searches">
-              {quickSearches.map((service) => <button key={service} type="button" onClick={() => setQuery(service)}>{service} <ArrowRight size={13} /></button>)}
+              {quickSearches.map((service) => <button key={service} type="button" onClick={() => setQuery(service)}>{service}</button>)}
             </div>
           </section>
-          <section className="discovery-explore" aria-label="Explore VerifiedNG categories">
-            <div className="discovery-explore-heading"><h3>Explore more</h3><p>Jump into what matters to you.</p></div>
-            <div className="discovery-explore-grid">
-              {exploreCards.map(({ id, label, detail, icon: Icon }) => (
-                <button key={id} className="discovery-explore-card" type="button" onClick={() => chooseExplore(id)}>
-                  <span className="discovery-explore-icon"><Icon size={21} /></span>
-                  <strong>{label}</strong><small>{detail}</small><ArrowRight className="discovery-explore-arrow" size={16} />
-                </button>
-              ))}
-            </div>
-          </section>
+          <div className="discovery-shortcuts" aria-label="Explore nearby">
+            <button type="button" onClick={() => onExplore?.("local-news")}>News</button>
+            <button type="button" onClick={() => onExplore?.("groups")}>Groups</button>
+            <button type="button" onClick={() => onExplore?.("sale")}>For Sale</button>
+          </div>
         </>
       )}
       <div className="discovery-search-controls">
@@ -158,7 +137,7 @@ export default function SearchPage({ area = "", initialTab = "all", mode = "sear
         </label>
       </div>
 
-      {!isSearchHub && !hasQuery && tab !== "community" && (
+      {false && !isSearchHub && !hasQuery && tab !== "community" && (
         <div className="discovery-quick-searches" aria-label="Popular service searches">
           {quickSearches.map((service) => (
             <button key={service} type="button" onClick={() => setQuery(service)}>{service}</button>
