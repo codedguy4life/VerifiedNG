@@ -31,6 +31,7 @@ describe("For Sale marketplace", () => {
   }
 
   beforeAll(async () => {
+    await SaleItem.init();
     seller = await createMember("Marketplace Seller", "Lagos", "Ikeja");
     buyer = await createMember("Marketplace Buyer", "Oyo", "Ibadan");
     sellerToken = await login(seller);
