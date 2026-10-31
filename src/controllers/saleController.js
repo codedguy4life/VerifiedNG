@@ -192,4 +192,19 @@ async function changeItemStatus(req, res) {
   }
 }
 
-module.exports = { listItems, createItem, changeItemStatus, CATEGORIES };
+
+async function getItem(req, res) {
+  try {
+    if (!mongoose.isValidObjectId(req.params.id))
+      return res.status(404).json({ message: "Listing not found." });
+    const item = await SaleItem.findOne({ _id: req.params.id, status: "active" })
+      .populate("seller", "fullName isVerified").lean();
+    if (!item) return res.status(404).json({ message: "Listing not found." });
+    res.json({ item: publicItem(item, null) });
+  } catch (error) {
+    console.error("Marketplace getItem:", error);
+    res.status(500).json({ message: "Could not load listing." });
+  }
+}
+
+module.exports = { listItems, getItem, createItem, changeItemStatus, CATEGORIES };
