@@ -114,6 +114,16 @@ describe("Verified groups, verification and Ask Area", () => {
       .set("Authorization", memberToken).send({ text: "Welcome to our group!" });
     expect(published.statusCode).toBe(201);
     await approve(visitor, visitorToken);
+    const directReply = await request(app)
+      .post("/api/groups/" + groupId + "/posts/" + published.body.post._id + "/comments")
+      .set("Authorization", visitorToken)
+      .send({ text: "Trying before joining" });
+    expect(directReply.statusCode).toBe(403);
+    const directReach = await request(app)
+      .post("/api/groups/" + groupId + "/posts/" + published.body.post._id + "/reactions")
+      .set("Authorization", visitorToken)
+      .send({});
+    expect(directReach.statusCode).toBe(403);
     const stillOutside = await request(app).get("/api/groups/" + groupId + "/posts")
       .set("Authorization", visitorToken);
     expect(stillOutside.statusCode).toBe(403);
