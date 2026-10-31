@@ -1,0 +1,18 @@
+const express = require("express");
+const { protect } = require("../middleware/authMiddleware");
+const c = require("../controllers/groupsController");
+const router = express.Router();
+router.use(protect);
+router.get("/", c.listGroups);
+router.post("/", c.createGroup);
+router.get("/:id", c.getGroup);
+router.post("/:id/join", c.joinGroup);
+router.post("/:id/leave", c.leaveGroup);
+router.get("/:id/posts", c.listPosts);
+router.post("/:id/posts", c.createPost);
+router.post("/:id/posts/:postId/reactions", c.react);
+router.post("/:id/posts/:postId/comments", c.comment);
+router.put("/:id/posts/:postId", c.editPost);
+router.delete("/:id/posts/:postId", c.deletePost);
+router.post("/:id/posts/:postId/reports", c.report);
+module.exports = router;
