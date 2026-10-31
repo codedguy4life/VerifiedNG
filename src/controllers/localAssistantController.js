@@ -62,4 +62,30 @@ async function ask(req, res) {
     res.status(500).json({ message: "Could not search the community right now." });
   }
 }
-module.exports = { ask };
+
+async function trending(req, res) {
+  try {
+    const [providers, sale] = await Promise.all([
+      User.aggregate([
+        { $match: { role: "provider", category: { $type: "string", $ne: "" } } },
+        { $group: { _id: "$category", count: { $sum: 1 } } },
+        { $sort: { count: -1 } }, { $limit: 6 },
+      ]),
+      SaleItem.aggregate([
+        { $match: { status: "active" } },
+        { $group: { _id: "$category", count: { $sum: 1 } } },
+        { $sort: { count: -1 } }, { $limit: 6 },
+      ]),
+    ]);
+    const ranked = [...providers, ...sale]
+      .filter((entry) => typeof entry._id === "string" && entry._id.trim().length > 1)
+      .sort((a, b) => b.count - a.count);
+    const terms = [...new Set(ranked.map((item) => item._id.trim()))].slice(0, 4);
+    res.json({ terms, basis: "number_of_registered_provider_and_sale_listings" });
+  } catch (error) {
+    console.error("Trending local topics:", error);
+    res.status(500).json({ message: "Could not load trending topics." });
+  }
+}
+
+module.exports = { ask, trending };
