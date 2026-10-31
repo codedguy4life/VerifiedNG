@@ -6,7 +6,7 @@ import PostCard from "./PostCard.jsx";
 const categories = ["General", "Neighbourhood", "Business", "Learning", "Family", "Sports", "Interests"];
 const location = (group) => [group.city, group.state].filter(Boolean).join(", ") || "Across Nigeria";
 
-export default function GroupsPage({ user, onOpenVerification }) {
+export default function GroupsPage({ user, onOpenVerification, initialGroupId = null }) {
   const [verified, setVerified] = useState(Boolean(user?.isVerified));
   const [groups, setGroups] = useState([]);
   const [search, setSearch] = useState("");
@@ -46,6 +46,10 @@ export default function GroupsPage({ user, onOpenVerification }) {
       .catch(() => {});
     return () => { active = false; };
   }, []);
+
+  useEffect(() => {
+    if (initialGroupId) openGroup(initialGroupId);
+  }, [initialGroupId]);
 
   async function openGroup(id) {
     setError(""); setMessage(""); setPosts([]); setSelected(null); setPage(1);
