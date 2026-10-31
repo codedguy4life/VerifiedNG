@@ -661,30 +661,6 @@ export default function App() {
               </button>
             </section>
           )}
-          {currentView === "groups" && (
-            <section className="section-card">
-              <div className="section-icon">
-                <Users size={24} />
-              </div>
-              <h2>Find your people</h2>
-              <p>
-                Groups will help neighbours gather around interests like estate
-                updates, parents, sports, learning, and local business. Group
-                creation and membership are not connected yet.
-              </p>
-              <button
-                className="primary-button"
-                type="button"
-                onClick={() =>
-                  setMessage(
-                    "Group creation and membership are queued for the next build.",
-                  )
-                }
-              >
-                Create a group <Users size={16} />
-              </button>
-            </section>
-          )}
           {currentView === "saved-posts" && (
             <section className="section-card">
               <div className="section-icon">
@@ -1110,6 +1086,10 @@ export default function App() {
               >
                 <UserPlus size={17} />
                 <span>Invite neighbours</span>
+              </button>
+              <button type="button" onClick={() => openProfileItem("Verification")}>
+                <ShieldCheck size={17} />
+                <span>Get verified</span>
               </button>
               <button type="button" onClick={() => openProfileItem("Settings")}>
                 <Settings size={17} />
