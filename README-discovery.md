@@ -130,3 +130,38 @@ API: `GET /api/sales/categories`, `GET /api/sales`, `POST /api/sales`, `PATCH /a
 8. With `MONGO_TEST_URI` pointed to a **dedicated, disposable test database**, run `npm test` and `cd frontend && npm run build` separately. Do not point automated tests at your main application database.
 
 The backend JS syntax has been checked, but the full Vite build and database tests still need to run and pass in your environment/CI.
+
+## Search, Ask Your Area, groups and manual verification
+
+The Search tab now prioritizes its search box instead of a large intro or Explore grid. Under the box, **Ask [your saved city]** offers a conversational-style card, example prompts and **Choose for me**. The backend endpoint `POST /api/discovery/ask` matches the question against real registered providers, active For Sale items and group names. A dinner question searches dining-related service categories in the user's saved city/state; an empty result is reported honestly. **This is a database-backed recommendation/search assistant, not a generative AI model**. It does not invent restaurants or external businesses, and it is not connected to a live restaurant reservation provider. The compact trending chips come from `GET /api/discovery/trending` (top registered provider and sale listing categories); when there is no activity, they are clearly labelled suggested searches. Search results deep-link to a provider profile, a marketplace item or group details.
+
+The Providers tab is kept as a compact provider directory with its search and real results visible immediately; the duplicate introductory hero and large Explore grid were removed. Search also has small links to News, Groups and For Sale.
+
+### Groups
+
+Routes: `GET/POST /api/groups`, `GET /api/groups/:id`, `POST /api/groups/:id/join`, `POST /api/groups/:id/leave`, `GET/POST /api/groups/:id/posts`, and member-only post actions for comments, reactions, edits, deletes and reports.
+
+Signed-in users may browse the group directory and read basic group descriptions. A green verification banner explains the requirement. **Joining a group, creating a group, and accessing or posting in its discussion require a server-confirmed verified account.** Group posts can only be read by verified members who have joined; guessing a group/post ID does not grant access. Group discussions reuse the homepage PostCard design (including comments, reaches, editing/deleting your own posts and reports). Group creation sets the signed-in author as creator and first member.
+
+**Privacy/trust note:** These are members-only groups, not end-to-end encrypted private conversations. The platform database administrators could access stored posts. Group content is text-only in this stage; no group photo/video uploads, group admin moderation dashboard, bans or invitations are implemented yet.
+
+### Verification
+
+The in-app **Get verified** page shows status, a manual review request form and (for authorized administrators) a pending-review queue. Users cannot set `isVerified` through profile editing or approve themselves. Requests do not contain ID documents or passwords. An account must first save a state or city. A pending request cannot be repeatedly resubmitted; rejected requests may be resubmitted after 24 hours.
+
+**You must configure `VERIFICATION_ADMIN_EMAILS` in the backend's own `.env` / Render environment**, as a comma-separated list of emails belonging to authorized VerifiedNG administrators. Example:
+
+```env
+VERIFICATION_ADMIN_EMAILS=admin@example.com
+```
+
+Replace the example with an actual existing administrator account and keep this setting on the backend only. The server compares the signed-in user's database email to the allowlist on every admin request. Admins can open **Get verified** to review/approve/reject requests. Verified badges and group access are enabled **only after an admin approves** the request. This is a manual account review, not an independently verified national-ID check, a licence check or a guarantee of safety. Build stronger evidence collection, anti-fraud checks, moderation, revocation and audit tooling before claiming high-assurance identity verification.
+
+### Suggested checks
+
+1. Pull the feature branch, restart the backend and Vite frontend. Visit Search and verify the Ask card and compact trending layout, then Providers and confirm real provider results appear immediately.
+2. Ask "a nice dinner place". If no registered dining providers exist in your saved area, the response should state this instead of showing invented places.
+3. Open Groups while unverified. Check the banner, group directory and group preview; trying to join/create should go to Get verified or receive HTTP 403.
+4. Submit a verification request. An allowlisted admin should review the pending request in their verification page. Never approve a user without following your own review process.
+5. After approval, open Groups, create a group, join and publish a post. Confirm the post appears in the homepage-style card and that another unjoined user cannot access it via the API.
+6. Run `npm test` against your dedicated `MONGO_TEST_URI` test database and `cd frontend && npm run build`. Check the GitHub Actions tab. Backend JS syntax has been checked in this conversation, but complete integration/browser testing still must pass; do not deploy without it.
