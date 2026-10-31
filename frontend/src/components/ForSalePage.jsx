@@ -101,7 +101,12 @@ export default function ForSalePage({ user, onEditProfile }) {
         setLocationNotice("Showing approximate distances. Your location is only used for this search.");
         setPage(1);
       },
-      () => setLocationNotice("Location was not available. You can still browse without distance filters."),
+      () => {
+        setLocationNotice("Location was not available. Showing all listings instead.");
+        setDistance("");
+        setSort((current) => current === "nearest" ? "relevant" : current);
+        setPage(1);
+      },
       { enableHighAccuracy: false, maximumAge: 300000, timeout: 10000 },
     );
   }
