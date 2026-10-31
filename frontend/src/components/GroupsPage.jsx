@@ -60,6 +60,13 @@ export default function GroupsPage({ user, onOpenVerification, initialGroupId = 
     } catch (cause) { setError(cause.message || "Could not load group."); }
   }
 
+  // The server's verification status may arrive after a deep-linked group.
+  useEffect(() => {
+    if (verified && selected?.isMember && selected?._id && posts.length === 0) {
+      loadPosts(selected._id, 1);
+    }
+  }, [verified, selected?._id, selected?.isMember]);
+
   async function loadPosts(id, targetPage = 1) {
     setPostsLoading(true);
     try {
