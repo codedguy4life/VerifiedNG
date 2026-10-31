@@ -15,7 +15,7 @@ describe("Verified groups, verification and Ask Area", () => {
   let visitorToken;
   let groupId;
   const users = [];
-  const oldAdminEmail = process.env.VERIFICATION_ADMIN_EMAILS;
+  const oldAdminIds = process.env.VERIFICATION_ADMIN_USER_IDS;
   let serial = 0;
 
   async function addUser(label) {
@@ -53,7 +53,7 @@ describe("Verified groups, verification and Ask Area", () => {
     admin = await addUser("Verification Administrator");
     member = await addUser("Verified Group Member");
     visitor = await addUser("Not Yet Verified");
-    process.env.VERIFICATION_ADMIN_EMAILS = admin.email;
+    process.env.VERIFICATION_ADMIN_USER_IDS = String(admin._id);
     adminToken = await login(admin);
     memberToken = await login(member);
     visitorToken = await login(visitor);
@@ -65,8 +65,8 @@ describe("Verified groups, verification and Ask Area", () => {
     }
     await VerificationRequest.deleteMany({ user: { $in: users } });
     await User.deleteMany({ _id: { $in: users } });
-    if (oldAdminEmail === undefined) delete process.env.VERIFICATION_ADMIN_EMAILS;
-    else process.env.VERIFICATION_ADMIN_EMAILS = oldAdminEmail;
+    if (oldAdminIds === undefined) delete process.env.VERIFICATION_ADMIN_USER_IDS;
+    else process.env.VERIFICATION_ADMIN_USER_IDS = oldAdminIds;
   });
 
   test("unverified users can browse groups but cannot join or create", async () => {
