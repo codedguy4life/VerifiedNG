@@ -83,6 +83,11 @@ describe("Verified groups, verification and Ask Area", () => {
     const status = await request(app).get("/api/verification/status").set("Authorization", memberToken);
     expect(status.body.verified).toBe(false);
     expect(status.body.canReview).toBe(false);
+    const spoofed = await request(app).put("/api/user/profile")
+      .set("Authorization", memberToken).send({ isVerified: true });
+    expect(spoofed.statusCode).toBe(400);
+    const afterSpoof = await User.findById(member._id);
+    expect(afterSpoof.isVerified).toBe(false);
     const forbidden = await request(app).get("/api/verification/admin/pending").set("Authorization", memberToken);
     expect(forbidden.statusCode).toBe(403);
     await approve(member, memberToken);
