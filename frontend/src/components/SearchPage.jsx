@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ArrowRight, CalendarDays, MapPin, Search, ShieldCheck, Users, MessageCircle, RefreshCw, Newspaper, ShoppingBag, Compass, TrendingUp } from "lucide-react";
+import { ArrowRight, MapPin, Search, ShieldCheck, Users, MessageCircle, RefreshCw, TrendingUp } from "lucide-react";
 import { api } from "../lib/api.js";
 import AskArea from "./AskArea.jsx";
 
@@ -87,14 +87,6 @@ export default function SearchPage({ area = "", user, initialTab = "all", mode =
   const count = providers.length + posts.length;
   const directoryEmpty = directoryCount === 0;
   const showHub = isSearchHub && !query.trim() && tab !== "community";
-  function chooseExplore(id) {
-    if (id === "community") {
-      setTab("community");
-      document.querySelector(".discovery-search-field input")?.focus();
-      return;
-    }
-    onExplore?.(id);
-  }
 
   return (
     <div className={isSearchHub ? "discovery-search discovery-search-hub" : "discovery-search discovery-provider-directory"}>
