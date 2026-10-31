@@ -34,6 +34,7 @@ import {
 import { api, getToken } from "./lib/api.js";
 import PostComposer from "./components/PostComposer.jsx";
 import ProfileEditor from "./components/ProfileEditor.jsx";
+import ForSalePage from "./components/ForSalePage.jsx";
 import PostCard from "./components/PostCard.jsx";
 import SearchPage from "./components/SearchPage.jsx";
 import LocalNewsPage from "./components/LocalNewsPage.jsx";
@@ -605,12 +606,13 @@ export default function App() {
             />
           )}
           {currentView === "sale" && (
-            <section className="section-card">
-              <div className="section-icon"><ShoppingBag size={24} /></div>
-              <h2>Neighbourhood marketplace</h2>
-              <p>Buy and sell listings are not connected to the VerifiedNG backend yet. This section will show real local listings when marketplace features are ready.</p>
-              <button className="primary-button" type="button" onClick={() => chooseTab("search")}>Explore community search <Search size={16} /></button>
-            </section>
+            <ForSalePage
+              user={user}
+              onEditProfile={() => {
+                setPostingBlocked(false);
+                setProfileEditorOpen(true);
+              }}
+            />
           )}
           {currentView === "events" && (
             <section className="section-card">
