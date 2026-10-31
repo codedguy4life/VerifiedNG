@@ -18,7 +18,7 @@ const formatAge = (value) => {
   return days < 7 ? days + "d ago" : new Date(value).toLocaleDateString("en-NG", { day: "numeric", month: "short" });
 };
 
-export default function ForSalePage({ user, onEditProfile }) {
+export default function ForSalePage({ user, onEditProfile, initialListingId = null }) {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("");
   const [subcategory, setSubcategory] = useState("");
@@ -40,6 +40,15 @@ export default function ForSalePage({ user, onEditProfile }) {
   const [showCreate, setShowCreate] = useState(false);
   const [selected, setSelected] = useState(null);
   const [actionBusy, setActionBusy] = useState(false);
+
+  useEffect(() => {
+    if (!initialListingId) return;
+    let active = true;
+    api("/api/sales/" + encodeURIComponent(initialListingId))
+      .then((result) => { if (active) setSelected(result.item); })
+      .catch((cause) => { if (active) setError(cause.message || "Recommended listing is not available."); });
+    return () => { active = false; };
+  }, [initialListingId]);
 
   useEffect(() => {
     let active = true;
