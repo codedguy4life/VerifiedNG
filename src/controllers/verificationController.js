@@ -2,9 +2,11 @@ const User = require("../models/user");
 const VerificationRequest = require("../models/VerificationRequest");
 
 function isAdmin(user) {
-  const allowed = String(process.env.VERIFICATION_ADMIN_EMAILS || "")
-    .split(",").map((item) => item.trim().toLowerCase()).filter(Boolean);
-  return Boolean(user?.email && allowed.includes(user.email.toLowerCase()));
+  // Immutable database user IDs, not emails: registration does not yet verify
+  // ownership of an email address, so an email allowlist would be unsafe.
+  const allowed = String(process.env.VERIFICATION_ADMIN_USER_IDS || "")
+    .split(",").map((item) => item.trim()).filter(Boolean);
+  return Boolean(user?._id && allowed.includes(String(user._id)));
 }
 async function getViewer(req) {
   return User.findById(req.user.id).select("email fullName isVerified city state");
