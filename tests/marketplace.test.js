@@ -3,12 +3,16 @@ const bcrypt = require("bcryptjs");
 const app = require("../src/index");
 const User = require("../src/models/user");
 const SaleItem = require("../src/models/SaleItem");
+const SaleInquiry = require("../src/models/SaleInquiry");
+const SaleReport = require("../src/models/SaleReport");
 
 describe("For Sale marketplace", () => {
   let seller;
   let buyer;
   let sellerToken;
   let buyerToken;
+  let outsider;
+  let outsiderToken;
   const createdIds = [];
 
   async function createMember(label, state, city) {
@@ -36,11 +40,15 @@ describe("For Sale marketplace", () => {
     buyer = await createMember("Marketplace Buyer", "Oyo", "Ibadan");
     sellerToken = await login(seller);
     buyerToken = await login(buyer);
+    outsider = await createMember("Listing Outsider", "Kano", "Kano");
+    outsiderToken = await login(outsider);
   });
 
   afterAll(async () => {
+    await SaleInquiry.deleteMany({ listing: { $in: createdIds } });
+    await SaleReport.deleteMany({ listing: { $in: createdIds } });
     await SaleItem.deleteMany({ _id: { $in: createdIds } });
-    await User.deleteMany({ _id: { $in: [seller?._id, buyer?._id].filter(Boolean) } });
+    await User.deleteMany({ _id: { $in: [seller?._id, buyer?._id, outsider?._id].filter(Boolean) } });
   });
 
   async function publish(overrides = {}) {
@@ -120,6 +128,42 @@ describe("For Sale marketplace", () => {
       .set("Authorization", "Bearer " + buyerToken);
     expect(result.statusCode).toBe(200);
     expect(result.body.items.map((item) => String(item._id))).not.toContain(String(id));
+  });
+
+  test("buyer can privately message seller and outsider cannot see or reply", async () => {
+    const listing = await publish({ title: "Messageable used phone", price: 5000 });
+    const id = listing.body.item._id;
+    const sent = await request(app).post("/api/sales/" + id + "/inquiries")
+      .set("Authorization", "Bearer " + buyerToken).send({ message: "Hello, is this item still available?" });
+    expect(sent.statusCode).toBe(201);
+    const sellerInbox = await request(app).get("/api/sales/inquiries")
+      .set("Authorization", "Bearer " + sellerToken);
+    expect(sellerInbox.statusCode).toBe(200);
+    expect(sellerInbox.body.inquiries.some((t) => String(t._id) === String(sent.body.threadId))).toBe(true);
+    expect(sellerInbox.body.inquiries[0].buyer.email).toBeUndefined();
+    const denied = await request(app).post("/api/sales/inquiries/" + sent.body.threadId + "/messages")
+      .set("Authorization", "Bearer " + outsiderToken).send({ message: "Not my conversation" });
+    expect(denied.statusCode).toBe(404);
+    const outsiderInbox = await request(app).get("/api/sales/inquiries")
+      .set("Authorization", "Bearer " + outsiderToken);
+    expect(outsiderInbox.body.inquiries).toHaveLength(0);
+    const replied = await request(app).post("/api/sales/inquiries/" + sent.body.threadId + "/messages")
+      .set("Authorization", "Bearer " + sellerToken).send({ message: "Yes, you can collect it nearby." });
+    expect(replied.statusCode).toBe(201);
+  });
+
+  test("seller cannot message self and only one report per buyer is accepted", async () => {
+    const listing = await publish({ title: "Reportable old phone", price: 3000 });
+    const id = listing.body.item._id;
+    const own = await request(app).post("/api/sales/" + id + "/inquiries")
+      .set("Authorization", "Bearer " + sellerToken).send({ message: "Can I message myself?" });
+    expect(own.statusCode).toBe(400);
+    const reported = await request(app).post("/api/sales/" + id + "/reports")
+      .set("Authorization", "Bearer " + buyerToken).send({ reason: "misleading" });
+    expect(reported.statusCode).toBe(201);
+    const repeated = await request(app).post("/api/sales/" + id + "/reports")
+      .set("Authorization", "Bearer " + buyerToken).send({ reason: "spam" });
+    expect(repeated.statusCode).toBe(409);
   });
 
   test("server rejects invalid categories, forged prices and public image URLs", async () => {
