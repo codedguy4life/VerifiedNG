@@ -311,7 +311,7 @@ export default function ForSalePage({ user, onEditProfile, initialListingId = nu
                 </form>}
                 <p className="marketplace-detail-note">Use in-app messages. Never share passwords or pay before inspecting an item.</p>
               </>}
-              {error && <p className="marketplace-error" role="alert">{error}</p>
+              {error && <p className="marketplace-error" role="alert">{error}</p>}
             </div>
           </section>
         </div>
