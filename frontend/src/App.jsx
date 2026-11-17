@@ -9,6 +9,7 @@ import {
   Check,
   ChevronDown,
   CircleHelp,
+  ClipboardList,
   Compass,
   Globe2,
   Heart,
@@ -41,6 +42,8 @@ import PostCard from "./components/PostCard.jsx";
 import SearchPage from "./components/SearchPage.jsx";
 import LocalNewsPage from "./components/LocalNewsPage.jsx";
 import LocalFavesPage from "./components/LocalFavesPage.jsx";
+import ProviderProfile from "./components/ProviderProfile.jsx";
+import HireRequestsPage from "./components/HireRequestsPage.jsx";
 import CommunityNotifications from "./components/CommunityNotifications.jsx";
 
 const scopes = [
@@ -83,6 +86,9 @@ export default function App() {
   const [currentView, setCurrentView] = useState("home");
   const [notificationFilter, setNotificationFilter] = useState("all");
   const [recommendedItem, setRecommendedItem] = useState(null);
+  const [selectedProviderId, setSelectedProviderId] = useState(null);
+  const [providerReturnView, setProviderReturnView] = useState("providers");
+  const [saleInboxRequested, setSaleInboxRequested] = useState(false);
   const [profileDrawerOpen, setProfileDrawerOpen] = useState(false);
   const [profileEditorOpen, setProfileEditorOpen] = useState(false);
   const [postingBlocked, setPostingBlocked] = useState(false);
@@ -321,7 +327,16 @@ export default function App() {
       setPage(1);
     }
   }
+  function openProvider(id) {
+    setSelectedProviderId(id);
+    setProviderReturnView(currentView);
+    setCurrentView("provider-profile");
+    setActiveTab("providers");
+    setMessage("");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
   function chooseTab(id) {
+    setSaleInboxRequested(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
     setActiveTab(id);
     setRecommendedItem(null);
@@ -372,6 +387,7 @@ export default function App() {
     setError("");
     const views = {
       "Local news": "local-news",
+      "Hire requests": "hire-requests",
       Events: "events",
       Groups: "groups",
       Verification: "verification",
@@ -386,7 +402,8 @@ export default function App() {
       return;
     }
     if (label === "Become a provider") {
-      openLegacyPage("upgrade-to-provider.html");
+      setCurrentView("verification");
+      setMessage("Provider registration is reviewed by the VerifiedNG team. Community verification does not automatically grant a provider account.");
       return;
     }
     if (label === "Safety and trust") {
@@ -496,7 +513,7 @@ export default function App() {
             className="header-icon"
             type="button"
             aria-label="Messages"
-            onClick={() => setMessage("Your chats inbox is on the build list.")}
+            onClick={() => { setSaleInboxRequested(true); setCurrentView("sale"); setActiveTab("sale"); setProfileDrawerOpen(false); }}
           >
             <MessageCircle size={20} />
             <span className="notification-dot" />
@@ -574,6 +591,8 @@ export default function App() {
                 events: "Neighbourhood events",
                 groups: "Community groups",
                 "saved-posts": "Saved posts",
+                "provider-profile": "Provider profile",
+                "hire-requests": "Hire requests",
                 invite: "Invite neighbours",
                 settings: "Settings",
                 help: "Help centre",
@@ -634,14 +653,23 @@ export default function App() {
                   window.scrollTo({ top: 0, behavior: "smooth" });
                 }
               }}
-              onOpenProvider={(providerId) =>
-                openLegacyPage("all-providers-profile.html?id=db_" + encodeURIComponent(providerId))
-              }
+              onOpenProvider={openProvider}
             />
+          )}
+          {currentView === "provider-profile" && (
+            <ProviderProfile providerId={selectedProviderId} user={user} onBack={() => {
+              const view = providerReturnView || "providers";
+              setCurrentView(view);
+              setActiveTab(["search", "providers", "faves", "sale"].includes(view) ? view : "home");
+            }} onViewRequests={() => { setCurrentView("hire-requests"); setActiveTab("home"); }} />
+          )}
+          {currentView === "hire-requests" && (
+            <HireRequestsPage user={user} onOpenProvider={openProvider} />
           )}
           {currentView === "sale" && (
             <ForSalePage
               user={user}
+              initialShowInbox={saleInboxRequested}
               initialListingId={recommendedItem?.type === "sale" ? recommendedItem._id : null}
               onEditProfile={() => {
                 setPostingBlocked(false);
@@ -652,7 +680,7 @@ export default function App() {
           {currentView === "faves" && (
             <LocalFavesPage area={[user?.city, user?.state].filter(Boolean).join(", ") || area} onOpenResult={(item) => {
               if (item.type === "providers") {
-                openLegacyPage("all-providers-profile.html?id=db_" + encodeURIComponent(item._id));
+                openProvider(item._id);
                 return;
               }
               setRecommendedItem(item);
@@ -1083,6 +1111,11 @@ export default function App() {
                 <UserRound size={18} />
                 <span>My profile</span>
                 <ArrowRight size={15} />
+              </button>
+              <button type="button" onClick={() => openProfileItem("Hire requests")}>
+                <ClipboardList size={18}/>
+                <span>Hire requests</span>
+                <ArrowRight size={15}/>
               </button>
             </div>
             <div className="drawer-link-list">

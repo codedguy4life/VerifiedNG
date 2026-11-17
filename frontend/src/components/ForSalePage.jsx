@@ -19,7 +19,7 @@ const formatAge = (value) => {
   return days < 7 ? days + "d ago" : new Date(value).toLocaleDateString("en-NG", { day: "numeric", month: "short" });
 };
 
-export default function ForSalePage({ user, onEditProfile, initialListingId = null }) {
+export default function ForSalePage({ user, onEditProfile, initialListingId = null, initialShowInbox = false }) {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("");
   const [subcategory, setSubcategory] = useState("");
@@ -41,7 +41,8 @@ export default function ForSalePage({ user, onEditProfile, initialListingId = nu
   const [showCreate, setShowCreate] = useState(false);
   const [selected, setSelected] = useState(null);
   const [actionBusy, setActionBusy] = useState(false);
-  const [inboxOpen, setInboxOpen] = useState(false);
+  const [inboxOpen, setInboxOpen] = useState(initialShowInbox);
+  useEffect(() => { if (initialShowInbox) setInboxOpen(true); }, [initialShowInbox]);
   const [initialThreadId, setInitialThreadId] = useState(null);
   const [contactOpen, setContactOpen] = useState(false);
   const [contactDraft, setContactDraft] = useState("");
