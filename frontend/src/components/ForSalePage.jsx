@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import {
   ArrowLeft, ArrowRight, Check, ChevronDown, Clock3, ImagePlus,
-  MapPin, PackageOpen, Plus, Search, SlidersHorizontal, X, Tag,
+  MapPin, PackageOpen, Plus, Search, SlidersHorizontal, X, Tag, MessageCircle, Flag,
 } from "lucide-react";
 import { api } from "../lib/api.js";
+import SaleConversations from "./SaleConversations.jsx";
 
 const money = new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN", maximumFractionDigits: 0 });
 const moneyLabel = (amount) => Number(amount) === 0 ? "Free" : money.format(amount);
@@ -40,6 +41,14 @@ export default function ForSalePage({ user, onEditProfile, initialListingId = nu
   const [showCreate, setShowCreate] = useState(false);
   const [selected, setSelected] = useState(null);
   const [actionBusy, setActionBusy] = useState(false);
+  const [inboxOpen, setInboxOpen] = useState(false);
+  const [initialThreadId, setInitialThreadId] = useState(null);
+  const [contactOpen, setContactOpen] = useState(false);
+  const [contactDraft, setContactDraft] = useState("");
+  const [reportOpen, setReportOpen] = useState(false);
+  const [reportReason, setReportReason] = useState("scam");
+  const [reportDetails, setReportDetails] = useState("");
+  const [notice, setNotice] = useState("");
 
   useEffect(() => {
     if (!initialListingId) return;
@@ -126,6 +135,33 @@ export default function ForSalePage({ user, onEditProfile, initialListingId = nu
     return "~" + Math.max(0.1, Math.round(rounded * 10) / 10) + " " + unit;
   }
 
+  async function contactSeller(event) {
+    event.preventDefault();
+    if (!selected || actionBusy || contactDraft.trim().length < 10) return;
+    setActionBusy(true); setError(""); setNotice("");
+    try {
+      const result = await api("/api/sales/" + encodeURIComponent(selected._id) + "/inquiries", {
+        method: "POST", body: JSON.stringify({ message: contactDraft.trim() }),
+      });
+      setContactDraft(""); setContactOpen(false); setSelected(null);
+      setInitialThreadId(result.threadId); setInboxOpen(true);
+      setNotice("Message sent to seller. You can continue the conversation in Messages.");
+    } catch (cause) { setError(cause.message || "Could not message seller."); }
+    finally { setActionBusy(false); }
+  }
+  async function reportListing(event) {
+    event.preventDefault();
+    if (!selected || actionBusy) return;
+    setActionBusy(true); setError("");
+    try {
+      const result = await api("/api/sales/" + encodeURIComponent(selected._id) + "/reports", {
+        method: "POST", body: JSON.stringify({ reason: reportReason, details: reportDetails.trim() }),
+      });
+      setNotice(result.message || "Report submitted.");
+      setSelected(null); setReportOpen(false); setReportDetails("");
+    } catch (cause) { setError(cause.message || "Could not report listing."); }
+    finally { setActionBusy(false); }
+  }
   async function markSold(item) {
     if (!window.confirm("Mark this item as sold? It will be hidden from active listings.")) return;
     setActionBusy(true);
@@ -154,6 +190,7 @@ export default function ForSalePage({ user, onEditProfile, initialListingId = nu
           <span className="sr-only">Search all listings</span>
           <input type="search" maxLength={80} value={query} onChange={(event) => resetPage(() => setQuery(event.target.value))} placeholder="Search all listings" />
         </label>
+        <button className="marketplace-messages" type="button" aria-label="Marketplace messages" onClick={() => { setInitialThreadId(null); setInboxOpen(true); }}><MessageCircle size={17} /> <span>Messages</span></button>
         <button className="marketplace-sell" type="button" onClick={() => setShowCreate(true)}><Plus size={17} /> <span>Sell</span></button>
       </div>
 
@@ -212,6 +249,7 @@ export default function ForSalePage({ user, onEditProfile, initialListingId = nu
           </div>
         </div>
       )}
+      {notice && <p className="marketplace-location-note" role="status">{notice}</p>}
       {locationNotice && <p className="marketplace-location-note" role="status">{locationNotice}</p>}
 
       <div className="marketplace-heading"><strong>Listings</strong><span>{loading && page === 1 ? "Loading…" : total + " available"}</span></div>
@@ -219,7 +257,7 @@ export default function ForSalePage({ user, onEditProfile, initialListingId = nu
       {items.length > 0 && (
         <div className="marketplace-grid">
           {items.map((item) => (
-            <button key={item._id} type="button" className="marketplace-card" onClick={() => setSelected(item)}>
+            <button key={item._id} type="button" className="marketplace-card" onClick={() => { setSelected(item); setContactOpen(false); setReportOpen(false); setError(""); }}>
               <span className="marketplace-card-media">
                 {item.imageUrl ? <img src={item.imageUrl} loading="lazy" alt={item.title} /> : <PackageOpen size={31} />}
                 {Number(item.price) === 0 && <span className="marketplace-free-tag">FREE</span>}
@@ -255,13 +293,30 @@ export default function ForSalePage({ user, onEditProfile, initialListingId = nu
               <p>{selected.description || "No extra description provided."}</p>
               <span className="marketplace-meta"><MapPin size={14} /> {[selected.city, selected.state].filter(Boolean).join(", ") || "Nigeria"}</span>
               <span className="marketplace-meta"><Clock3 size={14} /> {formatAge(selected.createdAt)} · {selected.seller?.fullName || "Member"}</span>
-              {String(selected.seller?._id) === String(user?._id) ? (
+              {String(selected.seller?._id) === String(user?._id || user?.id) ? (
                 <button className="marketplace-sold-button" disabled={actionBusy} type="button" onClick={() => markSold(selected)}>Mark as sold</button>
-              ) : <p className="marketplace-detail-note">In-app buyer/seller messaging is not connected yet. Never pay a stranger in advance without verifying the item.</p>}
+              ) : <>
+                <button className="marketplace-sold-button" type="button" onClick={() => { setContactOpen((open) => !open); setReportOpen(false); }}><MessageCircle size={15} /> Message seller</button>
+                {contactOpen && <form className="marketplace-contact-form" onSubmit={contactSeller}>
+                  <label>Your message to the seller<textarea required minLength={10} maxLength={1000} rows={3} value={contactDraft} onChange={(event) => setContactDraft(event.target.value)} placeholder="Hello, is this item still available?" /></label>
+                  <button type="submit" disabled={actionBusy || contactDraft.trim().length < 10}>{actionBusy ? "Sending…" : "Send message"}</button>
+                </form>}
+                <button className="marketplace-report-toggle" type="button" onClick={() => { setReportOpen((open) => !open); setContactOpen(false); }}><Flag size={14}/> Report listing</button>
+                {reportOpen && <form className="marketplace-contact-form" onSubmit={reportListing}>
+                  <label>Reason<select value={reportReason} onChange={(event) => setReportReason(event.target.value)}>
+                    <option value="scam">Possible scam</option><option value="prohibited">Prohibited item</option><option value="misleading">Misleading information</option><option value="spam">Spam</option><option value="other">Other</option>
+                  </select></label>
+                  <label>Details (optional)<textarea rows={2} maxLength={500} value={reportDetails} onChange={(event) => setReportDetails(event.target.value)} /></label>
+                  <button type="submit" disabled={actionBusy}>Submit report</button>
+                </form>}
+                <p className="marketplace-detail-note">Use in-app messages. Never share passwords or pay before inspecting an item.</p>
+              </>}
+              {error && <p className="marketplace-error" role="alert">{error}</p>
             </div>
           </section>
         </div>
       )}
+      {inboxOpen && <SaleConversations user={user} initialThreadId={initialThreadId} onClose={() => setInboxOpen(false)} />}
       {showCreate && (
         <CreateSaleItem
           categories={categories}

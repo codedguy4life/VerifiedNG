@@ -97,7 +97,7 @@ export default function VerificationPage({ user, onEditProfile, onUpdated, onOpe
       <p className="verification-disclaimer">Verification means an administrator reviewed the account under VerifiedNG's current process. It is not a government identity certification, a guarantee of safety, or proof of professional competence. No fee or identity document is collected by this form.</p>
       {status?.canReview && <section className="verification-admin">
         <h3>Admin review queue <span>{queue.length}</span></h3>
-        <p>Approvals are restricted by the server's VERIFICATION_ADMIN_EMAILS setting. Review account evidence independently before deciding.</p>
+        <p>Approvals are restricted by the server's VERIFICATION_ADMIN_USER_IDS setting. Review account evidence independently before deciding.</p>
         {queue.length === 0 ? <p className="muted small">No requests waiting for review.</p> : queue.map((item) => (
           <article key={item._id} className="verification-review-card">
             <strong>{item.user?.fullName || "Unavailable account"}</strong>
