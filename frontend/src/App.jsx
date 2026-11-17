@@ -40,6 +40,7 @@ import VerificationPage from "./components/VerificationPage.jsx";
 import PostCard from "./components/PostCard.jsx";
 import SearchPage from "./components/SearchPage.jsx";
 import LocalNewsPage from "./components/LocalNewsPage.jsx";
+import LocalFavesPage from "./components/LocalFavesPage.jsx";
 import CommunityNotifications from "./components/CommunityNotifications.jsx";
 
 const scopes = [
@@ -55,6 +56,18 @@ const tabs = [
   { id: "sale", label: "For Sale", icon: ShoppingBag },
   { id: "faves", label: "Local Faves", icon: Heart },
 ];
+
+// Solid active icons: Lucide is an outline icon set; filling its paths directly
+// can make the line-art unreadable. These shapes are intentionally drawn solid.
+function FilledNavIcon({ name }) {
+  return <svg viewBox="0 0 24 24" width="21" height="21" fill="currentColor" aria-hidden="true" focusable="false">
+    {name === "home" && <path d="M11.3 2.7a1 1 0 0 1 1.4 0l9 8.7a1 1 0 0 1-1.4 1.4l-1.3-1.3V20a2 2 0 0 1-2 2h-3v-6h-4v6H7a2 2 0 0 1-2-2v-8.5l-1.3 1.3a1 1 0 0 1-1.4-1.4z"/>}
+    {name === "search" && <path fillRule="evenodd" clipRule="evenodd" d="M10.5 2a8.5 8.5 0 1 0 5.2 15.2l4.1 4.1a1.5 1.5 0 1 0 2.1-2.1l-4.1-4.1A8.5 8.5 0 0 0 10.5 2Zm0 3a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z"/>}
+    {name === "providers" && <><circle cx="9" cy="7" r="3.7"/><path d="M1.5 20a7.5 7.5 0 0 1 15 0v1h-15z"/><circle cx="18" cy="8.5" r="2.8"/><path d="M17.5 14a6 6 0 0 1 5 6v1h-4.1v-1a9.6 9.6 0 0 0-.9-6z"/></>}
+    {name === "sale" && <><path d="M5 7h14a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2z"/><path d="M7 8V6a5 5 0 0 1 10 0v2h-2V6a3 3 0 0 0-6 0v2z"/></>}
+    {name === "faves" && <path d="M12 21.2 3.2 12.5C-1 8.3 5.4.8 10.5 5.2L12 6.6l1.5-1.4c5.1-4.4 11.5 3.1 7.3 7.3z"/>}
+  </svg>;
+}
 
 export default function App() {
   const [token, setToken] = useState(getToken());
@@ -314,7 +327,7 @@ export default function App() {
     setRecommendedItem(null);
     setProfileDrawerOpen(false);
     setError("");
-    if (id === "search" || id === "providers" || id === "sale") {
+    if (id === "search" || id === "providers" || id === "sale" || id === "faves") {
       setCurrentView(id);
       setMessage("");
       return;
@@ -544,6 +557,9 @@ export default function App() {
       )}
       {currentView !== "home" && currentView !== "notifications" ? (
         <main key={currentView} className={currentView === "local-news" ? "section-page section-page-map" : "section-page"}>
+          {["search", "sale", "faves"].includes(currentView) ? (
+            <button className="back-button subtle-back section-compact-back" type="button" onClick={returnHome}><ArrowLeft size={16} /> Back</button>
+          ) : (
           <header className="section-page-header">
             <button className="back-button subtle-back" type="button" onClick={returnHome}>
               <ArrowLeft size={16} /> Back
@@ -581,6 +597,7 @@ export default function App() {
               }[currentView] || ""}
             </p>
           </header>
+          )}
           {message && (
             <div className="notice success-notice" role="status">
               {message}
@@ -595,7 +612,7 @@ export default function App() {
             </div>
           )}
           {currentView === "local-news" && (
-            <LocalNewsPage area={area} onChangeArea={chooseArea} />
+            <LocalNewsPage area={area} profileArea={[user?.city, user?.state].filter(Boolean).join(", ")} onChangeArea={chooseArea} />
           )}
           {(currentView === "search" || currentView === "providers") && (
             <SearchPage
@@ -631,6 +648,18 @@ export default function App() {
                 setProfileEditorOpen(true);
               }}
             />
+          )}
+          {currentView === "faves" && (
+            <LocalFavesPage area={[user?.city, user?.state].filter(Boolean).join(", ") || area} onOpenResult={(item) => {
+              if (item.type === "providers") {
+                openLegacyPage("all-providers-profile.html?id=db_" + encodeURIComponent(item._id));
+                return;
+              }
+              setRecommendedItem(item);
+              setCurrentView(item.type === "sale" ? "sale" : "groups");
+              setActiveTab(item.type === "sale" ? "sale" : "home");
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}/>
           )}
           {currentView === "groups" && (
             <GroupsPage user={user} initialGroupId={recommendedItem?.type === "groups" ? recommendedItem._id : null} onOpenVerification={() => { setCurrentView("verification"); setMessage(""); }} />
@@ -987,7 +1016,7 @@ export default function App() {
             aria-current={activeTab === id ? "page" : undefined}
             onClick={() => chooseTab(id)}
           >
-            <Icon size={21} strokeWidth={activeTab === id ? 2.4 : 1.8} />
+            {activeTab === id ? <FilledNavIcon name={id} /> : <Icon size={21} strokeWidth={1.8} aria-hidden="true" />}
             <span>{label}</span>
           </button>
         ))}

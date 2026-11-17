@@ -42,10 +42,16 @@ async function listGroups(req, res) {
       const expression = new RegExp(escape(q), "i");
       clause.$or = [{ name: expression }, { description: expression }, { category: expression }, { city: expression }, { state: expression }];
     }
-    const groups = await Group.find(clause).sort({ createdAt: -1 }).limit(60)
+    const viewer = await User.findById(req.user.id).select("city state").lean();
+    if (!viewer) return res.status(401).json({ message: "Please sign in again." });
+    const groups = await Group.find(clause).sort({ createdAt: -1 }).limit(200)
       .select("name description category city state creator members createdAt").lean();
-    res.json({ groups: groups.map(({ members, ...group }) => ({
+    const same = (left, right) => Boolean(left && right && String(left).trim().toLowerCase() === String(right).trim().toLowerCase());
+    const score = (group) => same(group.city, viewer.city) ? 2 : same(group.state, viewer.state) ? 1 : 0;
+    groups.sort((a, b) => score(b) - score(a) || new Date(b.createdAt) - new Date(a.createdAt));
+    res.json({ groups: groups.slice(0, 60).map(({ members, ...group }) => ({
       ...group,
+      nearby: score(group) > 0,
       memberCount: members?.length || 0,
       isMember: (members || []).some((item) => String(item) === String(req.user.id)),
     })) });

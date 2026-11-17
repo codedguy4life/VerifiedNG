@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { ArrowRight, MapPin, Search, ShieldCheck, Users, MessageCircle, RefreshCw, TrendingUp } from "lucide-react";
 import { api } from "../lib/api.js";
-import AskArea from "./AskArea.jsx";
 
 const tabs = [
   { id: "all", label: "All" },
@@ -103,11 +102,7 @@ export default function SearchPage({ area = "", user, initialTab = "all", mode =
       </label>
       {showHub && (
         <>
-          <AskArea
-            area={[user?.city, user?.state].filter(Boolean).join(", ") || area}
-            onOpenProvider={onOpenProvider}
-            onExplore={onExplore}
-          />
+          <h2 className="discovery-inline-title">Explore VerifiedNG</h2>
           <section className="discovery-trending" aria-label="Trending search suggestions">
             <h3><TrendingUp size={16} /> {trending.length ? "Trending" : "Suggested searches"}</h3>
             <div className="discovery-quick-searches">

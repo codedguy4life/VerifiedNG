@@ -205,14 +205,15 @@ export default function GroupsPage({ user, onOpenVerification, initialGroupId = 
         <>
           <div className="groups-directory-controls">
             <label className="marketplace-search"><Search size={17}/><span className="sr-only">Find groups</span><input type="search" value={search} maxLength={80} onChange={(event) => setSearch(event.target.value)} placeholder="Search groups…" /></label>
-            <button className="groups-add" type="button" onClick={() => verified ? setCreateOpen(true) : onOpenVerification()}><Plus size={18}/> <span>Create</span></button>
+            <button className="groups-add groups-add-compact" aria-label="Create a group" title="Create a group" type="button" onClick={() => verified ? setCreateOpen(true) : onOpenVerification()}><Plus size={22}/></button>
           </div>
+          {!loading && !search && groups.some((group) => group.nearby) && <p className="groups-nearby-label"><MapPin size={15}/> Groups near {[user?.city, user?.state].filter(Boolean).join(", ") || "you"} appear first</p>}
           {loading ? <p className="muted small">Loading groups…</p> : groups.length === 0 ? (
-            <div className="groups-empty"><Users size={26}/><strong>No groups yet</strong><p>Verified members can start the first discussion group in their community.</p></div>
+            <div className="groups-empty"><Users size={26}/><strong>{search ? "No matching groups" : "No groups yet"}</strong><p>{search ? "Try another group name or location." : "Verified members can start the first discussion group in their community."}</p>{!search && <button type="button" className="groups-join-button" onClick={() => verified ? setCreateOpen(true) : onOpenVerification()}><Plus size={16}/> Create the first group</button>}</div>
           ) : <div className="groups-directory">
             {groups.map((group) => <button key={group._id} className="groups-list-card" type="button" onClick={() => openGroup(group._id)}>
               <span className="groups-symbol"><Users size={20}/></span>
-              <span className="groups-list-details"><strong>{group.name}</strong><small>{group.category} · {location(group)}</small><span>{group.description || "Join a neighbourhood discussion."}</span><small>{group.memberCount} members {group.isMember ? "· Joined" : ""}</small></span>
+              <span className="groups-list-details"><strong>{group.name}</strong><small>{group.nearby ? "📍 Near you · " : ""}{group.category} · {location(group)}</small><span>{group.description || "Join a neighbourhood discussion."}</span><small>{group.memberCount} members {group.isMember ? "· Joined" : ""}</small></span>
               <ArrowRight size={18}/>
             </button>)}
           </div>}

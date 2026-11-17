@@ -55,9 +55,9 @@ function timeLabel(value) {
   return Number.isNaN(date.getTime()) ? "Date not available" : date.toLocaleString("en-NG", { dateStyle: "medium", timeStyle: "short" });
 }
 
-export default function LocalNewsPage({ area, onChangeArea }) {
+export default function LocalNewsPage({ area, profileArea = "", onChangeArea }) {
   const [section, setSection] = useState("latest");
-  const [coverage, setCoverage] = useState(() => area?.trim() ? "local" : "nigeria");
+  const [coverage, setCoverage] = useState(() => (profileArea || area)?.trim() ? "local" : "nigeria");
   const [sheetOpen, setSheetOpen] = useState(true);
   const touchStartY = useRef(null);
   const wasSwiped = useRef(false);
@@ -74,8 +74,10 @@ export default function LocalNewsPage({ area, onChangeArea }) {
   const centre = useMemo(() => getCentre(area), [area]);
   const iframeSrc = useMemo(() => mapUrl(centre), [centre]);
   const safetyWords = /\b(fire|flood|accident|road closure|security alert|evacuation|outage|emergency|police warning)\b/i;
-  const effectiveCoverage = coverage === "local" && area?.trim() ? "local" : "nigeria";
-  const chosenArea = effectiveCoverage === "local" ? area.trim() : "";
+  // The profile area determines neighbourhood coverage; changing a map pin never grants access.
+  const localArea = (profileArea || area || "").trim();
+  const effectiveCoverage = coverage === "local" && localArea ? "local" : "nigeria";
+  const chosenArea = effectiveCoverage === "local" ? localArea : "";
 
   useEffect(() => {
     if (section !== "weather" || !centre.known) return;
@@ -98,8 +100,8 @@ export default function LocalNewsPage({ area, onChangeArea }) {
   }, [section, centre, refreshCount]);
 
   useEffect(() => {
-    setCoverage(area?.trim() ? "local" : "nigeria");
-  }, [area]);
+    if (!localArea && coverage === "local") setCoverage("nigeria");
+  }, [localArea, coverage]);
 
   useEffect(() => {
     let cancelled = false;
@@ -144,7 +146,7 @@ export default function LocalNewsPage({ area, onChangeArea }) {
   return (
     <div className="local-news-experience">
       <div className="local-map-toolbar">
-        <p>Explore the map and see news from {effectiveCoverage === "local" ? area : "across Nigeria"}.</p>
+        <p>Explore the map and see news from {effectiveCoverage === "local" ? localArea : "across Nigeria"}.</p>
         <button type="button" className="local-change-area" onClick={onChangeArea}>
           <MapPin size={15} /> Change map area <ChevronDown size={14} />
         </button>
@@ -191,17 +193,11 @@ export default function LocalNewsPage({ area, onChangeArea }) {
                 <button type="button" className={section === "weather" ? "active" : ""} aria-pressed={section === "weather"} onClick={() => setSection("weather")}><CloudSun size={15} /> Weather</button>
               </div>
               <div className="local-news-utilities">
-                <label className="local-news-coverage">
-                  <span>Coverage</span>
-                  <select
-                    value={effectiveCoverage}
-                    onChange={(event) => setCoverage(event.target.value)}
-                    aria-label="News coverage"
-                  >
-                    {area?.trim() && <option value="local">{area}</option>}
-                    <option value="nigeria">Across Nigeria</option>
-                  </select>
-                </label>
+                <div className="local-news-scope" role="group" aria-label="Choose news area">
+                  <button type="button" className={effectiveCoverage === "local" ? "active" : ""} aria-pressed={effectiveCoverage === "local"} disabled={!localArea} onClick={() => setCoverage("local")}>My neighbourhood</button>
+                  <button type="button" className={effectiveCoverage === "nigeria" ? "active" : ""} aria-pressed={effectiveCoverage === "nigeria"} onClick={() => setCoverage("nigeria")}>Across Nigeria</button>
+                  {!localArea && <button type="button" onClick={onChangeArea}>Set area</button>}
+                </div>
                 <button type="button" className="local-refresh-button" onClick={() => setRefreshCount((v) => v + 1)} disabled={loading}><RefreshCw size={14} /> Refresh</button>
               </div>
             </div>
@@ -229,7 +225,7 @@ export default function LocalNewsPage({ area, onChangeArea }) {
             ) : <>
             <p className="local-news-caption">
               {effectiveCoverage === "local"
-                ? "Published news and available community updates matching " + area + ". Some local headlines may not be covered."
+                ? "Published news and available community updates matching " + localArea + ". Some local headlines may not be covered."
                 : "Recent publisher headlines and accessible community updates from across Nigeria."}
             </p>
             {errors.length > 0 && <p className="local-news-hint" role="status">{errors[0]}</p>}
@@ -242,6 +238,7 @@ export default function LocalNewsPage({ area, onChangeArea }) {
                   {activeItems.map((item) => item.kind === "publisher" ? (
                     <a className="local-story-card" key={"publisher-" + item.url} href={item.url} target="_blank" rel="noopener noreferrer">
                       <span className="local-story-head"><span className="local-story-type"><Newspaper size={14} /> Publisher report</span><ArrowUpRight size={16} /></span>
+                      {item.imageUrl && <img className="local-story-image" src={item.imageUrl} alt="" loading="lazy" referrerPolicy="no-referrer" onError={(event) => { event.currentTarget.hidden = true; }} />}
                       <strong>{item.title}</strong>
                       {item.description && <p>{item.description}</p>}
                       <small>{item.source} · {timeLabel(item.publishedAt)}</small>
@@ -257,7 +254,7 @@ export default function LocalNewsPage({ area, onChangeArea }) {
                   {activeItems.length === 0 && (
                     <div className="local-news-empty">
                       {section === "alerts" ? <ShieldAlert size={23} /> : <Newspaper size={23} />}
-                      <strong>{effectiveCoverage === "local" ? "No updates found for " + area : section === "alerts" ? "No safety reports available yet" : "No recent updates available yet"}</strong>
+                      <strong>{effectiveCoverage === "local" ? "No updates found for " + localArea : section === "alerts" ? "No safety reports available yet" : "No recent updates available yet"}</strong>
                       <p>{effectiveCoverage === "local"
                         ? "No matching " + (section === "alerts" ? "alerts" : "headlines or posts") + " were returned for this area. Try Across Nigeria in the Coverage menu, or check again later."
                         : "The connected sources have no matching updates at the moment. Publisher news requires a configured news API."}</p>
@@ -266,7 +263,7 @@ export default function LocalNewsPage({ area, onChangeArea }) {
                 </>
               )}
             </div>
-            <p className="local-news-disclaimer">Publisher stories can be delayed. Member alerts are unverified reports, not confirmed official emergency warnings.</p>
+            <p className="local-news-disclaimer">Neighbourhood coverage is approximate and depends on available publisher headlines and member posts. Publisher images, when supplied, belong to their sources. Publisher stories can be delayed. Member alerts are unverified reports, not confirmed official emergency warnings.</p>
             </>}
           </div>
         </section>
