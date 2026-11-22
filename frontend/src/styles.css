@@ -3472,3 +3472,7 @@ a.notification-story:hover { border-color: #b7d8c5; }
 .auth-entry-footer{font-size:11px;color:#82958a}
 @media(max-width:850px){.auth-entry{grid-template-columns:1fr}.auth-entry-hero{display:none}.auth-entry-mobile{display:block}.auth-entry-card{max-width:470px}}
 @media(max-width:390px){.auth-entry-two{grid-template-columns:1fr}.auth-entry-card{padding:18px 16px}.auth-entry-card h2{font-size:23px}}
+
+/* Unread conversation labels show only when incoming messages are unread. */
+.sale-inbox-list button strong { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.sale-inbox-list .sale-inbox-unread { flex:0 0 auto; display:inline-block; border-radius:999px; padding:3px 7px; background:#dff5e8; color:#076839; font-size:10px; font-weight:800; }

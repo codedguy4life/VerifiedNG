@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { ArrowLeft, MessageCircle, RefreshCw, Send, X } from "lucide-react";
 import { api } from "../lib/api.js";
 
-export default function SaleConversations({ onClose, initialThreadId = null, user }) {
+export default function SaleConversations({ onClose, onUnreadChange, initialThreadId = null, user }) {
   const [threads, setThreads] = useState([]);
   const [selectedId, setSelectedId] = useState(initialThreadId);
   const [draft, setDraft] = useState("");
@@ -19,6 +19,24 @@ export default function SaleConversations({ onClose, initialThreadId = null, use
   }, []);
   useEffect(() => { load(); }, [load]);
   const selected = threads.find((item) => String(item._id) === String(selectedId));
+  const latestMessageId = selected?.messages?.at(-1)?._id;
+  useEffect(() => {
+    if (!selectedId || !latestMessageId) return undefined;
+    let cancelled = false;
+    api("/api/sales/inquiries/" + encodeURIComponent(selectedId) + "/read", {
+      method: "POST", body: JSON.stringify({}),
+    }).then(() => {
+      if (cancelled) return;
+      setThreads((current) => current.map((thread) =>
+        String(thread._id) === String(selectedId) ? { ...thread, unread: false } : thread
+      ));
+      onUnreadChange?.();
+    }).catch((cause) => {
+      if (!cancelled) setError(cause.message || "Could not mark messages as read.");
+    });
+    return () => { cancelled = true; };
+  }, [selectedId, latestMessageId, onUnreadChange]);
+
   async function reply(event) {
     event.preventDefault();
     if (!draft.trim() || sending || !selected) return;
@@ -43,7 +61,7 @@ export default function SaleConversations({ onClose, initialThreadId = null, use
           {threads.map((thread) => {
             const other = String(thread.seller?._id) === String(user?._id || user?.id) ? thread.buyer : thread.seller;
             return <button key={thread._id} type="button" className={String(selectedId) === String(thread._id) ? "selected" : ""} onClick={() => setSelectedId(thread._id)}>
-              <strong>{other?.fullName || "VerifiedNG member"}</strong>
+              <strong>{other?.fullName || "VerifiedNG member"}{thread.unread && <span className="sale-inbox-unread">New</span>}</strong>
               <small>{thread.listing?.title || "Listing unavailable"}</small>
               <span>{thread.messages?.at(-1)?.text || "Conversation started"}</span>
             </button>;
