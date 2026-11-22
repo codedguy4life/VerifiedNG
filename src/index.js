@@ -11,7 +11,12 @@ const frontendRoot = path.join(__dirname, "..");
 app.use(
   cors({
     origin: [
+      // Keep old GitHub Pages and local development while moving to the new domain.
       "https://codedguy4life.github.io",
+      "https://verifiedng.site",
+      "https://www.verifiedng.site",
+      // Set FRONTEND_URL in Render to your Cloudflare Pages preview URL while testing.
+      ...(process.env.FRONTEND_URL || "").split(",").map((url) => url.trim().replace(/\\/$/, "")).filter(Boolean),
       "http://localhost:5000",
       "http://127.0.0.1:5000",
       "http://localhost:5500",

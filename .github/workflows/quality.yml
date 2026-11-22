@@ -3,6 +3,7 @@ name: VerifiedNG quality checks
 on:
   push:
     branches:
+      - main
       - feature/community-home-redesign
   pull_request:
 

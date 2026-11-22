@@ -1,9 +1,8 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
-export default defineConfig(({ command }) => ({
+export default defineConfig(() => ({
   plugins: [react()],
-  // Vite serves at / locally. The production path reserves a subfolder so
-  // the current GitHub Pages homepage and legacy HTML pages can remain intact.
-  base: command === "serve" ? "/" : "/VerifiedNG/community/",
+  // The React app is now the main website and is deployed at the domain root.
+  base: "/",
 }));
