@@ -15,7 +15,9 @@ app.use(
       "https://codedguy4life.github.io",
       "https://verifiedng.site",
       "https://www.verifiedng.site",
-      // Set FRONTEND_URL in Render to your Cloudflare Pages preview URL while testing.
+      // The current Vercel production origin. Keep explicit origins: never use a wildcard for authenticated requests.
+      "https://verified-ng-ten.vercel.app",
+      // FRONTEND_URL is used for password-reset links; accept it as an additional frontend origin.
       ...(process.env.FRONTEND_URL || "").split(",").map((url) => url.trim().replace(/[/]$/, "")).filter(Boolean),
       "http://localhost:5000",
       "http://127.0.0.1:5000",
