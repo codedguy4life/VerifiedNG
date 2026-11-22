@@ -16,7 +16,7 @@ app.use(
       "https://verifiedng.site",
       "https://www.verifiedng.site",
       // Set FRONTEND_URL in Render to your Cloudflare Pages preview URL while testing.
-      ...(process.env.FRONTEND_URL || "").split(",").map((url) => url.trim().replace(/\\/$/, "")).filter(Boolean),
+      ...(process.env.FRONTEND_URL || "").split(",").map((url) => url.trim().replace(/[/]$/, "")).filter(Boolean),
       "http://localhost:5000",
       "http://127.0.0.1:5000",
       "http://localhost:5500",
