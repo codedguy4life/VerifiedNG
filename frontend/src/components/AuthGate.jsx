@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ArrowLeft, ArrowRight, Eye, EyeOff, MapPin, ShieldCheck, Users } from "lucide-react";
 import { api } from "../lib/api.js";
+import BrandLogo from "./BrandLogo.jsx";
 import ThemeToggleButton from "./ThemeToggleButton.jsx";
 import { resolveTheme, systemPrefersDark } from "../lib/theme.js";
 
@@ -61,14 +62,14 @@ export default function AuthGate({ onAuthenticated, onResetFinished, theme = "sy
   const field=(label,name,props={})=><label key={name}>{label}<input value={value(name)} onChange={change(name)} required {...props}/></label>;
   return <main className="auth-entry">
     <aside className="auth-entry-hero">
-      <a href="/" className="auth-entry-brand">Verified<span>NG</span></a>
+      <a href="/" className="auth-entry-brand" aria-label="VerifiedNG home"><BrandLogo light /></a>
       <div><small>YOUR COMMUNITY, YOUR CONNECTIONS</small><h1>Connect with the people and places around you.</h1>
         <p>Discover local services, share news, explore listings and meet neighbours across Nigeria.</p>
         <div className="auth-entry-benefits"><span><Users size={18}/> Community conversations</span><span><MapPin size={18}/> Local recommendations</span><span><ShieldCheck size={18}/> Safety and trust</span></div>
       </div><small>VerifiedNG · Your neighbourhood matters.</small>
     </aside>
     <section className="auth-entry-content">
-      <a href="/" className="auth-entry-brand auth-entry-mobile">Verified<span>NG</span></a>
+      <a href="/" className="auth-entry-brand auth-entry-mobile" aria-label="VerifiedNG home"><BrandLogo /></a>
       <div className="auth-entry-card">
         {!login&&<button className="auth-entry-back" type="button" onClick={()=>switchMode("login")}><ArrowLeft size={16}/> Back to sign in</button>}
         <small>{signup?"JOIN VERIFIEDNG":login?"WELCOME BACK":"ACCOUNT RECOVERY"}</small>

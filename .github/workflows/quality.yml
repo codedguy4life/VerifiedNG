@@ -24,6 +24,9 @@ jobs:
       - name: Test theme behaviour
         working-directory: frontend
         run: npm run test:theme
+      - name: Test official logo integration
+        working-directory: frontend
+        run: npm run test:branding
       - name: Build frontend
         working-directory: frontend
         run: npm run build

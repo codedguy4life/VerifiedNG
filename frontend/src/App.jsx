@@ -38,6 +38,7 @@ import ThemePicker from "./components/ThemePicker.jsx";
 import ThemeToggleButton from "./components/ThemeToggleButton.jsx";
 import AuthGate from "./components/AuthGate.jsx";
 import PublicSite from "./components/PublicSite.jsx";
+import BrandLogo from "./components/BrandLogo.jsx";
 import ProviderApplyPage from "./components/ProviderApplyPage.jsx";
 import "./components/public-site.css";
 import PostComposer from "./components/PostComposer.jsx";
@@ -535,8 +536,7 @@ export default function App() {
           href="/"
           aria-label="VerifiedNG home"
         >
-          Verified<span>NG</span>
-          <small> YOUR COMMUNITY</small>
+          <BrandLogo tagline />
         </a>
         <div className="header-actions">
           <button

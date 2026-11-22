@@ -1,3 +1,4 @@
+import BrandLogo from "./BrandLogo.jsx";
 import {
   ArrowRight, ArrowUpRight, Armchair, Compass, Heart, LampDesk, MapPin,
   MessageCircle, Search, ShieldCheck, ShoppingBag, SlidersHorizontal, Users, Wrench,
@@ -9,7 +10,7 @@ function PreviewFrame({ label, children, className = "" }) {
   return (
     <div className={"public-showcase-frame " + className} aria-label={label}>
       <div className="public-showcase-frame-head">
-        <span className="public-showcase-mini-logo"><ShieldCheck size={16}/> Verified<span>NG</span></span>
+        <BrandLogo className="public-showcase-mini-logo" />
         <span className="public-showcase-demo-label">Example preview</span>
       </div>
       {children}

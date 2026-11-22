@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { api } from "../lib/api.js";
 import PublicShowcase from "./PublicShowcase.jsx";
+import BrandLogo from "./BrandLogo.jsx";
 import ThemeToggleButton from "./ThemeToggleButton.jsx";
 import { resolveTheme, systemPrefersDark } from "../lib/theme.js";
 
@@ -24,10 +25,7 @@ const steps = [
 ];
 
 function Brand({ light = false }) {
-  return <span className={light ? "public-brand public-brand-light" : "public-brand"}>
-    <span className="public-brand-symbol"><ShieldCheck size={19} strokeWidth={2.6} /></span>
-    Verified<span>NG</span>
-  </span>;
+  return <BrandLogo light={light} className={light ? "public-brand public-brand-light" : "public-brand"} />;
 }
 function PageHeading({ eyebrow, title, description }) {
   return <div className="public-page-heading">
