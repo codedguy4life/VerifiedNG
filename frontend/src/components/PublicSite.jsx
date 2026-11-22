@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { api } from "../lib/api.js";
 import PublicShowcase from "./PublicShowcase.jsx";
+import ThemePicker from "./ThemePicker.jsx";
 
 const infoLinks = [
   { href: "/about", label: "About" },
@@ -78,7 +79,7 @@ function ContactForm() {
   </form>;
 }
 
-export default function PublicSite({ page = "home", loggedIn = false }) {
+export default function PublicSite({ page = "home", loggedIn = false, theme = "system", onThemeChange = () => {} }) {
   const [menuOpen, setMenuOpen] = useState(false);
   useEffect(() => {
     const titles = {
@@ -113,6 +114,7 @@ export default function PublicSite({ page = "home", loggedIn = false }) {
           <a href={loggedIn ? "/app" : "/login"} className="public-signin">{loggedIn ? "My community" : "Log in"}</a>
           {!loggedIn && <a href="/signup" className="public-button public-button-primary">Join for free <ArrowRight size={16} /></a>}
         </div>
+        <div className="public-theme-slot"><ThemePicker theme={theme} onChange={onThemeChange} menu /></div>
         <button className="public-menu-toggle" aria-label={menuOpen ? "Close menu" : "Open menu"} aria-expanded={menuOpen} onClick={() => setMenuOpen((open) => !open)}>{menuOpen ? <X size={24}/> : <Menu size={24}/>}</button>
       </div>
     </header>

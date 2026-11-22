@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { ArrowLeft, ArrowRight, Eye, EyeOff, MapPin, ShieldCheck, Users } from "lucide-react";
 import { api } from "../lib/api.js";
+import ThemePicker from "./ThemePicker.jsx";
 
 const query = new URLSearchParams(window.location.search);
 const resetToken = query.get("reset_token");
 const resetEmail = query.get("email");
 
-export default function AuthGate({ onAuthenticated, onResetFinished }) {
+export default function AuthGate({ onAuthenticated, onResetFinished, theme = "system", onThemeChange = () => {} }) {
   const [mode, setMode] = useState(() => resetToken ? "reset" : window.location.pathname === "/signup" ? "signup" : window.location.pathname === "/forgot-password" ? "forgot" : "login");
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [fields, setFields] = useState({identifier:"",loginPassword:"",fullName:"",email:resetEmail || "",phone:"",state:"",city:"",password:"",confirm:""});
@@ -65,6 +66,7 @@ export default function AuthGate({ onAuthenticated, onResetFinished }) {
       </div><small>VerifiedNG · Your neighbourhood matters.</small>
     </aside>
     <section className="auth-entry-content">
+      <div className="auth-theme-slot"><ThemePicker theme={theme} onChange={onThemeChange} menu /></div>
       <a href="/" className="auth-entry-brand auth-entry-mobile">Verified<span>NG</span></a>
       <div className="auth-entry-card">
         {!login&&<button className="auth-entry-back" type="button" onClick={()=>switchMode("login")}><ArrowLeft size={16}/> Back to sign in</button>}

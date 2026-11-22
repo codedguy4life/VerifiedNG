@@ -33,6 +33,8 @@ import {
   Menu,
 } from "lucide-react";
 import { api, getToken } from "./lib/api.js";
+import { applyTheme, normalizeTheme, readThemePreference, saveThemePreference, THEME_STORAGE_KEY } from "./lib/theme.js";
+import ThemePicker from "./components/ThemePicker.jsx";
 import AuthGate from "./components/AuthGate.jsx";
 import PublicSite from "./components/PublicSite.jsx";
 import ProviderApplyPage from "./components/ProviderApplyPage.jsx";
@@ -76,6 +78,27 @@ function FilledNavIcon({ name }) {
 }
 
 export default function App() {
+  const [theme, setTheme] = useState(readThemePreference);
+  useEffect(() => {
+    applyTheme(theme);
+    const media = typeof window.matchMedia === "function" ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+    const updateSystemTheme = () => { if (theme === "system") applyTheme("system"); };
+    const syncOtherTabs = (event) => {
+      if (event.key === THEME_STORAGE_KEY) setTheme(readThemePreference());
+    };
+    media?.addEventListener?.("change", updateSystemTheme);
+    window.addEventListener("storage", syncOtherTabs);
+    return () => {
+      media?.removeEventListener?.("change", updateSystemTheme);
+      window.removeEventListener("storage", syncOtherTabs);
+    };
+  }, [theme]);
+  function changeTheme(choice) {
+    const next = normalizeTheme(choice);
+    saveThemePreference(next);
+    applyTheme(next);
+    setTheme(next);
+  }
   const [token, setToken] = useState(getToken());
   const [user, setUser] = useState(() => {
     try {
@@ -483,11 +506,11 @@ export default function App() {
     "/about": "about", "/safety": "safety", "/privacy": "privacy",
     "/terms": "terms", "/contact": "contact",
   };
-  if (!resetMode && publicInfo[path]) return <PublicSite page={publicInfo[path]} loggedIn={Boolean(token)} />;
-  if (!resetMode && !token && (path === "/" || path === "/app")) return <PublicSite page="home" />;
-  if (!resetMode && !token && path === "/become-a-provider") return <PublicSite page="become-a-provider" />;
+  if (!resetMode && publicInfo[path]) return <PublicSite page={publicInfo[path]} loggedIn={Boolean(token)} theme={theme} onThemeChange={changeTheme} />;
+  if (!resetMode && !token && (path === "/" || path === "/app")) return <PublicSite page="home" theme={theme} onThemeChange={changeTheme} />;
+  if (!resetMode && !token && path === "/become-a-provider") return <PublicSite page="become-a-provider" theme={theme} onThemeChange={changeTheme} />;
   if (!token || resetMode) {
-    return <AuthGate onAuthenticated={onAuthenticated} onResetFinished={() => {
+    return <AuthGate theme={theme} onThemeChange={changeTheme} onAuthenticated={onAuthenticated} onResetFinished={() => {
       window.history.replaceState(null, "", window.location.pathname);
       setResetMode(false);
       signOut();
@@ -512,6 +535,7 @@ export default function App() {
           <small> YOUR COMMUNITY</small>
         </a>
         <div className="header-actions">
+          <ThemePicker theme={theme} onChange={changeTheme} menu />
           <button
             className="header-icon"
             type="button"
@@ -783,6 +807,11 @@ export default function App() {
               </div>
               <h2>Your preferences</h2>
               <p>These preferences are saved in this browser on this device.</p>
+              <div className="setting-theme">
+                <strong>Appearance</strong>
+                <small>Choose how VerifiedNG looks on this device.</small>
+                <ThemePicker theme={theme} onChange={changeTheme} />
+              </div>
               <label className="setting-row">
                 <span>
                   <strong>Community notifications</strong>

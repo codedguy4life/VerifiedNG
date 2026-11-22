@@ -3492,3 +3492,8 @@ a.notification-story:hover { border-color: #b7d8c5; }
 .auth-entry-footer{text-align:center;line-height:1.8}
 .drawer-info-links{display:flex;align-items:center;flex-wrap:wrap;gap:11px;padding:12px 0}
 .drawer-info-links a{color:var(--green-dark);font-size:11px;font-weight:750;text-decoration:underline}
+
+/* Appearance settings (Light / Dark / System) */
+.setting-theme { display: grid; justify-items: start; gap: 10px; padding: 17px 0; border-top: 1px solid var(--line); }
+.setting-theme>strong { font-size: 14px; }
+.setting-theme>small { color: var(--muted); font-size: 12px; line-height: 1.5; }
