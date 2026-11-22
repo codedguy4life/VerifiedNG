@@ -90,6 +90,7 @@ export default function App() {
   const [selectedProviderId, setSelectedProviderId] = useState(null);
   const [providerReturnView, setProviderReturnView] = useState("providers");
   const [saleInboxRequested, setSaleInboxRequested] = useState(false);
+  const [unreadSaleCount, setUnreadSaleCount] = useState(0);
   const [profileDrawerOpen, setProfileDrawerOpen] = useState(false);
   const [profileEditorOpen, setProfileEditorOpen] = useState(false);
   const [postingBlocked, setPostingBlocked] = useState(false);
@@ -104,6 +105,28 @@ export default function App() {
   const [resetMode, setResetMode] = useState(() => new URLSearchParams(window.location.search).has("reset_token"));
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+
+  const refreshUnreadSale = useCallback(async () => {
+    const currentToken = getToken();
+    if (!currentToken) { setUnreadSaleCount(0); return; }
+    try {
+      const result = await api("/api/sales/inquiries/unread");
+      if (getToken() === currentToken) setUnreadSaleCount(Math.max(0, Number(result.unreadConversations) || 0));
+    } catch {
+      // Inbox availability must not prevent the Home feed from loading.
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!token) { setUnreadSaleCount(0); return undefined; }
+    refreshUnreadSale();
+    const timer = window.setInterval(refreshUnreadSale, 60000);
+    window.addEventListener("focus", refreshUnreadSale);
+    return () => {
+      window.clearInterval(timer);
+      window.removeEventListener("focus", refreshUnreadSale);
+    };
+  }, [token, refreshUnreadSale]);
 
   const loadFeed = useCallback(
     async ({ append = false, requestedPage = 1 } = {}) => {
@@ -145,6 +168,7 @@ export default function App() {
       } catch {
         setUser(null);
       }
+      setArea(localStorage.getItem("verifiedng-area") || "");
     };
     window.addEventListener("storage", onStorage);
     return () => window.removeEventListener("storage", onStorage);
@@ -283,10 +307,11 @@ export default function App() {
     setToken(result.token);
     setUser(result.user);
     const location = [result.user?.city, result.user?.state].filter(Boolean).join(", ");
-    if (location) {
-      localStorage.setItem("verifiedng-area", location);
-      setArea(location);
-    }
+    if (location) localStorage.setItem("verifiedng-area", location);
+    else localStorage.removeItem("verifiedng-area");
+    setArea(location);
+    setScope("for-you");
+    setUnreadSaleCount(0);
     setCurrentView("home");
     setActiveTab("home");
     setError("");
@@ -294,6 +319,9 @@ export default function App() {
   function signOut() {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+    localStorage.removeItem("verifiedng-area");
+    setArea("");
+    setUnreadSaleCount(0);
     setToken(null);
     setUser(null);
     setPosts([]);
@@ -460,11 +488,11 @@ export default function App() {
           <button
             className="header-icon"
             type="button"
-            aria-label="Messages"
-            onClick={() => { setSaleInboxRequested(true); setCurrentView("sale"); setActiveTab("sale"); setProfileDrawerOpen(false); }}
+            aria-label={unreadSaleCount ? "Messages (" + unreadSaleCount + " unread conversations)" : "Messages"}
+            onClick={() => { setSaleInboxRequested(true); setCurrentView("sale"); setActiveTab("sale"); setProfileDrawerOpen(false); refreshUnreadSale(); }}
           >
             <MessageCircle size={20} />
-            <span className="notification-dot" />
+            {unreadSaleCount > 0 && <span className="notification-dot" aria-hidden="true" />}
           </button>
           <button
             className="header-icon"
@@ -618,6 +646,7 @@ export default function App() {
             <ForSalePage
               user={user}
               initialShowInbox={saleInboxRequested}
+              onUnreadChange={refreshUnreadSale}
               initialListingId={recommendedItem?.type === "sale" ? recommendedItem._id : null}
               onEditProfile={() => {
                 setPostingBlocked(false);
@@ -901,10 +930,10 @@ export default function App() {
             )}
             <div className="feed-caption">
               {scope === "nearby"
-                ? "Posts from your area and nearby conversations"
+                ? "Neighbourhood posts matching your saved location and selected area."
                 : scope === "nigeria"
-                  ? "Conversations shared across Nigeria"
-                  : "Conversations from your community"}
+                  ? "Posts members chose to share across Nigeria."
+                  : "Across Nigeria posts, plus neighbourhood posts matching your city or state."}
             </div>
             {loading && !posts.length && (
               <div className="empty-state card">Loading your community…</div>
