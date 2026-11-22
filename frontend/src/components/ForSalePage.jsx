@@ -21,7 +21,7 @@ const formatAge = (value) => {
   return days < 7 ? days + "d ago" : new Date(value).toLocaleDateString("en-NG", { day: "numeric", month: "short" });
 };
 
-export default function ForSalePage({ user, onEditProfile, onUnreadChange, initialListingId = null, initialShowInbox = false }) {
+export default function ForSalePage({ user, onEditProfile, onUnreadChange, onInboxClose, initialListingId = null, initialShowInbox = false }) {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("");
   const [subcategory, setSubcategory] = useState("");
@@ -320,7 +320,7 @@ export default function ForSalePage({ user, onEditProfile, onUnreadChange, initi
         </div>,
         document.body,
       )}
-      {inboxOpen && <SaleConversations user={user} initialThreadId={initialThreadId} onUnreadChange={onUnreadChange} onClose={() => { setInboxOpen(false); onUnreadChange?.(); }} />}
+      {inboxOpen && <SaleConversations user={user} initialThreadId={initialThreadId} onUnreadChange={onUnreadChange} onClose={() => { setInboxOpen(false); onInboxClose?.(); onUnreadChange?.(); }} />}
       {showCreate && createPortal(
         <CreateSaleItem
           categories={categories}

@@ -647,6 +647,7 @@ export default function App() {
               user={user}
               initialShowInbox={saleInboxRequested}
               onUnreadChange={refreshUnreadSale}
+              onInboxClose={() => setSaleInboxRequested(false)}
               initialListingId={recommendedItem?.type === "sale" ? recommendedItem._id : null}
               onEditProfile={() => {
                 setPostingBlocked(false);
