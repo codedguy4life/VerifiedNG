@@ -476,3 +476,28 @@
 @media (prefers-reduced-motion: reduce) {
   :root[data-theme="dark"] :is(.header-icon,.marketplace-card,.theme-quick-toggle) { transition: none; }
 }
+
+
+/* Final small controls: avoid accidental white focus states and review buttons. */
+:root[data-theme="dark"] :is(.composer textarea:focus,.composer-inline textarea:focus,.provider-apply-form input:focus,.provider-apply-form textarea:focus) {
+  background: #14231b;
+  border-color: #7de0a6;
+  color: #edf5ee;
+  box-shadow: 0 0 0 3px rgba(92, 206, 136, .16);
+}
+:root[data-theme="dark"] .local-sheet-handle { background: #536c59; }
+:root[data-theme="dark"] .verification-review-card button:last-child {
+  background: #263d2d;
+  border-color: #456e51;
+  color: #bceccb;
+}
+:root[data-theme="dark"] .react-request-status.declined {
+  background: #422b2a;
+  border-color: #78453d;
+  color: #ffc1b8;
+}
+:root[data-theme="dark"] :is(.ask-area-result-list>button:hover,.groups-join-area>button:not(.groups-join-button):hover) {
+  background: #294335;
+  border-color: #526d58;
+  color: #e7f2e9;
+}
