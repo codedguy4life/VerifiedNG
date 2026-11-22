@@ -185,3 +185,12 @@
 }
 :root[data-theme="dark"] .public-theme-slot .theme-menu-trigger { background: #213428; color: #cbefd7; border-color: #3c5745; }
 :root[data-theme="dark"] .auth-theme-slot .theme-menu-trigger { background: #1b2b21; color: #cbefd7; }
+
+/* Bright accent buttons need dark text for contrast in dark mode. */
+:root[data-theme="dark"] :is(.primary-button,.comment-form button,.report-actions button[type="submit"],.marketplace-sell,.marketplace-publish,.marketplace-sold-button,.ask-area-form>button,.groups-add,.groups-join-button,.groups-composer button,.local-faves-form button,.sale-inbox-compose button,.marketplace-contact-form button,.react-provider-hire,.react-provider-request button,.auth-entry-submit) {
+  color: #102a1a;
+}
+:root[data-theme="dark"] :is(.primary-button,.auth-entry-submit,.marketplace-publish,.groups-add,.groups-join-button):focus-visible {
+  outline: 2px solid #a6ecc1;
+  outline-offset: 2px;
+}
