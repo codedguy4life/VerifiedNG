@@ -8,6 +8,7 @@ import {
   Video,
   X,
 } from "lucide-react";
+import { uploadMedia } from "../lib/cloudinary.js";
 
 const categories = [
   "General",
@@ -73,43 +74,9 @@ export default function PostComposer({ user, onPublish, onRequireLocation, busy 
   }
 
   async function uploadSelectedMedia() {
-    const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-    const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
-    const invalidCloud = !cloudName || cloudName.startsWith("your_");
-    const invalidPreset = !uploadPreset || uploadPreset.startsWith("your_");
-    if (invalidCloud || invalidPreset) {
-      const missing = [
-        invalidCloud ? "VITE_CLOUDINARY_CLOUD_NAME" : null,
-        invalidPreset ? "VITE_CLOUDINARY_UPLOAD_PRESET" : null,
-      ].filter(Boolean).join(" and ");
-      throw new Error(
-        "Cloudinary setting missing: " + missing +
-        ". Add real values to frontend/.env.local, then stop and restart Vite (npm run dev)."
-      );
-    }
-    const resourceType = selectedFile.type.startsWith("video/")
-      ? "video"
-      : "image";
-    const formData = new FormData();
-    formData.append("file", selectedFile);
-    formData.append("upload_preset", uploadPreset);
-    const response = await fetch(
-      "https://api.cloudinary.com/v1_1/" +
-        cloudName +
-        "/" +
-        resourceType +
-        "/upload",
-      { method: "POST", body: formData },
-    );
-    const result = await response.json();
-    if (!response.ok || !result.secure_url)
-      throw new Error(
-        result.error?.message ||
-          "Could not upload this file. Please try again.",
-      );
-    return resourceType === "video"
-      ? { videoUrl: result.secure_url }
-      : { imageUrl: result.secure_url };
+    const resourceType = selectedFile.type.startsWith("video/") ? "video" : "image";
+    const url = await uploadMedia(selectedFile, resourceType);
+    return resourceType === "video" ? { videoUrl: url } : { imageUrl: url };
   }
 
   async function submit(event) {

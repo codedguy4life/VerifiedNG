@@ -4,6 +4,7 @@ import {
   MapPin, PackageOpen, Plus, Search, SlidersHorizontal, X, Tag, MessageCircle, Flag,
 } from "lucide-react";
 import { api } from "../lib/api.js";
+import { uploadMedia } from "../lib/cloudinary.js";
 import SaleConversations from "./SaleConversations.jsx";
 
 const money = new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN", maximumFractionDigits: 0 });
@@ -358,18 +359,7 @@ function CreateSaleItem({ categories, user, onEditProfile, onClose, onCreated })
 
   async function uploadPhoto() {
     if (!photo) return "";
-    const cloud = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-    const preset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
-    if (!cloud || !preset || cloud.startsWith("your_") || preset.startsWith("your_")) {
-      throw new Error("Set VITE_CLOUDINARY_CLOUD_NAME and VITE_CLOUDINARY_UPLOAD_PRESET in frontend/.env.local to upload a photo.");
-    }
-    const data = new FormData();
-    data.append("file", photo);
-    data.append("upload_preset", preset);
-    const response = await fetch("https://api.cloudinary.com/v1_1/" + cloud + "/image/upload", { method: "POST", body: data });
-    const result = await response.json();
-    if (!response.ok || !result.secure_url) throw new Error(result.error?.message || "Photo upload failed.");
-    return result.secure_url;
+    return uploadMedia(photo, "image");
   }
 
   async function submit(event) {

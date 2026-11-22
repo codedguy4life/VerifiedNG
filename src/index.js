@@ -65,6 +65,7 @@ const saleRoutes = require("./routes/saleRoutes");
 const groupsRoutes = require("./routes/groupsRoutes");
 const verificationRoutes = require("./routes/verificationRoutes");
 const localAssistantRoutes = require("./routes/localAssistantRoutes");
+const uploadRoutes = require("./routes/uploadRoutes");
 
 app.get("/api/health", (req, res) => {
   res.json({ message: "VerifiedNG Backend is running!" });
@@ -80,6 +81,7 @@ app.use("/api/sales", saleRoutes);
 app.use("/api/groups", groupsRoutes);
 app.use("/api/verification", verificationRoutes);
 app.use("/api/discovery", localAssistantRoutes);
+app.use("/api/uploads", uploadRoutes);
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(frontendRoot, "index.html"));
