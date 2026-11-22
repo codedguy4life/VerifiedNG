@@ -229,7 +229,7 @@ const login = async (req, res) => {
 const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body || {};
-    if (typeof email !== "string" || !/^\\S+@\\S+\\.\\S+$/.test(email.trim()) || email.length > 200) {
+    if (typeof email !== "string" || !/^\S+@\S+\.\S+$/.test(email.trim()) || email.length > 200) {
       return res.status(400).json({ message: "Please provide a valid email address." });
     }
     // Check mail configuration for all addresses before querying user records.
