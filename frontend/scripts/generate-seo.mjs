@@ -95,7 +95,7 @@ try {
     '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
     publicUrls + '\n</urlset>\n';
   await writeFile(path.join(distDir, "sitemap.xml"), sitemap, "utf8");
-  process.stdout.write("SEO sitemap has " + publicUrls.split("<url>").length.toString() + " entries (including the opening text)\n");
+  process.stdout.write("SEO sitemap has " + Object.values(ROUTES).filter((route) => route.index).length + " indexable URLs\n");
 } finally {
   await server.close();
 }

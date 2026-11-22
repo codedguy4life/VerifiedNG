@@ -11,7 +11,7 @@ test("every real public page is prerendered with unique metadata and visible tex
   for (const [pathname, info] of Object.entries(ROUTES)) {
     const html = built(pathname);
     assert.match(html, /<div id="root">[\s\S]*<main|<div id="root">[\s\S]*public-hero/, "Missing public HTML at " + pathname);
-    assert.ok(html.includes("<title>" + info.title + "</title>"), "Wrong title " + pathname);
+    assert.ok(html.includes("<title>" + info.title.replaceAll("&", "&amp;") + "</title>"), "Wrong title " + pathname);
     assert.ok(html.includes('name="description" content="' + info.description + '"'), "Missing description " + pathname);
     assert.ok(html.includes('name="robots" content="' + (info.index ? "index,follow" : "noindex,follow")), "Wrong robots instruction " + pathname);
     assert.equal(titles.has(info.title), false, "Duplicate page title");
