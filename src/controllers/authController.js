@@ -37,8 +37,14 @@ const createAccount = async (req, res, role) => {
       per,
     } = req.body;
 
-    if (!fullName || !email || !password || !phone) {
-      return res.status(400).json({ message: "Please fill in all fields" });
+    if (![fullName, email, password, phone].every((value) => typeof value === "string" && value.trim())) {
+      return res.status(400).json({ message: "Please fill in all required fields" });
+    }
+    if (password.length < 8 || password.length > 128) {
+      return res.status(400).json({ message: "Password must be between 8 and 128 characters" });
+    }
+    if (fullName.trim().length > 100 || email.trim().length > 200 || phone.trim().length > 30) {
+      return res.status(400).json({ message: "Some account details are too long" });
     }
 
     const cleanEmail = email.trim().toLowerCase();
@@ -131,9 +137,16 @@ const register = async (req, res) => createAccount(req, res, "customer");
 
 // ─── PROVIDER REGISTER ───
 
-// The server assigns the provider role; the browser cannot choose it.
-
+// Provider signup must never grant this role to arbitrary visitors.
+// A configured invitation is verified only on the server. If not configured, fail closed.
 const registerProvider = async (req, res) => {
+  const expected = process.env.PROVIDER_INVITE_CODE;
+  const supplied = req.body?.inviteCode;
+  if (!expected || typeof supplied !== "string" ||
+    Buffer.byteLength(supplied) !== Buffer.byteLength(expected) ||
+    !crypto.timingSafeEqual(Buffer.from(supplied), Buffer.from(expected))) {
+    return res.status(403).json({ message: "Provider registration requires an invitation from VerifiedNG." });
+  }
   return createAccount(req, res, "provider");
 };
 
@@ -242,8 +255,9 @@ const forgotPassword = async (req, res) => {
       resetTokenExpiry,
     });
 
-    const frontendUrl = process.env.FRONTEND_URL.replace(/\/$/, "");
-    const resetLink = `${frontendUrl}/reset-password.html?token=${resetToken}&email=${encodeURIComponent(cleanEmail)}`;
+    // Reset links use the React website root. The query opens the in-app form.
+    const frontendUrl = (process.env.RESET_FRONTEND_URL || "https://verifiedng.site").replace(/[/]$/, "");
+    const resetLink = frontendUrl + "/?reset_token=" + encodeURIComponent(resetToken) + "&email=" + encodeURIComponent(cleanEmail);
 
     await transporter.sendMail({
       from: `"VerifiedNG" <${process.env.EMAIL_USER}>`,

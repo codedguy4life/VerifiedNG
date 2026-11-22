@@ -33,6 +33,7 @@ import {
   Menu,
 } from "lucide-react";
 import { api, getToken } from "./lib/api.js";
+import AuthGate from "./components/AuthGate.jsx";
 import PostComposer from "./components/PostComposer.jsx";
 import ProfileEditor from "./components/ProfileEditor.jsx";
 import ForSalePage from "./components/ForSalePage.jsx";
@@ -100,9 +101,7 @@ export default function App() {
   const [hasMore, setHasMore] = useState(false);
   const [loading, setLoading] = useState(false);
   const [publishing, setPublishing] = useState(false);
-  const [loginIdentifier, setLoginIdentifier] = useState("");
-  const [loginPassword, setLoginPassword] = useState("");
-  const [loginBusy, setLoginBusy] = useState(false);
+  const [resetMode, setResetMode] = useState(() => new URLSearchParams(window.location.search).has("reset_token"));
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
@@ -278,28 +277,19 @@ export default function App() {
       return false;
     }
   }
-  async function signIn(event) {
-    event.preventDefault();
-    setLoginBusy(true);
-    setError("");
-    try {
-      const result = await api("/api/auth/login", {
-        method: "POST",
-        body: JSON.stringify({
-          identifier: loginIdentifier,
-          password: loginPassword,
-        }),
-      });
-      localStorage.setItem("token", result.token);
-      localStorage.setItem("user", JSON.stringify(result.user));
-      setToken(result.token);
-      setUser(result.user);
-      setLoginPassword("");
-    } catch (cause) {
-      setError(cause.message || "Could not sign in.");
-    } finally {
-      setLoginBusy(false);
+  function onAuthenticated(result) {
+    localStorage.setItem("token", result.token);
+    localStorage.setItem("user", JSON.stringify(result.user));
+    setToken(result.token);
+    setUser(result.user);
+    const location = [result.user?.city, result.user?.state].filter(Boolean).join(", ");
+    if (location) {
+      localStorage.setItem("verifiedng-area", location);
+      setArea(location);
     }
+    setCurrentView("home");
+    setActiveTab("home");
+    setError("");
   }
   function signOut() {
     localStorage.removeItem("token");
@@ -441,55 +431,13 @@ export default function App() {
     setMessage("Your setting has been saved on this device.");
   }
 
-  if (!token)
-    return (
-      <main className="login-wall">
-        <form className="login-card card" onSubmit={signIn}>
-          <div className="brand">
-            Verified<span>NG</span>
-          </div>
-          <h1>Your community is waiting.</h1>
-          <p>Sign in with your existing VerifiedNG email or phone number.</p>
-          {error && (
-            <div className="notice error-notice" role="alert">
-              {error}
-            </div>
-          )}
-          <label className="login-label">
-            Email or phone
-            <input
-              autoComplete="username"
-              value={loginIdentifier}
-              onChange={(event) => setLoginIdentifier(event.target.value)}
-              required
-            />
-          </label>
-          <label className="login-label">
-            Password
-            <input
-              type="password"
-              autoComplete="current-password"
-              value={loginPassword}
-              onChange={(event) => setLoginPassword(event.target.value)}
-              required
-            />
-          </label>
-          <button className="primary-button login-submit" disabled={loginBusy}>
-            {loginBusy ? "Signing in…" : "Sign in"} <ArrowRight size={16} />
-          </button>
-          <p className="muted small">
-            Your existing account is used. This does not create a new account or
-            change your role.
-          </p>
-          <a
-            className="muted small"
-            href="https://codedguy4life.github.io/VerifiedNG/"
-          >
-            Back to the existing website
-          </a>
-        </form>
-      </main>
-    );
+  if (!token || resetMode) {
+    return <AuthGate onAuthenticated={onAuthenticated} onResetFinished={() => {
+      window.history.replaceState(null, "", window.location.pathname);
+      setResetMode(false);
+      signOut();
+    }}/>;
+  }
 
   return (
     <div className="app-shell">
@@ -502,7 +450,7 @@ export default function App() {
       >
         <a
           className="brand"
-          href="https://codedguy4life.github.io/VerifiedNG/"
+          href="/"
           aria-label="VerifiedNG home"
         >
           Verified<span>NG</span>

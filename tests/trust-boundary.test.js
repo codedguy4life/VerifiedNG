@@ -194,6 +194,7 @@ describe("Trust boundary", () => {
     const response = await request(app)
       .post("/api/auth/register-provider")
       .send({
+        inviteCode: process.env.PROVIDER_INVITE_CODE,
         fullName: "Provider Route User",
         email: `providerroute${Date.now()}@example.com`,
         password: "TestPass123!",

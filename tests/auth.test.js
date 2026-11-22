@@ -27,10 +27,33 @@ describe("Authentication", () => {
     expect(response.body.user.role).toBe("customer");
   });
 
+  test("provider registration requires a private invitation", async () => {
+    const response = await request(app).post("/api/auth/register-provider").send({
+      fullName: "Uninvited Provider",
+      email: "uninvited" + Date.now() + "@example.com",
+      phone: "094" + String(Date.now()).slice(-8),
+      password: "TestPass123!",
+    });
+    expect(response.statusCode).toBe(403);
+    expect(response.body.token).toBeUndefined();
+  });
+
+  test("member signup rejects too-short passwords", async () => {
+    const response = await request(app).post("/api/auth/register").send({
+      fullName: "Short Password",
+      email: "short" + Date.now() + "@example.com",
+      phone: "095" + String(Date.now()).slice(-8),
+      password: "abc123",
+    });
+    expect(response.statusCode).toBe(400);
+    expect(response.body.token).toBeUndefined();
+  });
+
   test("provider can sign up successfully", async () => {
     const response = await request(app)
       .post("/api/auth/register-provider")
       .send({
+        inviteCode: process.env.PROVIDER_INVITE_CODE,
         fullName: "Jest Test Provider",
         email: `jestprovider${Date.now()}@example.com`,
         password: "TestPass123!",
