@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   ArrowLeft, ArrowRight, Check, ChevronDown, Clock3, ImagePlus,
   MapPin, PackageOpen, Plus, Search, SlidersHorizontal, X, Tag, MessageCircle, Flag,
@@ -284,7 +285,7 @@ export default function ForSalePage({ user, onEditProfile, initialListingId = nu
       {loading && <p className="marketplace-loading" role="status">Loading listings…</p>}
       {hasMore && !loading && <button type="button" className="marketplace-loadmore" onClick={() => setPage((value) => value + 1)}>Load more <ArrowRight size={15} /></button>}
 
-      {selected && (
+      {selected && createPortal(
         <div className="marketplace-dialog" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelected(null); }}>
           <section role="dialog" aria-modal="true" aria-labelledby="marketplace-detail-title" className="marketplace-detail">
             <button type="button" className="marketplace-close" aria-label="Close details" onClick={() => setSelected(null)}><X size={19} /></button>
@@ -316,17 +317,19 @@ export default function ForSalePage({ user, onEditProfile, initialListingId = nu
               {error && <p className="marketplace-error" role="alert">{error}</p>}
             </div>
           </section>
-        </div>
+        </div>,
+        document.body,
       )}
       {inboxOpen && <SaleConversations user={user} initialThreadId={initialThreadId} onClose={() => setInboxOpen(false)} />}
-      {showCreate && (
+      {showCreate && createPortal(
         <CreateSaleItem
           categories={categories}
           user={user}
           onEditProfile={onEditProfile}
           onClose={() => setShowCreate(false)}
           onCreated={() => { setShowCreate(false); setPage(1); setReload((n) => n + 1); }}
-        />
+        />,
+        document.body,
       )}
     </div>
   );
@@ -365,8 +368,25 @@ function CreateSaleItem({ categories, user, onEditProfile, onClose, onCreated })
   async function submit(event) {
     event.preventDefault();
     if (busy) return;
-    setBusy(true);
     setError("");
+    // Do not upload a photo before checking all required listing details.
+    if (title.trim().length < 3) {
+      setError("Enter an item name with at least 3 characters.");
+      return;
+    }
+    if (!category) {
+      setError("Choose a category for your item.");
+      return;
+    }
+    if (price === "" || !Number.isInteger(Number(price)) || Number(price) < 0) {
+      setError("Enter the price in naira (use 0 for a free item).");
+      return;
+    }
+    if (!user?.city?.trim() && !user?.state?.trim()) {
+      setError("Add your city or state in My profile before publishing. Tap Set location below.");
+      return;
+    }
+    setBusy(true);
     try {
       const imageUrl = await uploadPhoto();
       await api("/api/sales", {
@@ -389,7 +409,7 @@ function CreateSaleItem({ categories, user, onEditProfile, onClose, onCreated })
     <div className="marketplace-dialog">
       <section role="dialog" aria-modal="true" aria-labelledby="marketplace-create-title" className="marketplace-create">
         <header className="marketplace-create-header"><h2 id="marketplace-create-title">Sell an item</h2><button type="button" className="marketplace-close" onClick={onClose} disabled={busy} aria-label="Close"><X size={19} /></button></header>
-        <form onSubmit={submit} className="marketplace-create-form">
+        <form id="marketplace-create-form" onSubmit={submit} className="marketplace-create-form">
           <label>Item name <input value={title} onChange={(event) => setTitle(event.target.value)} placeholder="e.g. Samsung 32-inch TV" minLength={3} maxLength={100} required /></label>
           <div className="marketplace-form-row">
             <label>Category <select value={category} required onChange={(event) => { setCategory(event.target.value); setSubcategory(""); }}><option value="">Choose</option>{Object.keys(categories).map((name) => <option key={name} value={name}>{name}</option>)}</select></label>
@@ -402,9 +422,17 @@ function CreateSaleItem({ categories, user, onEditProfile, onClose, onCreated })
             {(!user?.city && !user?.state) && <button type="button" onClick={onEditProfile}>Set location</button>}
           </div>
           <div className="marketplace-approx"><button type="button" onClick={approximateLocation ? () => { setApproximateLocation(null); setLocationStatus("Approximate location removed."); } : useApproximateLocation}><MapPin size={14} /> {approximateLocation ? "Remove approximate distance" : "Add approximate distance (optional)"}</button><small>Only rounded coordinates are stored, not your precise location. Leave off for privacy.</small>{locationStatus && <small role="status">{locationStatus}</small>}</div>
-          {error && <p className="marketplace-error" role="alert">{error}</p>}
-          <button className="marketplace-publish" type="submit" disabled={busy || !title.trim() || !category || price === "" || (!user?.city && !user?.state)}><Tag size={15} /> {busy ? "Publishing…" : "Publish listing"}</button>
         </form>
+        <footer className="marketplace-create-footer">
+          {(!user?.city?.trim() && !user?.state?.trim()) && (
+            <div className="marketplace-publish-location">
+              <span>Set your city or state to publish a listing.</span>
+              <button type="button" onClick={onEditProfile}>Set location</button>
+            </div>
+          )}
+          {error && <p className="marketplace-error" role="alert">{error}</p>}
+          <button className="marketplace-publish" type="submit" form="marketplace-create-form" disabled={busy}><Tag size={15} /> {busy ? "Publishing…" : "Publish listing"}</button>
+        </footer>
       </section>
     </div>
   );
