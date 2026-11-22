@@ -257,3 +257,221 @@
  .public-form-two{grid-template-columns:1fr}
 }
 @media(prefers-reduced-motion:reduce){.public-button{transition:none}.public-button:hover{transform:none}}
+
+
+/* Compact editorial refresh: natural, realistic tones with no cartoon artwork. */
+.public-site{--p-green:#0d6048;--p-dark:#153b32;--p-deep:#122b27;--p-ink:#24332f;--p-muted:#65736d;--p-line:#e4e8e3;--p-pale:#f4f6f1;background:#fcfcfa;color:var(--p-ink)}
+.public-site .public-header{background:rgba(252,252,250,.98);border-color:#e1e7e2}
+.public-site .public-brand>span:last-child{color:#188367}
+.public-site .public-brand-symbol{background:#155d46}
+.public-site .public-button-primary{background:#176649;box-shadow:none}
+.public-site .public-button-primary:hover{background:#105039}
+.public-site .public-button-light{background:#fbfcfa;border-color:#dbe3dc}
+.public-site .public-hero{background:linear-gradient(125deg,#f7f8f3 0%,#fff 62%);padding:56px 0 62px}
+.public-site .public-hero-grid{gap:55px}
+.public-site .public-hero-kicker{background:#edf2ec;border-color:#dfe7dd;color:#336b55;letter-spacing:.15px}
+.public-site .public-kicker-dot{background:#207c56;box-shadow:none}
+.public-site .public-hero h1{font-size:clamp(40px,5.1vw,68px);margin:21px 0 17px;letter-spacing:-2px;color:#1b3a2d}
+.public-site .public-hero h1 em{color:#1c7957}
+.public-site .public-hero-copy>p{font-size:14px;line-height:1.75;max-width:465px;margin-bottom:24px}
+.public-site .public-hero-footnote{margin-top:19px}
+.public-site .public-product-visual{transform:none;max-width:520px;border:1px solid #d7e1d9;border-radius:15px;padding:16px;background:#f9fbf8;box-shadow:0 16px 48px rgba(16,47,35,.10)}
+.public-site .public-preview-top{padding:1px 0 12px}
+.public-site .public-preview-tabs{background:#e9eee9}
+.public-site .public-preview-post{background:#fff;border-color:#e0e7e0}
+.public-site .public-preview-post h3{margin:13px 0 5px;font-size:18px}
+.public-site .public-preview-post>p{font-size:11px;margin:0 0 12px}
+.public-site .public-preview-avatar{background:#e6ebe7;color:#265343}
+.public-site .public-preview-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:15px 3px 11px}
+.public-site .public-preview-toolbar>span:first-child{font-size:12px;font-weight:850;color:#2e493b}
+.public-site .public-preview-toolbar>span:last-child{display:inline-flex;align-items:center;gap:5px;background:#fff;border:1px solid #dce5dd;border-radius:6px;padding:5px 8px;font-size:10px;color:#3e6c52;font-weight:750}
+.public-site .public-preview-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.public-site .public-preview-actions span{display:flex;align-items:center;gap:8px;min-width:0;padding:12px 10px;background:#f4f6f2;border:1px solid #e4e9e1;border-radius:7px;font-size:11px;font-weight:800;color:#315741}
+.public-site .public-preview-actions svg{flex-shrink:0}
+.public-site .public-preview-interactions{border-top:1px solid #e7ece8;padding-top:12px}
+.public-site .public-preview-shortcuts{display:flex;gap:11px;padding:12px 3px 2px}
+.public-site .public-preview-shortcuts>span{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:750;color:#566f60}
+.public-site .public-preview-shortcuts svg{color:#357558}
+.public-site .public-feature-section{padding:68px 0 72px}
+.public-site .public-steps-section{padding:64px 0}
+.public-site .public-trust-section{background:#173b31;padding:70px 0}
+.public-site .public-provider-section{padding:69px 0}
+.public-site .public-faq-section{padding:65px 0;background:#f7f8f5}
+.public-site .public-feature-card{min-height:210px;padding:20px;border-color:#e3e8e2;border-radius:12px;box-shadow:none}
+.public-site .public-feature-icon{background:#e9f0e8;color:#2c6951;border-radius:9px;width:42px;height:42px}
+.public-site .public-feature-tone-1,.public-site .public-feature-tone-2,.public-site .public-feature-tone-3{background:#edf0ec;color:#456956}
+.public-site .public-feature-card h3{margin:15px 0 8px}
+.public-site .public-feature-card p{line-height:1.65}
+.public-site .public-feature-bottom{color:#476b55}
+.public-site .public-step{min-height:180px;border-radius:12px;padding:23px}
+.public-site .public-step>span{color:#8caf9c;font-size:28px}
+.public-site .public-step h3{margin:13px 0 8px}
+.public-site .public-trust-list>div{padding:14px 17px;background:rgba(255,255,255,.035)}
+.public-site .public-trust-grid{gap:45px}
+.public-site .public-provider-symbol{display:flex;flex-direction:column;justify-content:center;align-items:stretch;gap:16px;min-height:260px;padding:25px;background:#eef1eb;border:1px solid #d9e1da;border-radius:13px;color:#234d3e}
+.public-site .public-provider-visual-label{display:flex;align-items:center;gap:14px}
+.public-site .public-provider-visual-label svg{flex:0 0 auto;width:49px;height:49px;background:#dce9df;border-radius:9px;padding:10px}
+.public-site .public-provider-visual-label span{display:grid;gap:5px;font-size:12px}
+.public-site .public-provider-visual-label strong{font-size:20px;color:#224a38}
+.public-site .public-provider-sample{display:grid;gap:10px;border:1px solid #dce5dd;border-radius:9px;background:white;padding:16px 19px}
+.public-site .public-provider-sample>span{font-size:10px;letter-spacing:1px;color:#718374;font-weight:800}
+.public-site .public-provider-sample>strong{font-size:14px}
+.public-site .public-provider-sample p{margin:0;font-size:12px;color:#617769}
+.public-site .public-provider-sample>div{display:flex;align-items:center;gap:7px;font-size:10px;font-weight:750;color:#2f6952}
+.public-site .public-faq-list details{border-radius:8px}
+.public-site .public-faq-list summary{padding:14px 0}
+.public-site .public-final-cta{padding:42px 0}
+.public-site .public-final-inner{background:#eff3ee;border-color:#e2e9e2;border-radius:13px;padding:28px 35px}
+.public-site .public-final-inner h2{font-size:clamp(25px,3vw,34px);margin:9px 0}
+.public-site .public-footer{background:#172d27;padding-top:43px}
+.public-site .public-footer-main{gap:26px;padding-bottom:35px}
+.public-site .public-info-main{padding-top:46px;padding-bottom:70px}
+.public-site .public-page-heading{margin-bottom:36px}
+.public-site .public-page-heading h1{font-size:clamp(31px,4vw,48px);letter-spacing:-1.2px;margin:11px 0}
+.public-site .public-page-heading>p{font-size:13px;line-height:1.65}
+.public-site .public-info-feature{gap:30px;margin-bottom:32px}
+.public-site .public-values>div,.public-site .public-information-card{padding:19px;border-radius:10px}
+.public-site .public-info-card-grid{gap:12px}
+.public-site .public-info-action{margin-top:20px}
+.public-site .public-apply-card{padding:22px;border-radius:12px}
+.public-site .public-contact-form{padding:22px;border-radius:12px;box-shadow:none}
+.public-site .public-contact-aside{margin-top:20px;gap:12px}
+.public-site .public-policy-layout{gap:35px}
+.public-site .public-policy-layout article section{padding:15px 0 10px}
+@media(max-width:850px){
+  .public-site .public-hero{padding:42px 0 48px}
+  .public-site .public-hero-grid{gap:30px}
+  .public-site .public-trust-grid{gap:20px}
+  .public-site .public-provider-grid{gap:24px}
+  .public-site .public-info-feature,.public-site .public-provider-apply-layout,.public-site .public-contact-layout{gap:20px}
+}
+@media(max-width:600px){
+  .public-site .public-container{width:calc(100% - 30px)}
+  .public-site .public-header-inner{min-height:58px}
+  .public-site .public-nav{top:58px}
+  .public-site .public-brand{font-size:21px}
+  .public-site .public-brand-symbol{width:30px;height:30px;border-radius:7px}
+  .public-site .public-menu-toggle{width:36px;height:36px;border-radius:6px}
+  .public-site .public-hero{padding:30px 0 32px}
+  .public-site .public-hero-grid{gap:0}
+  .public-site .public-hero-kicker{font-size:9px;padding:6px 9px}
+  .public-site .public-hero h1{font-size:clamp(33px,8.5vw,45px);line-height:1.09;letter-spacing:-1.3px;margin:15px 0 12px}
+  .public-site .public-hero-copy>p{font-size:12.5px;line-height:1.58;margin:0 0 18px;max-width:345px}
+  .public-site .public-hero-actions{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
+  .public-site .public-hero-actions .public-button{min-height:43px;padding:9px 10px;font-size:11px;border-radius:7px;gap:5px}
+  .public-site .public-hero-actions svg{width:14px;height:14px}
+  .public-site .public-hero-footnote{margin-top:13px;font-size:10px;line-height:1.35}
+  .public-site .public-product-visual{display:none}
+  .public-site .public-feature-section{padding:33px 0 35px}
+  .public-site .public-section-heading{margin-bottom:14px;gap:5px}
+  .public-site .public-eyebrow{font-size:9px;letter-spacing:1px}
+  .public-site .public-section-heading h2{font-size:24px;margin:7px 0 0;letter-spacing:-.65px}
+  .public-site .public-section-heading>p{font-size:11px;line-height:1.5}
+  .public-site .public-features-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+  .public-site .public-feature-card{padding:12px 11px;min-height:149px;border-radius:9px}
+  .public-site .public-feature-icon{width:30px;height:30px;border-radius:6px}
+  .public-site .public-feature-icon svg{width:17px;height:17px}
+  .public-site .public-feature-card h3{margin:10px 0 5px;font-size:12px;line-height:1.25;letter-spacing:0}
+  .public-site .public-feature-card p{margin:0 0 8px;font-size:10.5px;line-height:1.4}
+  .public-site .public-feature-bottom{padding-top:7px;font-size:9px}
+  .public-site .public-feature-bottom svg{width:11px;height:11px}
+  .public-site .public-steps-section{padding:30px 0 32px}
+  .public-site .public-steps-grid{grid-template-columns:1fr;gap:8px}
+  .public-site .public-step{min-height:0;display:grid;grid-template-columns:33px minmax(0,1fr);grid-template-rows:auto auto;column-gap:10px;align-content:center;padding:11px 13px;border-radius:8px}
+  .public-site .public-step>span{font-size:21px;grid-row:1/3;align-self:center}
+  .public-site .public-step h3{font-size:12px;margin:0 0 3px}
+  .public-site .public-step p{font-size:10.5px;line-height:1.42}
+  .public-site .public-trust-section{padding:34px 0}
+  .public-site .public-trust-grid{gap:17px}
+  .public-site .public-trust-grid h2{font-size:24px;margin:9px 0 7px;letter-spacing:-.65px}
+  .public-site .public-trust-grid p{font-size:11.5px;line-height:1.55;margin-bottom:13px}
+  .public-site .public-trust-list{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+  .public-site .public-trust-list>div{display:block;padding:10px 7px;border-radius:7px}
+  .public-site .public-trust-list svg{width:17px;height:17px;margin-bottom:4px}
+  .public-site .public-trust-list strong{font-size:10px;line-height:1.25}
+  .public-site .public-trust-list span{display:none}
+  .public-site .public-button-outline{min-height:37px;padding:8px 13px;font-size:11px}
+  .public-site .public-provider-section{padding:34px 0}
+  .public-site .public-provider-symbol{display:none}
+  .public-site .public-provider-grid h2{font-size:24px;line-height:1.2;letter-spacing:-.6px;margin:9px 0}
+  .public-site .public-provider-grid p{font-size:11.5px;line-height:1.55;margin:0 0 15px}
+  .public-site .public-provider-grid .public-button{min-height:41px}
+  .public-site .public-faq-section{padding:30px 0 35px}
+  .public-site .public-faq-grid{gap:10px}
+  .public-site .public-faq-grid h2{font-size:24px;margin:7px 0}
+  .public-site .public-faq-grid>div:first-child>p{display:none}
+  .public-site .public-faq-list{gap:5px}
+  .public-site .public-faq-list details{padding:0 12px;border-radius:7px}
+  .public-site .public-faq-list summary{padding:11px 0;font-size:11.5px}
+  .public-site .public-faq-list details p{font-size:11px;line-height:1.55;margin:0 0 11px}
+  .public-site .public-final-cta{padding:25px 0}
+  .public-site .public-final-inner{gap:13px;padding:17px 15px}
+  .public-site .public-final-inner h2{font-size:22px;margin:6px 0}
+  .public-site .public-final-inner p{font-size:11px}
+  .public-site .public-final-inner .public-button{min-height:42px}
+  .public-site .public-footer{padding-top:24px}
+  .public-site .public-footer-main{gap:20px 12px;padding-bottom:22px}
+  .public-site .public-footer-main strong{font-size:11px;margin-bottom:1px}
+  .public-site .public-footer-main>div:not(:first-child){gap:8px}
+  .public-site .public-footer-main>div:nth-child(4){display:none}
+  .public-site .public-footer-about p{margin:9px 0 0;font-size:10.5px;line-height:1.55}
+  .public-site .public-footer-bottom{padding:15px 0;font-size:9px}
+  .public-site .public-info-main{padding-top:23px;padding-bottom:38px}
+  .public-site .public-page-heading{margin-bottom:20px}
+  .public-site .public-page-heading h1{font-size:clamp(28px,8vw,36px);line-height:1.16;letter-spacing:-.9px;margin:7px 0 9px}
+  .public-site .public-page-heading>p{font-size:12px;line-height:1.55}
+  .public-site .public-info-feature{gap:14px;margin-bottom:22px}
+  .public-site .public-info-feature h2{font-size:22px;line-height:1.23;margin:7px 0}
+  .public-site .public-info-feature p{font-size:11.5px;line-height:1.6;margin:0 0 9px}
+  .public-site .public-info-highlight{padding:15px;border-radius:9px}
+  .public-site .public-info-highlight h3{font-size:17px;margin:8px 0}
+  .public-site .public-values{grid-template-columns:1fr;gap:8px}
+  .public-site .public-values>div{padding:13px 15px}
+  .public-site .public-values svg{width:19px;height:19px}
+  .public-site .public-values h3{display:inline;margin-left:9px;font-size:13px}
+  .public-site .public-values p{font-size:11px;margin:6px 0 0}
+  .public-site .public-info-card-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .public-site .public-information-card{padding:12px}
+  .public-site .public-information-number{font-size:19px}
+  .public-site .public-information-card h3{font-size:12px;margin:8px 0 5px}
+  .public-site .public-information-card p{font-size:10.5px;line-height:1.48;margin:0}
+  .public-site .public-info-action{gap:8px;padding:13px;margin-top:15px}
+  .public-site .public-info-action h3{font-size:12px}
+  .public-site .public-info-action p{font-size:11px}
+  .public-site .public-info-note{margin-top:13px;font-size:11px}
+  .public-site .public-provider-apply-layout{gap:15px}
+  .public-site .public-provider-apply-layout h2{font-size:21px}
+  .public-site .public-application-steps{gap:10px;margin:13px 0}
+  .public-site .public-application-steps>div>span{height:27px;flex-basis:27px;font-size:11px}
+  .public-site .public-application-steps strong{font-size:11.5px}
+  .public-site .public-application-steps p{font-size:11px;margin:3px 0}
+  .public-site .public-apply-card{padding:16px;gap:9px;border-radius:9px}
+  .public-site .public-apply-card>svg{width:22px;height:22px}
+  .public-site .public-apply-card h3{font-size:18px}
+  .public-site .public-apply-card p{font-size:11.5px}
+  .public-site .public-contact-layout{gap:15px}
+  .public-site .public-contact-layout h2{font-size:22px}
+  .public-site .public-contact-layout>div>p{font-size:11.5px}
+  .public-site .public-contact-aside{margin-top:13px;gap:9px}
+  .public-site .public-contact-aside>div{gap:9px}
+  .public-site .public-contact-aside strong{font-size:11.5px}
+  .public-site .public-contact-aside small{font-size:10.5px;line-height:1.45}
+  .public-site .public-contact-form{padding:15px;gap:11px}
+  .public-site .public-contact-form label{font-size:11px;gap:5px}
+  .public-site .public-contact-form input:not([type=checkbox]),.public-site .public-contact-form select{height:42px}
+  .public-site .public-contact-form textarea{min-height:105px}
+  .public-site .public-policy-layout{gap:10px}
+  .public-site .public-policy-layout aside{padding:10px;gap:8px}
+  .public-site .public-policy-layout aside a{font-size:10px}
+  .public-site .public-policy-layout article>p,.public-site .public-policy-layout article section p{font-size:11.5px;line-height:1.6;margin-bottom:9px}
+  .public-site .public-policy-layout article section{padding:10px 0 8px}
+  .public-site .public-policy-layout article section h2{font-size:16px;margin:0 0 7px}
+}
+@media(max-width:350px){
+  .public-site .public-container{width:calc(100% - 24px)}
+  .public-site .public-features-grid{gap:6px}
+  .public-site .public-feature-card{padding:10px 9px}
+  .public-site .public-feature-card h3{font-size:11.5px}
+  .public-site .public-hero-actions .public-button{font-size:10px}
+  .public-site .public-hero h1{font-size:31px}
+}
