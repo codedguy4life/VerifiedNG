@@ -19,6 +19,11 @@ export function resolveTheme(preference, systemIsDark = false) {
   return choice === "system" ? (systemIsDark ? "dark" : "light") : choice;
 }
 
+// A quick toggle always selects the opposite of the visible mode.
+export function nextManualTheme(resolvedTheme) {
+  return resolvedTheme === "dark" ? "light" : "dark";
+}
+
 export function systemPrefersDark() {
   return typeof window !== "undefined" &&
     typeof window.matchMedia === "function" &&

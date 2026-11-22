@@ -33,8 +33,9 @@ import {
   Menu,
 } from "lucide-react";
 import { api, getToken } from "./lib/api.js";
-import { applyTheme, normalizeTheme, readThemePreference, saveThemePreference, THEME_STORAGE_KEY } from "./lib/theme.js";
+import { applyTheme, normalizeTheme, readThemePreference, resolveTheme, saveThemePreference, systemPrefersDark, THEME_STORAGE_KEY } from "./lib/theme.js";
 import ThemePicker from "./components/ThemePicker.jsx";
+import ThemeToggleButton from "./components/ThemeToggleButton.jsx";
 import AuthGate from "./components/AuthGate.jsx";
 import PublicSite from "./components/PublicSite.jsx";
 import ProviderApplyPage from "./components/ProviderApplyPage.jsx";
@@ -79,10 +80,13 @@ function FilledNavIcon({ name }) {
 
 export default function App() {
   const [theme, setTheme] = useState(readThemePreference);
+  const [resolvedTheme, setResolvedTheme] = useState(() => resolveTheme(readThemePreference(), systemPrefersDark()));
   useEffect(() => {
-    applyTheme(theme);
+    setResolvedTheme(applyTheme(theme));
     const media = typeof window.matchMedia === "function" ? window.matchMedia("(prefers-color-scheme: dark)") : null;
-    const updateSystemTheme = () => { if (theme === "system") applyTheme("system"); };
+    const updateSystemTheme = () => {
+      if (theme === "system") setResolvedTheme(applyTheme("system"));
+    };
     const syncOtherTabs = (event) => {
       if (event.key === THEME_STORAGE_KEY) setTheme(readThemePreference());
     };
@@ -96,7 +100,7 @@ export default function App() {
   function changeTheme(choice) {
     const next = normalizeTheme(choice);
     saveThemePreference(next);
-    applyTheme(next);
+    setResolvedTheme(applyTheme(next));
     setTheme(next);
   }
   const [token, setToken] = useState(getToken());
@@ -535,7 +539,6 @@ export default function App() {
           <small> YOUR COMMUNITY</small>
         </a>
         <div className="header-actions">
-          <ThemePicker theme={theme} onChange={changeTheme} menu />
           <button
             className="header-icon"
             type="button"
@@ -1135,6 +1138,10 @@ export default function App() {
               <span className="drawer-location">
                 <MapPin size={14} /> {area || "Add your neighbourhood"}
               </span>
+            </div>
+            <div className="drawer-appearance">
+              <span className="drawer-section-label">APPEARANCE</span>
+              <ThemeToggleButton resolvedTheme={resolvedTheme} onChange={changeTheme} />
             </div>
             <div className="drawer-primary-links">
               <button

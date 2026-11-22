@@ -194,3 +194,285 @@
   outline: 2px solid #a6ecc1;
   outline-offset: 2px;
 }
+
+
+/*
+ * Dark Mode polish, round two.
+ * Unify interactive elements and secondary surfaces instead of allowing legacy
+ * white buttons/fields to contrast harshly with the dark page.
+ * Status indicators retain their own colours. Real photos are never inverted.
+ */
+:root[data-theme="dark"] {
+  --vng-surface: #1a2920;
+  --vng-surface-raised: #23362a;
+  --vng-surface-soft: #203428;
+  --vng-input: #14231b;
+  --vng-border: #3a5041;
+  --vng-muted: #adc0b2;
+  --vng-action-text: #102b1a;
+  --green: #65d99a;
+  --green-dark: #9be9b9;
+  --green-pale: #243f2e;
+  --ink: #ecf4ed;
+  --muted: #adc0b2;
+  --line: #3a5041;
+  --canvas: #101a15;
+  --white: #1a2920;
+}
+:root[data-theme="dark"] body {
+  background: var(--canvas);
+  color: var(--ink);
+}
+
+/* Header, common controls and the account sidebar. */
+:root[data-theme="dark"] :is(
+  .header-icon,.profile-menu-button,.drawer-close,.icon-button,.load-more,
+  .area-status,.scope-tab,.media-option,.back-button,.composer-settings,
+  .secondary-button,.notification-filter,.white-link,.post-menu button,
+  .drawer-primary-links button,.marketplace-messages
+) {
+  background: var(--vng-surface);
+  border-color: var(--line);
+  color: var(--ink);
+}
+:root[data-theme="dark"] :is(
+  .header-icon:hover,.profile-menu-button:hover,.drawer-close:hover,
+  .icon-button:hover,.load-more:hover,.area-status:hover,.scope-tab:hover,
+  .media-option:hover,.back-button:hover,.composer-settings:hover,
+  .secondary-button:hover,.post-menu button:hover
+) {
+  background: var(--vng-surface-raised);
+  border-color: #52715a;
+  color: #aef1c4;
+}
+:root[data-theme="dark"] :is(.header-icon,.profile-menu-button,.drawer-close,.icon-button)>svg {
+  color: inherit;
+}
+:root[data-theme="dark"] .drawer-primary-links button,
+:root[data-theme="dark"] .drawer-bottom-links button,
+:root[data-theme="dark"] .drawer-link-list button {
+  background: transparent;
+  color: #dcece0;
+}
+:root[data-theme="dark"] .drawer-primary-links button { background: var(--vng-surface-raised); }
+:root[data-theme="dark"] .drawer-primary-links button:hover,
+:root[data-theme="dark"] .drawer-bottom-links button:hover,
+:root[data-theme="dark"] .drawer-link-list button:hover {
+  background: #294536;
+  color: #b2ebc5;
+}
+:root[data-theme="dark"] .drawer-bottom-links button:last-child {
+  color: #efa19b;
+}
+:root[data-theme="dark"] .drawer-section-label { color: var(--vng-muted); }
+:root[data-theme="dark"] :is(.bottom-nav,.topbar,.profile-drawer) { border-color: var(--line); background: #17271e; }
+:root[data-theme="dark"] .bottom-tab:not(.active) { color: #b5c6b9; }
+:root[data-theme="dark"] .bottom-tab.active { color: #a5edbd; }
+:root[data-theme="dark"] .bottom-tab.active svg { color: inherit; }
+:root[data-theme="dark"] .drawer-info-links a { color: #a6edbd; }
+
+/* Inputs, dropdowns, composer and post controls. */
+:root[data-theme="dark"] :is(
+  .composer textarea,.composer-inline textarea,.composer-options .select-field,
+  .composer-visibility-row select,.comment-form input,.report-form input,
+  .report-form select,.report-form textarea,.post-comment-form textarea,
+  .post-comment-form input,.discovery-search-field input,
+  .discovery-search-hub .discovery-search-field,.discovery-provider-directory .discovery-search-field,
+  .profile-editor-form input,.profile-editor-form select,.profile-editor-form textarea,
+  .local-news-coverage select,.marketplace-sort select,.marketplace-filterpanel select,
+  .marketplace-create-form input:not([type="file"]),.marketplace-create-form select,
+  .marketplace-create-form textarea,.marketplace-contact-form textarea,
+  .marketplace-contact-form select,.groups-create input,.groups-create select,
+  .groups-create textarea,.groups-composer textarea,.verification-request-form input,
+  .verification-request-form select,.verification-request-form textarea,
+  .ask-area-input,.auth-entry-form input,.provider-apply-form input:not([type="checkbox"]),
+  .provider-apply-form textarea,.provider-apply-review textarea
+) {
+  background: var(--vng-input);
+  color: var(--ink);
+  border-color: var(--line);
+}
+:root[data-theme="dark"] :is(
+  .composer-prompt,.composer-media-preview,.composer-media-preview-frame,
+  .composer-visibility-row,.post-meta-chip,.post-time-chip,.post-location-chip,
+  .post-category,.marketplace-publish-location button,.marketplace-approx button,
+  .marketplace-location-note,.invite-preview,.local-faves-results button,
+  .ask-area-label,.ask-area-chips button,.marketplace-detail-note
+) {
+  background: var(--vng-surface-soft);
+  color: #d1e3d5;
+  border-color: var(--line);
+}
+:root[data-theme="dark"] .composer-prompt:hover,
+:root[data-theme="dark"] .marketplace-publish-location button:hover,
+:root[data-theme="dark"] .ask-area-chips button:hover {
+  background: var(--vng-surface-raised);
+}
+
+/* Discovery and search: filter buttons and cards use the same surface. */
+:root[data-theme="dark"] :is(
+  .discovery-quick-searches button,.discovery-trending .discovery-quick-searches button,
+  .discovery-shortcuts button,.discovery-switch,.discovery-result-card,
+  .discovery-explore-card,.discovery-state,.marketplace-pill,.marketplace-sort select,
+  .marketplace-filterpanel,.marketplace-filterpanel button,
+  .marketplace-card,.marketplace-loadmore,.marketplace-messages,
+  .local-faves-chips button,.local-faves-form,.local-faves-answer,.local-faves-results button,
+  .react-requests-toolbar button,.react-request-actions button
+) {
+  background: var(--vng-surface);
+  border-color: var(--line);
+  color: var(--ink);
+}
+:root[data-theme="dark"] :is(
+  .discovery-quick-searches button:hover,.discovery-shortcuts button:hover,
+  .discovery-switch:hover,.discovery-result-card:hover,
+  .marketplace-pill:hover,.marketplace-loadmore:hover,
+  .local-faves-chips button:hover,.react-requests-toolbar button:hover
+) { background: var(--vng-surface-raised); }
+:root[data-theme="dark"] :is(.marketplace-pill.active,.discovery-switch.active) {
+  background: var(--vng-surface-soft);
+  border-color: #6dcf92;
+  color: #a2efbd;
+}
+:root[data-theme="dark"] :is(.marketplace-filteractions button,.marketplace-empty button) {
+  background: var(--vng-surface-soft);
+  color: #a0eebc;
+}
+
+/* For Sale forms, detail dialogs and buyer/seller messages. */
+:root[data-theme="dark"] :is(
+  .marketplace-create,.marketplace-detail,.marketplace-create-footer,
+  .marketplace-detail-note,.marketplace-filterpanel,.marketplace-contact-form,
+  .sale-inbox,.sale-inbox-list button,.sale-inbox-placeholder button,
+  .react-provider-card,.react-provider-request,.react-request-card,
+  .react-requests-empty
+) {
+  background: var(--vng-surface);
+  border-color: var(--line);
+  color: var(--ink);
+}
+:root[data-theme="dark"] .sale-inbox-messages p:not(.mine) {
+  background: var(--vng-surface-raised);
+  color: #e1eee3;
+}
+:root[data-theme="dark"] .sale-inbox-messages p.mine {
+  background: #65d99a;
+  color: #102b1a;
+}
+:root[data-theme="dark"] .sale-inbox-list button.selected { background: #294535; color: #e3f3e7; }
+:root[data-theme="dark"] .sale-inbox-list .sale-inbox-unread { background: #275d3d; color: #bdf2ce; }
+:root[data-theme="dark"] .sale-inbox-placeholder button { background: #273b2c; color: #b6ebc9; }
+:root[data-theme="dark"] :is(.marketplace-seller-location,.marketplace-detail-note,.marketplace-location-note) {
+  background: var(--vng-surface-soft);
+  color: #cce7d3;
+}
+:root[data-theme="dark"] :is(.marketplace-filterpanel label,.marketplace-create-form label,.marketplace-contact-form label) {
+  color: #d5e6da;
+}
+
+/* Groups, verification and provider tools, including pop-up forms. */
+:root[data-theme="dark"] :is(
+  .groups-create,.groups-list-card,.groups-detail-head,.groups-locked,
+  .groups-empty,.groups-join-area>button:not(.groups-join-button),
+  .groups-verification-banner button,.verification-request-form,
+  .verification-status,.verification-requirements,.verification-review-card,
+  .react-provider-avatar,.react-provider-verified,
+  .react-provider-request,.react-provider-sent,.provider-apply-form-card,
+  .provider-apply-review,.provider-apply-info,.provider-apply-notice,
+  .provider-apply-admin-heading>button,.provider-apply-handle
+) {
+  background: var(--vng-surface);
+  border-color: var(--line);
+  color: var(--ink);
+}
+:root[data-theme="dark"] :is(
+  .groups-verification-banner,.groups-symbol,.groups-join-area,.verification-intro,
+  .verification-badge,.react-provider-hero,.provider-apply-admin,
+  .provider-apply-heading,.provider-apply-icon
+) {
+  background: var(--vng-surface-soft);
+  color: #d9eddd;
+  border-color: var(--line);
+}
+:root[data-theme="dark"] :is(
+  .provider-apply-form label,.provider-apply-review label,.provider-apply-admin label,
+  .groups-create label,.verification-request-form label
+) { color: #d9e9dc; }
+:root[data-theme="dark"] .provider-apply-status { background: #1b3a2a; color: #baf0ca; border-color: #36694a; }
+:root[data-theme="dark"] .provider-apply-status.pending { background: #3b301d; color: #f2d59c; border-color: #80643a; }
+:root[data-theme="dark"] .provider-apply-success { background: #1e432e; color: #bbf2ce; }
+:root[data-theme="dark"] .provider-apply-rejected { background: #432923; color: #ffb7a9; }
+:root[data-theme="dark"] .provider-apply-error { background: #3f2728; border-color: #80514a; color: #ffc2bb; }
+:root[data-theme="dark"] .provider-apply-review-actions button.decline { background: #392728; color: #ffb8af; border-color: #70423a; }
+:root[data-theme="dark"] .provider-apply-review-actions button:not(.decline) { background: var(--green); color: var(--vng-action-text); }
+:root[data-theme="dark"] .provider-apply-submit { background: var(--green); color: var(--vng-action-text); }
+:root[data-theme="dark"] :is(.react-provider-hire,.react-provider-request button,.react-provider-sent button) { background: var(--green); color: var(--vng-action-text); }
+:root[data-theme="dark"] .react-provider-sent { background: #1d3c2a; border-color: #3c7650; color: #b8f0c8; }
+
+/* News, notifications, badges and alert panels. */
+:root[data-theme="dark"] :is(
+  .local-news-sheet,.local-news-tabs button,.local-story-card,
+  .local-refresh-button,.local-news-empty,.local-news-coverage select,
+  .local-weather-stats>span,.notification-story,.notification-filter
+) {
+  background: var(--vng-surface);
+  color: var(--ink);
+  border-color: var(--line);
+}
+:root[data-theme="dark"] .notification-story-symbol.alert { background: #453222; color: #f7bf8c; }
+:root[data-theme="dark"] .notification-filter.active,
+:root[data-theme="dark"] .local-news-tabs button.active { background: #274836; color: #a4e9bc; }
+:root[data-theme="dark"] :is(.marketplace-error,.error-notice,.auth-entry-error) { background: #402628; border-color: #754246; color: #ffc1bd; }
+
+/* Public website: older illustrations and legal forms still had bright edges. */
+:root[data-theme="dark"] .public-site :is(
+  .public-floating-tag,.public-feature-card,.public-values>div,
+  .public-information-card,.public-policy-layout aside,
+  .public-info-highlight,.public-faq-list details,.public-contact-form
+) {
+  background: #1b2d22;
+  border-color: #395241;
+  color: #eaf2ea;
+}
+:root[data-theme="dark"] .public-site .public-menu-toggle {
+  background: #243e2d;
+  color: #a8ebbd;
+  border: 1px solid #38533f;
+}
+:root[data-theme="dark"] .public-site .public-nav-mobile-actions a {
+  background: #263e2e;
+  color: #d9eddf;
+  border-color: #45644e;
+}
+:root[data-theme="dark"] .public-site .public-nav-mobile-actions .public-mobile-join {
+  background: #68d99a;
+  color: #122e1d;
+  border-color: #68d99a;
+}
+:root[data-theme="dark"] .public-site .public-contact-form :is(input:not([type=checkbox]),select,textarea) {
+  background: #15241b;
+  color: #e4efe6;
+  border-color: #465b4b;
+}
+:root[data-theme="dark"] .public-site .public-floating-tag strong { color: #ebf4ec; }
+:root[data-theme="dark"] .public-site .public-floating-tag small { color: #afc9b6; }
+
+/* Ensure primary actions stay readable on the brighter green accent. */
+:root[data-theme="dark"] :is(
+  .primary-button,.comment-form button,.report-actions button[type="submit"],
+  .marketplace-sell,.marketplace-publish,.marketplace-sold-button,
+  .ask-area-form>button,.groups-add,.groups-join-button,
+  .groups-composer button,.local-faves-form button,.sale-inbox-compose button,
+  .marketplace-contact-form button,.react-provider-hire,.react-provider-request button,
+  .react-provider-sent button,.auth-entry-submit,.provider-apply-submit
+) { color: var(--vng-action-text); }
+:root[data-theme="dark"] :is(
+  .header-icon,.profile-menu-button,.drawer-close,.marketplace-pill,
+  .marketplace-sort select,.marketplace-filterpanel select,.secondary-button
+):focus-visible {
+  outline: 2px solid #9de4b8;
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  :root[data-theme="dark"] :is(.header-icon,.marketplace-card,.theme-quick-toggle) { transition: none; }
+}

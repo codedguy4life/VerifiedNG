@@ -7,7 +7,8 @@ import {
 } from "lucide-react";
 import { api } from "../lib/api.js";
 import PublicShowcase from "./PublicShowcase.jsx";
-import ThemePicker from "./ThemePicker.jsx";
+import ThemeToggleButton from "./ThemeToggleButton.jsx";
+import { resolveTheme, systemPrefersDark } from "../lib/theme.js";
 
 const infoLinks = [
   { href: "/about", label: "About" },
@@ -81,6 +82,7 @@ function ContactForm() {
 
 export default function PublicSite({ page = "home", loggedIn = false, theme = "system", onThemeChange = () => {} }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const resolvedTheme = resolveTheme(theme, systemPrefersDark());
   useEffect(() => {
     const titles = {
       home: "VerifiedNG — Your Community. Your Connections.",
@@ -105,6 +107,9 @@ export default function PublicSite({ page = "home", loggedIn = false, theme = "s
           <a href="/about" onClick={() => setMenuOpen(false)}>About</a>
           <a href="/safety" onClick={() => setMenuOpen(false)}>Safety</a>
           <a href="/contact" onClick={() => setMenuOpen(false)}>Contact</a>
+          <div className="public-nav-appearance">
+            <ThemeToggleButton resolvedTheme={resolvedTheme} onChange={onThemeChange} />
+          </div>
           <div className="public-nav-mobile-actions">
             <a href={loggedIn ? "/app" : "/login"}>{loggedIn ? "Open community" : "Log in"}</a>
             {!loggedIn && <a href="/signup" className="public-mobile-join">Join VerifiedNG</a>}
@@ -114,7 +119,6 @@ export default function PublicSite({ page = "home", loggedIn = false, theme = "s
           <a href={loggedIn ? "/app" : "/login"} className="public-signin">{loggedIn ? "My community" : "Log in"}</a>
           {!loggedIn && <a href="/signup" className="public-button public-button-primary">Join for free <ArrowRight size={16} /></a>}
         </div>
-        <div className="public-theme-slot"><ThemePicker theme={theme} onChange={onThemeChange} menu /></div>
         <button className="public-menu-toggle" aria-label={menuOpen ? "Close menu" : "Open menu"} aria-expanded={menuOpen} onClick={() => setMenuOpen((open) => !open)}>{menuOpen ? <X size={24}/> : <Menu size={24}/>}</button>
       </div>
     </header>
@@ -224,6 +228,6 @@ export default function PublicSite({ page = "home", loggedIn = false, theme = "s
       <div className="public-contact-layout"><div><span className="public-eyebrow">GET IN TOUCH</span><h2>How can we help?</h2><p>Choose a topic and share enough details for us to understand the issue. Never include passwords, private security codes or financial credentials.</p><div className="public-contact-aside"><div><ShieldCheck size={21}/><span><strong>Safety concern?</strong><small>For immediate danger, contact the appropriate local emergency service. The form isn't monitored for emergencies.</small></span></div><div><LockKeyhole size={21}/><span><strong>Privacy request?</strong><small>Select “Privacy or data” and describe your request. We may need to verify your identity before taking account-specific action.</small></span></div></div></div><ContactForm/></div>
     </main>}
 
-    <footer className="public-footer"><div className="public-container"><div className="public-footer-main"><div className="public-footer-about"><a href="/"><Brand light/></a><p>Connecting people, places and opportunities across Nigeria. Built with community in mind.</p></div><div><strong>Explore</strong><a href="/#features">Community features</a><a href="/become-a-provider">Become a provider</a><a href="/about">About VerifiedNG</a></div><div><strong>Trust & support</strong>{infoLinks.filter((x)=>x.href!=="/about").map((x)=><a key={x.href} href={x.href}>{x.label}</a>)}</div><div><strong>Get started</strong><a href={loggedIn ? "/app" : "/login"}>{loggedIn ? "Open community" : "Log in"}</a>{!loggedIn && <a href="/signup">Create an account</a>}<a href="/safety">Community safety</a></div></div><div className="public-footer-bottom"><span>© {new Date().getFullYear()} VerifiedNG. Built for communities across Nigeria.</span><span>Community · Discovery · Trust</span></div></div></footer>
+    <footer className="public-footer"><div className="public-container"><div className="public-footer-main"><div className="public-footer-about"><a href="/"><Brand light/></a><p>Connecting people, places and opportunities across Nigeria. Built with community in mind.</p></div><div><strong>Explore</strong><a href="/#features">Community features</a><a href="/become-a-provider">Become a provider</a><a href="/about">About VerifiedNG</a></div><div><strong>Trust & support</strong>{infoLinks.filter((x)=>x.href!=="/about").map((x)=><a key={x.href} href={x.href}>{x.label}</a>)}</div><div><strong>Get started</strong><a href={loggedIn ? "/app" : "/login"}>{loggedIn ? "Open community" : "Log in"}</a>{!loggedIn && <a href="/signup">Create an account</a>}<a href="/safety">Community safety</a></div></div><div className="public-footer-bottom"><span>© {new Date().getFullYear()} VerifiedNG. Built for communities across Nigeria.</span><div className="public-footer-appearance"><ThemeToggleButton resolvedTheme={resolvedTheme} onChange={onThemeChange} /></div></div></div></footer>
   </div>;
 }
