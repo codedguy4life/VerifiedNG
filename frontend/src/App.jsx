@@ -276,6 +276,20 @@ export default function App() {
       setError(cause.message);
     }
   }
+  async function sharePostPublicly(post) {
+    if (!window.confirm("Share this neighbourhood post with everyone on VerifiedNG? Anyone on VerifiedNG will be able to view it.")) return;
+    try {
+      await api(`/api/community/posts/${encodeURIComponent(post._id)}`, {
+        method: "PUT",
+        body: JSON.stringify({ audience: "national" }),
+      });
+      await loadFeed({ requestedPage: 1 });
+      setMessage("Your post is now visible to everyone on VerifiedNG.");
+    } catch (cause) {
+      setError(cause.message || "Could not make this post public.");
+    }
+  }
+
   async function deletePost(postId) {
     if (!window.confirm("Delete this post? This cannot be undone.")) return;
     try {
@@ -964,6 +978,7 @@ export default function App() {
                   onReach={reactToPost}
                   onComment={addComment}
                   onEdit={editPost}
+                  onSharePublic={sharePostPublicly}
                   onDelete={deletePost}
                   onReport={reportPost}
                 />

@@ -132,6 +132,41 @@ describe("Community discovery and local news", () => {
     }
   });
 
+  test("only an author can make an older neighbourhood post public", async () => {
+    const oldPost = await CommunityPost.create({
+      author: neighbour._id,
+      text: "Author approved public share test",
+      audience: "local",
+      location: { city: "Ikeja", state: "Lagos" },
+    });
+    try {
+      const neighbourLogin = await request(app).post("/api/auth/login")
+        .send({ identifier: neighbour.email, password: "TestPass123!" });
+      const outsiderLogin = await request(app).post("/api/auth/login")
+        .send({ identifier: outsider.email, password: "TestPass123!" });
+      expect(neighbourLogin.statusCode).toBe(200);
+      expect(outsiderLogin.statusCode).toBe(200);
+
+      const outsiderBefore = await request(app).get("/api/community/feed?scope=for-you")
+        .set("Authorization", "Bearer " + outsiderLogin.body.token);
+      expect(outsiderBefore.body.posts.some((post) => String(post._id) === String(oldPost._id))).toBe(false);
+
+      const forbidden = await request(app).put("/api/community/posts/" + oldPost._id)
+        .set("Authorization", "Bearer " + token).send({ audience: "national" });
+      expect(forbidden.statusCode).toBe(403);
+      const permitted = await request(app).put("/api/community/posts/" + oldPost._id)
+        .set("Authorization", "Bearer " + neighbourLogin.body.token).send({ audience: "national" });
+      expect(permitted.statusCode).toBe(200);
+      expect(permitted.body.post.audience).toBe("national");
+
+      const outsiderAfter = await request(app).get("/api/community/feed?scope=for-you")
+        .set("Authorization", "Bearer " + outsiderLogin.body.token);
+      expect(outsiderAfter.body.posts.some((post) => String(post._id) === String(oldPost._id))).toBe(true);
+    } finally {
+      await CommunityPost.deleteOne({ _id: oldPost._id });
+    }
+  });
+
   test("a member can find safety alerts shared with their own area", async () => {
     const response = await request(app)
       .get("/api/community/search?area=Ikeja&category=Safety%20Alert")

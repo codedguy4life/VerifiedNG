@@ -175,15 +175,18 @@ const toggleReaction = async (req, res) => {
 
 const updatePost = async (req, res) => {
   try {
-    const text = typeof req.body.text === "string" ? req.body.text.trim() : "";
     const categories = ["General", "Question", "Opportunity", "Recommendation", "Service Request", "Safety Alert"];
-    if (!text) return res.status(400).json({ message: "A post cannot be empty." });
-    if (text.length > 2000) return res.status(400).json({ message: "Posts must be 2,000 characters or fewer." });
     const post = await CommunityPost.findById(req.params.postId);
     if (!post || post.isHidden) return res.status(404).json({ message: "Post not found." });
     if (String(post.author) !== String(req.user.id)) return res.status(403).json({ message: "You can only edit your own posts." });
+    const text = typeof req.body.text === "string" ? req.body.text.trim() : post.text;
+    if (!text && !post.imageUrl && !post.videoUrl) return res.status(400).json({ message: "A post cannot be empty." });
+    if (text.length > 2000) return res.status(400).json({ message: "Posts must be 2,000 characters or fewer." });
     post.text = text;
     if (categories.includes(req.body.category)) post.category = req.body.category;
+    // An author may deliberately make an older local-only post visible to everyone.
+    // Never do this automatically and never accept a visibility change from non-owners.
+    if (req.body.audience === "national" && post.audience === "local") post.audience = "national";
     await post.save();
     await post.populate({ path: "author", select: authorFields });
     return res.json({ message: "Post updated.", post });

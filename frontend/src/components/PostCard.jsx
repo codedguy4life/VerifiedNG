@@ -55,6 +55,7 @@ export default function PostCard({
   onReach,
   onComment,
   onEdit,
+  onSharePublic,
   onDelete,
   onReport,
 }) {
@@ -194,6 +195,18 @@ export default function PostCard({
                   >
                     <Pencil size={15} /> Edit post
                   </button>
+
+                  {post.audience === "local" && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowMenu(false);
+                        onSharePublic?.(post);
+                      }}
+                    >
+                      <Globe2 size={15} /> Share with everyone
+                    </button>
+                  )}
 
                   <button
                     type="button"
