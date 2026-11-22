@@ -9,6 +9,7 @@ import { api } from "../lib/api.js";
 import PublicShowcase from "./PublicShowcase.jsx";
 import BrandLogo from "./BrandLogo.jsx";
 import ThemeToggleButton from "./ThemeToggleButton.jsx";
+import { ROUTES } from "../../seo/routes.mjs";
 import { resolveTheme, systemPrefersDark } from "../lib/theme.js";
 
 const infoLinks = [
@@ -17,6 +18,17 @@ const infoLinks = [
   { href: "/privacy", label: "Privacy" },
   { href: "/terms", label: "Terms" },
   { href: "/contact", label: "Contact" },
+];
+const publicAnswers = [
+  ["What is VerifiedNG?", "VerifiedNG is a Nigerian community platform where members can share updates, discover services, explore items for sale and connect with people. Some features, such as Groups, are still being improved."],
+  ["Is it free to join VerifiedNG?", "Yes. Creating a member account is free. You can explore community features after signing in."],
+  ["Do I need to share my location?", "No. Location features are optional. You can choose an area when you want to discover nearby posts, services or listings."],
+  ["How do I find a service provider?", "Use Search to explore services and read provider profiles. Ask questions, confirm experience and check work before hiring."],
+  ["How can I become a provider?", "Create a member account, describe your services and send a provider application. A team review is required, and approval is not automatic."],
+  ["Is provider approval the same as verification?", "No. Provider applications and community verification are separate processes. A status or badge does not guarantee quality, safety or suitability."],
+  ["Can I buy or sell items?", "Members can browse and post listings in For Sale and contact sellers or buyers. Check items and agree on payment details before trading."],
+  ["Who can see community posts?", "New community posts can appear to signed-in members across Nigeria. The area filter helps you focus on local updates. Older neighbourhood-only posts remain restricted."],
+  ["How do I report a problem?", "Use the in-app report option where available, or contact the VerifiedNG team through the contact form. Do not send passwords or verification codes."]
 ];
 const steps = [
   { number: "01", title: "Join", description: "Create a free account and set up your profile." },
@@ -82,16 +94,7 @@ export default function PublicSite({ page = "home", loggedIn = false, theme = "s
   const [menuOpen, setMenuOpen] = useState(false);
   const resolvedTheme = resolveTheme(theme, systemPrefersDark());
   useEffect(() => {
-    const titles = {
-      home: "VerifiedNG — Your Community. Your Connections.",
-      about: "About VerifiedNG",
-      safety: "Safety on VerifiedNG",
-      privacy: "Privacy Policy — VerifiedNG",
-      terms: "Terms of Service — VerifiedNG",
-      contact: "Contact VerifiedNG",
-      "become-a-provider": "Become a Provider — VerifiedNG",
-    };
-    document.title = titles[page] || titles.home;
+    document.title = Object.values(ROUTES).find((route) => route.page === page)?.title || ROUTES["/"].title;
   }, [page]);
   const appHref = loggedIn ? "/app" : "/signup";
   const hero = page === "home";
@@ -155,6 +158,7 @@ export default function PublicSite({ page = "home", loggedIn = false, theme = "s
         <div className="public-container">
           <div className="public-section-heading public-section-heading-center"><div><span className="public-eyebrow">GET STARTED</span><h2>It's easy to join.</h2></div></div>
           <div className="public-steps-grid">{steps.map((step) => <div key={step.number} className="public-step"><span>{step.number}</span><h3>{step.title}</h3><p>{step.description}</p></div>)}</div>
+          <p className="public-guide-link"><a href="/how-it-works">Learn how VerifiedNG works <ArrowRight size={15} /></a></p>
         </div>
       </section>
       <section className="public-trust-section">
@@ -180,6 +184,21 @@ export default function PublicSite({ page = "home", loggedIn = false, theme = "s
       </div></div></section>
       <section className="public-final-cta"><div className="public-container public-final-inner"><div><span className="public-eyebrow">JOIN VERIFIEDNG</span><h2>Be part of your community.</h2><p>Join today and see what's happening.</p></div><a href={appHref} className="public-button public-button-primary public-button-large">{loggedIn ? "Open VerifiedNG" : "Get started for free"} <ArrowRight size={18}/></a></div></section>
     </>}
+
+    {page === "how-it-works" && <main className="public-info-main public-container">
+      <PageHeading eyebrow="GETTING STARTED" title="How does VerifiedNG work?" description="Simple answers about connecting with people, finding services and using VerifiedNG safely."/>
+      <section className="public-how-guide" aria-label="Getting started on VerifiedNG">
+        <h2>Start in three steps</h2>
+        <div className="public-steps-grid">{steps.map((step) => <div key={step.number} className="public-step"><span>{step.number}</span><h3>{step.title}</h3><p>{step.description}</p></div>)}</div>
+      </section>
+      <section className="public-how-answers" aria-labelledby="public-how-faq-heading">
+        <h2 id="public-how-faq-heading">Common questions</h2>
+        <div className="public-how-answer-list">{publicAnswers.map(([question,answer]) =>
+          <article className="public-how-answer" key={question}><h3>{question}</h3><p>{answer}</p></article>
+        )}</div>
+      </section>
+      <div className="public-info-action"><Users size={27}/><div><h3>Ready to join?</h3><p>Create a free member account and find your community.</p></div><a className="public-button public-button-primary" href={appHref}>Join VerifiedNG <ArrowRight size={16}/></a></div>
+    </main>}
 
     {page === "about" && <main className="public-info-main public-container"><PageHeading eyebrow="OUR STORY" title="Built for the places and people that connect us." description="VerifiedNG is a Nigerian community platform designed to make everyday discovery, conversations and local connections easier."/>
       <div className="public-info-feature"><div><span className="public-eyebrow">WHY WE EXIST</span><h2>Good connections change everyday life.</h2><p>Finding a trusted recommendation, the right service professional or someone nearby who has the answer should feel easier. We are building a place where Nigerians can connect through useful conversations, local knowledge and clearer information.</p><p>Our vision has grown beyond a service directory: VerifiedNG brings public community posts, local discovery, marketplace listings and interest-based groups together in one experience.</p></div><div className="public-info-highlight"><Globe2 size={35}/><h3>Local roots. Wider connections.</h3><p>Discover what's happening across Nigeria, then narrow the conversation when you want to focus on your own area.</p></div></div>
@@ -226,6 +245,6 @@ export default function PublicSite({ page = "home", loggedIn = false, theme = "s
       <div className="public-contact-layout"><div><span className="public-eyebrow">GET IN TOUCH</span><h2>How can we help?</h2><p>Choose a topic and share enough details for us to understand the issue. Never include passwords, private security codes or financial credentials.</p><div className="public-contact-aside"><div><ShieldCheck size={21}/><span><strong>Safety concern?</strong><small>For immediate danger, contact the appropriate local emergency service. The form isn't monitored for emergencies.</small></span></div><div><LockKeyhole size={21}/><span><strong>Privacy request?</strong><small>Select “Privacy or data” and describe your request. We may need to verify your identity before taking account-specific action.</small></span></div></div></div><ContactForm/></div>
     </main>}
 
-    <footer className="public-footer"><div className="public-container"><div className="public-footer-main"><div className="public-footer-about"><a href="/"><Brand light/></a><p>Connecting people, places and opportunities across Nigeria. Built with community in mind.</p></div><div><strong>Explore</strong><a href="/#features">Community features</a><a href="/become-a-provider">Become a provider</a><a href="/about">About VerifiedNG</a></div><div><strong>Trust & support</strong>{infoLinks.filter((x)=>x.href!=="/about").map((x)=><a key={x.href} href={x.href}>{x.label}</a>)}</div><div><strong>Get started</strong><a href={loggedIn ? "/app" : "/login"}>{loggedIn ? "Open community" : "Log in"}</a>{!loggedIn && <a href="/signup">Create an account</a>}<a href="/safety">Community safety</a></div></div><div className="public-footer-bottom"><span>© {new Date().getFullYear()} VerifiedNG. Built for communities across Nigeria.</span><div className="public-footer-appearance"><ThemeToggleButton resolvedTheme={resolvedTheme} onChange={onThemeChange} /></div></div></div></footer>
+    <footer className="public-footer"><div className="public-container"><div className="public-footer-main"><div className="public-footer-about"><a href="/"><Brand light/></a><p>Connecting people, places and opportunities across Nigeria. Built with community in mind.</p></div><div><strong>Explore</strong><a href="/#features">Community features</a><a href="/how-it-works">How it works</a><a href="/become-a-provider">Become a provider</a><a href="/about">About VerifiedNG</a></div><div><strong>Trust & support</strong>{infoLinks.filter((x)=>x.href!=="/about").map((x)=><a key={x.href} href={x.href}>{x.label}</a>)}</div><div><strong>Get started</strong><a href={loggedIn ? "/app" : "/login"}>{loggedIn ? "Open community" : "Log in"}</a>{!loggedIn && <a href="/signup">Create an account</a>}<a href="/safety">Community safety</a></div></div><div className="public-footer-bottom"><span>© {new Date().getFullYear()} VerifiedNG. Built for communities across Nigeria.</span><div className="public-footer-appearance"><ThemeToggleButton resolvedTheme={resolvedTheme} onChange={onThemeChange} /></div></div></div></footer>
   </div>;
 }

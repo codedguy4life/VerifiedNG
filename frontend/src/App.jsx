@@ -508,7 +508,7 @@ export default function App() {
 
   const path = window.location.pathname.replace(/\/+$/, "") || "/";
   const publicInfo = {
-    "/about": "about", "/safety": "safety", "/privacy": "privacy",
+    "/about": "about", "/how-it-works": "how-it-works", "/safety": "safety", "/privacy": "privacy",
     "/terms": "terms", "/contact": "contact",
   };
   if (!resetMode && publicInfo[path]) return <PublicSite page={publicInfo[path]} loggedIn={Boolean(token)} theme={theme} onThemeChange={changeTheme} />;

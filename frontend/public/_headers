@@ -1,0 +1,16 @@
+# Static hosting platforms (such as Cloudflare Pages) can read these.
+# Private/account pages are excluded from search results.
+/app
+  X-Robots-Tag: noindex, follow
+/login
+  X-Robots-Tag: noindex, follow
+/signup
+  X-Robots-Tag: noindex, follow
+/forgot-password
+  X-Robots-Tag: noindex, follow
+/reset-password
+  X-Robots-Tag: noindex, follow
+/privacy
+  X-Robots-Tag: noindex, follow
+/terms
+  X-Robots-Tag: noindex, follow

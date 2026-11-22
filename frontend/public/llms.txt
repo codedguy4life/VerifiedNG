@@ -1,0 +1,27 @@
+# VerifiedNG
+
+> VerifiedNG is a Nigerian community platform for local conversations, service discovery, marketplace listings and groups.
+
+Official website: https://verifiedng.site/
+Website language: English (Nigeria)
+Service area: Nigeria
+
+## Useful public pages
+
+- [Home](https://verifiedng.site/): An overview of community posts, local service discovery and buying or selling.
+- [How VerifiedNG Works](https://verifiedng.site/how-it-works): Clear answers about joining, providers, posts, location and safety.
+- [About VerifiedNG](https://verifiedng.site/about): Mission and platform overview.
+- [Become a Provider](https://verifiedng.site/become-a-provider): Apply for manually reviewed provider access.
+- [Safety](https://verifiedng.site/safety): Safety guidance for members and transactions.
+- [Contact](https://verifiedng.site/contact): Contact the VerifiedNG team.
+
+## Important clarifications
+
+- Free member accounts are available.
+- Provider applications require review; approval is not automatic.
+- Provider approval and community verification are separate.
+- Badges or profiles do not guarantee a person's quality or safety.
+- Community posts, member messages and account details require sign-in and are not included in this public reference.
+- Some features are still being developed.
+
+This file provides optional links for readers and tools. It does not grant access to private content or guarantee search visibility.

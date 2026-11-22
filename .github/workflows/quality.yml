@@ -27,9 +27,12 @@ jobs:
       - name: Test official logo integration
         working-directory: frontend
         run: npm run test:branding
-      - name: Build frontend
+      - name: Build and prerender public pages
         working-directory: frontend
         run: npm run build
+      - name: Test SEO output
+        working-directory: frontend
+        run: npm run test:seo
 
   backend-check:
     name: Backend syntax and integration tests
