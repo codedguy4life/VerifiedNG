@@ -152,6 +152,47 @@ describe("For Sale marketplace", () => {
     expect(replied.statusCode).toBe(201);
   });
 
+
+  test("unread indicator follows incoming messages and read receipts", async () => {
+    const listing = await publish({ title: "Unread marker test listing", price: 3200 });
+    const sent = await request(app).post("/api/sales/" + listing.body.item._id + "/inquiries")
+      .set("Authorization", "Bearer " + buyerToken)
+      .send({ message: "Hello, may I inspect this item?" });
+    expect(sent.statusCode).toBe(201);
+    const id = sent.body.threadId;
+    const getThreads = (token) => request(app).get("/api/sales/inquiries").set("Authorization", "Bearer " + token);
+    const thread = (result) => result.body.inquiries.find((item) => String(item._id) === String(id));
+
+    const sellerInbox = await getThreads(sellerToken);
+    expect(thread(sellerInbox).unread).toBe(true);
+    const buyerInbox = await getThreads(buyerToken);
+    expect(thread(buyerInbox).unread).toBe(false);
+    const sellerSummary = await request(app).get("/api/sales/inquiries/unread").set("Authorization", "Bearer " + sellerToken);
+    expect(sellerSummary.statusCode).toBe(200);
+    expect(sellerSummary.body.unreadConversations).toBeGreaterThanOrEqual(1);
+
+    const stranger = await request(app).post("/api/sales/inquiries/" + id + "/read")
+      .set("Authorization", "Bearer " + outsiderToken).send({});
+    expect(stranger.statusCode).toBe(404);
+    const anon = await request(app).get("/api/sales/inquiries/unread");
+    expect(anon.statusCode).toBe(401);
+
+    const read = await request(app).post("/api/sales/inquiries/" + id + "/read")
+      .set("Authorization", "Bearer " + sellerToken).send({});
+    expect(read.statusCode).toBe(200);
+    expect(thread(await getThreads(sellerToken)).unread).toBe(false);
+
+    const replied = await request(app).post("/api/sales/inquiries/" + id + "/messages")
+      .set("Authorization", "Bearer " + sellerToken).send({ message: "Yes, you can inspect it." });
+    expect(replied.statusCode).toBe(201);
+    expect(thread(await getThreads(buyerToken)).unread).toBe(true);
+
+    const buyerRead = await request(app).post("/api/sales/inquiries/" + id + "/read")
+      .set("Authorization", "Bearer " + buyerToken).send({});
+    expect(buyerRead.statusCode).toBe(200);
+    expect(thread(await getThreads(buyerToken)).unread).toBe(false);
+  });
+
   test("seller cannot message self and only one report per buyer is accepted", async () => {
     const listing = await publish({ title: "Reportable old phone", price: 3000 });
     const id = listing.body.item._id;

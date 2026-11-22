@@ -6,6 +6,49 @@ const validId = (id) => mongoose.isValidObjectId(id);
 const clean = (input) => typeof input === "string" ? input.trim() : "";
 const participant = (user) => user && ({ _id: user._id, fullName: user.fullName, isVerified: Boolean(user.isVerified) });
 
+
+function hasUnreadMessages(thread, viewerId) {
+  const own = String(viewerId);
+  const seller = String(thread.seller?._id || thread.seller);
+  const lastRead = seller === own ? thread.sellerLastReadAt : thread.buyerLastReadAt;
+  const readTime = lastRead ? new Date(lastRead).getTime() : 0;
+  return (thread.messages || []).some((message) =>
+    String(message.sender) !== own && new Date(message.createdAt).getTime() > readTime);
+}
+
+const isParticipant = (id) => ({ $or: [{ seller: id }, { buyer: id }] });
+
+async function unreadSummary(req, res) {
+  try {
+    const threads = await SaleInquiry.find(isParticipant(req.user.id))
+      .select("seller buyer sellerLastReadAt buyerLastReadAt messages.sender messages.createdAt").lean();
+    return res.json({ unreadConversations: threads.filter((thread) => hasUnreadMessages(thread, req.user.id)).length });
+  } catch (error) {
+    console.error("Marketplace unread summary:", error);
+    return res.status(500).json({ message: "Could not check unread messages." });
+  }
+}
+
+async function markRead(req, res) {
+  try {
+    if (!validId(req.params.threadId)) return res.status(404).json({ message: "Conversation not found." });
+    const thread = await SaleInquiry.findOne({
+      _id: req.params.threadId, ...isParticipant(req.user.id),
+    }).select("seller buyer").lean();
+    if (!thread) return res.status(404).json({ message: "Conversation not found." });
+    const field = String(thread.seller) === String(req.user.id) ? "sellerLastReadAt" : "buyerLastReadAt";
+    await SaleInquiry.updateOne(
+      { _id: thread._id, ...isParticipant(req.user.id) },
+      { $max: { [field]: new Date() } },
+      { timestamps: false },
+    );
+    return res.json({ message: "Conversation marked as read." });
+  } catch (error) {
+    console.error("Mark marketplace messages read:", error);
+    return res.status(500).json({ message: "Could not mark messages as read." });
+  }
+}
+
 async function inquiries(req, res) {
   try {
     const threads = await SaleInquiry.find({ $or: [{ seller: req.user.id }, { buyer: req.user.id }] })
@@ -18,7 +61,8 @@ async function inquiries(req, res) {
       listing: thread.listing && { _id: thread.listing._id, title: thread.listing.title, imageUrl: thread.listing.imageUrl, status: thread.listing.status },
       seller: participant(thread.seller), buyer: participant(thread.buyer),
       messages: thread.messages.map(({ _id, sender, text, createdAt }) => ({ _id, sender, text, createdAt })),
-      updatedAt: thread.updatedAt
+      updatedAt: thread.updatedAt,
+      unread: hasUnreadMessages(thread, req.user.id),
     })) });
   } catch (error) {
     console.error("Listing inquiries:", error);
@@ -76,4 +120,4 @@ async function report(req, res) {
     console.error("Listing report:", error); res.status(500).json({ message: "Could not report listing." });
   }
 }
-module.exports = { inquiries, contact, reply, report };
+module.exports = { inquiries, unreadSummary, markRead, contact, reply, report };

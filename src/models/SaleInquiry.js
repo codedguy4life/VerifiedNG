@@ -8,7 +8,9 @@ const schema = new mongoose.Schema({
   listing: { type: mongoose.Schema.Types.ObjectId, ref: "SaleItem", required: true },
   seller: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   buyer: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-  messages: { type: [message], default: [] }
+  messages: { type: [message], default: [] },
+  sellerLastReadAt: { type: Date, default: null },
+  buyerLastReadAt: { type: Date, default: null }
 }, { timestamps: true });
 schema.index({ listing: 1, buyer: 1 }, { unique: true });
 schema.index({ seller: 1, updatedAt: -1 });

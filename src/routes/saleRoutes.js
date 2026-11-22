@@ -8,6 +8,8 @@ router.use(protect);
 router.get("/categories", (req, res) => res.json({ categories: CATEGORIES }));
 router.get("/", listItems);
 router.get("/inquiries", saleContact.inquiries);
+router.get("/inquiries/unread", saleContact.unreadSummary);
+router.post("/inquiries/:threadId/read", saleContact.markRead);
 router.post("/inquiries/:threadId/messages", saleContact.reply);
 router.post("/:id/inquiries", saleContact.contact);
 router.post("/:id/reports", saleContact.report);
