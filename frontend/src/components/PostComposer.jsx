@@ -232,6 +232,19 @@ export default function PostComposer({ user, onPublish, onRequireLocation, busy 
           )}
         </div>
 
+        {expanded && (
+          <div className="composer-visibility-row">
+            <label htmlFor="post-audience"><Globe2 size={15} /> Who can see this?</label>
+            <select id="post-audience" value={audience} onChange={(event) => setAudience(event.target.value)}>
+              <option value="local">My neighbourhood</option>
+              <option value="national">Across Nigeria</option>
+            </select>
+            <small>{audience === "local"
+              ? "Only members who share your saved city or state can see this post."
+              : "All VerifiedNG members across Nigeria can see this post."}</small>
+          </div>
+        )}
+
         {previewUrl && (
           <div className="composer-media-preview">
             <div className="composer-media-preview-frame">
@@ -278,17 +291,6 @@ export default function PostComposer({ user, onPublish, onRequireLocation, busy 
                 {categories.map((item) => (
                   <option key={item}>{item}</option>
                 ))}
-              </select>
-            </label>
-            <label className="select-field">
-              <Globe2 size={15} />
-              <span className="sr-only">Who can see this post?</span>
-              <select
-                value={audience}
-                onChange={(event) => setAudience(event.target.value)}
-              >
-                <option value="local">My neighbourhood</option>
-                <option value="national">Across Nigeria</option>
               </select>
             </label>
           </div>

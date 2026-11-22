@@ -3476,3 +3476,9 @@ a.notification-story:hover { border-color: #b7d8c5; }
 /* Unread conversation labels show only when incoming messages are unread. */
 .sale-inbox-list button strong { display:flex; align-items:center; justify-content:space-between; gap:8px; }
 .sale-inbox-list .sale-inbox-unread { flex:0 0 auto; display:inline-block; border-radius:999px; padding:3px 7px; background:#dff5e8; color:#076839; font-size:10px; font-weight:800; }
+
+/* Show post audience before publishing so members know who will see it. */
+.composer-visibility-row { display:flex; align-items:center; flex-wrap:wrap; gap:8px; padding:10px 13px; margin:10px 0; border:1px solid var(--line); border-radius:10px; background:#f7fbf8; }
+.composer-visibility-row > label { display:inline-flex; align-items:center; gap:5px; font-size:11px; color:var(--ink); font-weight:800; }
+.composer-visibility-row select { min-width:0; max-width:100%; padding:7px 9px; border:1px solid #d9e7de; border-radius:8px; background:#fff; color:var(--ink); font-size:12px; }
+.composer-visibility-row small { flex-basis:100%; color:var(--muted); font-size:10px; line-height:1.45; }

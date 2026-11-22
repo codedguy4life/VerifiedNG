@@ -73,6 +73,16 @@ describe("Community discovery and local news", () => {
     expect(response.body.posts.map((post) => post.text)).not.toContain("Private bridge report");
   });
 
+  test("For you includes nationwide posts and matching local posts, without revealing other areas", async () => {
+    const result = await request(app).get("/api/community/feed?scope=for-you&area=Ibadan")
+      .set("Authorization", "Bearer " + token);
+    expect(result.statusCode).toBe(200);
+    const texts = result.body.posts.map((post) => post.text);
+    expect(texts).toContain("Public bridge update");
+    expect(texts).toContain("Neighbour bridge repair");
+    expect(texts).not.toContain("Private bridge report");
+  });
+
   test("a member can find safety alerts shared with their own area", async () => {
     const response = await request(app)
       .get("/api/community/search?area=Ikeja&category=Safety%20Alert")
