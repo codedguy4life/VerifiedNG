@@ -135,21 +135,18 @@ export default function PublicSite({ page = "home", loggedIn = false }) {
             </div>
             <div className="public-hero-footnote"><ShieldCheck size={16}/> Free to join · No location required</div>
           </div>
-          <div className="public-product-visual" aria-label="Example layout of the VerifiedNG community app. Content shown is a demonstration.">
-            <div className="public-preview-top"><Brand/><span>App preview</span></div>
+          <div className="public-product-visual" aria-label="Illustrative preview of the VerifiedNG community experience">
+            <div className="public-preview-top"><Brand/><span>Illustrative preview</span></div>
             <div className="public-preview-tabs"><span className="on"><Compass size={14}/> Home</span><span><Search size={14}/> Search</span><span><ShoppingBag size={14}/> For Sale</span></div>
-            <div className="public-preview-toolbar"><span>Community feed</span><span><Globe2 size={13}/> All posts</span></div>
             <article className="public-preview-post">
-              <div className="public-preview-author"><span className="public-preview-avatar">V</span><div><strong>VerifiedNG community</strong><small>Sample post · Across Nigeria</small></div><span className="public-preview-more">•••</span></div>
-              <h3>Looking for something nearby?</h3>
-              <p>Ask the community, find a service or see what's for sale.</p>
-              <div className="public-preview-actions">
-                <span><Search size={16}/> Browse services</span>
-                <span><ShoppingBag size={16}/> For Sale</span>
-              </div>
-              <div className="public-preview-interactions"><span><HeartHandshake size={15}/> Like</span><span><MessageCircle size={15}/> Comment</span><span><ArrowUpRight size={15}/> Share</span></div>
+              <div className="public-preview-author"><span className="public-preview-avatar">V</span><div><strong>Your neighbourhood</strong><small>Community conversation · Across Nigeria</small></div><span className="public-preview-more">•••</span></div>
+              <h3>There's more happening around you than you think.</h3>
+              <p>Share a useful tip, ask a question, or discover something worth knowing.</p>
+              <div className="public-preview-scene"><span className="public-scene-sun"/><span className="public-scene-road"/><span className="public-scene-building building-a"/><span className="public-scene-building building-b"/><span className="public-scene-building building-c"/><span className="public-scene-tree tree-a"/><span className="public-scene-tree tree-b"/><span className="public-scene-caption">Find what matters, right where you are.</span></div>
+              <div className="public-preview-interactions"><span><HeartHandshake size={16}/> Connect</span><span><MessageCircle size={16}/> Discuss</span><span><ArrowUpRight size={16}/> Discover</span></div>
             </article>
-            <div className="public-preview-shortcuts"><span><Users size={16}/> Local groups</span><span><ShieldCheck size={16}/> Stay informed</span></div>
+            <div className="public-floating-tag tag-one"><span><MapPin size={16}/></span><div><strong>Local discovery</strong><small>Your area, your choice</small></div></div>
+            <div className="public-floating-tag tag-two"><span><BadgeCheck size={16}/></span><div><strong>Trust matters</strong><small>Check profiles and status</small></div></div>
           </div>
         </div>
       </section>

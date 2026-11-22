@@ -475,3 +475,203 @@
   .public-site .public-hero-actions .public-button{font-size:10px}
   .public-site .public-hero h1{font-size:31px}
 }
+
+
+/* Balance pass: restore the original neighbourhood illustration on desktop
+   and give mobile content enough room to read without wasting space. */
+@media (min-width: 851px) {
+  .public-site .public-product-visual {
+    transform: rotate(1.2deg);
+    max-width: 510px;
+    border-radius: 23px;
+    background: #fff;
+    padding: 20px;
+    box-shadow: 0 25px 70px rgba(9,55,32,.13);
+  }
+  .public-site .public-preview-post h3 { margin: 18px 0 8px; }
+  .public-site .public-preview-post>p { margin: 0 0 14px; }
+}
+@media (min-width: 601px) and (max-width: 850px) {
+  .public-site .public-product-visual {
+    display: block;
+    transform: none;
+    max-width: 500px;
+    border-radius: 19px;
+    padding: 18px;
+  }
+}
+@media (max-width: 600px) {
+  .public-site { overflow-x: clip; }
+  .public-site .public-container { width: calc(100% - 34px); }
+  .public-site .public-header-inner { min-height: 64px; }
+  .public-site .public-nav { top: 64px; }
+  .public-site .public-hero { padding: 38px 0 44px; }
+  .public-site .public-hero-kicker { padding: 8px 11px; font-size: 10px; }
+  .public-site .public-hero h1 {
+    font-size: clamp(35px, 9vw, 47px);
+    line-height: 1.12;
+    letter-spacing: -1.4px;
+    margin: 20px 0 16px;
+  }
+  .public-site .public-hero-copy>p {
+    max-width: 390px;
+    font-size: 14px;
+    line-height: 1.65;
+    margin-bottom: 23px;
+  }
+  .public-site .public-hero-actions { grid-template-columns: 1fr; gap: 10px; }
+  .public-site .public-hero-actions .public-button {
+    min-height: 48px;
+    padding: 13px 16px;
+    font-size: 13px;
+    gap: 8px;
+    border-radius: 9px;
+  }
+  .public-site .public-hero-actions .public-button-light {
+    min-height: 34px;
+    padding: 7px 12px;
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+  }
+  .public-site .public-hero-actions svg { width: 17px; height: 17px; }
+  .public-site .public-hero-footnote { font-size: 11px; margin-top: 17px; }
+  /* Keep the original illustration visible on desktops and tablets; skip the
+     large visual on small phones so the useful links stay near the top. */
+  .public-site .public-product-visual { display: none; }
+
+  .public-site .public-feature-section { padding: 43px 0 47px; }
+  .public-site .public-section-heading { margin-bottom: 20px; gap: 9px; }
+  .public-site .public-section-heading h2 { font-size: 27px; line-height: 1.18; margin-top: 9px; }
+  .public-site .public-section-heading>p { font-size: 12.5px; line-height: 1.6; }
+  .public-site .public-features-grid { grid-template-columns: 1fr; gap: 12px; }
+  .public-site .public-feature-card {
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    column-gap: 14px;
+    row-gap: 3px;
+    padding: 17px;
+    min-height: 0;
+    border-radius: 11px;
+  }
+  .public-site .public-feature-icon {
+    grid-column: 1; grid-row: 1 / 3;
+    width: 42px; height: 42px; border-radius: 9px;
+  }
+  .public-site .public-feature-icon svg { width: 22px; height: 22px; }
+  .public-site .public-feature-card h3 {
+    grid-column: 2; grid-row: 1;
+    font-size: 15px;
+    margin: 0;
+    line-height: 1.3;
+  }
+  .public-site .public-feature-card p {
+    grid-column: 2; grid-row: 2;
+    font-size: 12.5px;
+    line-height: 1.55;
+    margin: 0;
+  }
+  .public-site .public-feature-bottom { display: none; }
+
+  .public-site .public-steps-section { padding: 43px 0 45px; }
+  .public-site .public-steps-grid { gap: 12px; }
+  .public-site .public-step {
+    grid-template-columns: 42px minmax(0,1fr);
+    column-gap: 14px;
+    padding: 16px 17px;
+    border-radius: 10px;
+    min-height: 0;
+  }
+  .public-site .public-step>span { font-size: 24px; }
+  .public-site .public-step h3 { font-size: 14px; margin: 0 0 5px; }
+  .public-site .public-step p { font-size: 12px; line-height: 1.55; }
+
+  .public-site .public-trust-section { padding: 46px 0; }
+  .public-site .public-trust-grid h2 { font-size: 28px; margin: 12px 0; }
+  .public-site .public-trust-grid p { font-size: 13px; line-height: 1.65; margin-bottom: 18px; }
+  .public-site .public-trust-list { display: none; }
+  .public-site .public-button-outline { min-height: 43px; font-size: 12px; padding: 11px 15px; }
+
+  .public-site .public-provider-section { padding: 46px 0; }
+  .public-site .public-provider-grid h2 { font-size: 27px; margin: 11px 0 13px; }
+  .public-site .public-provider-grid p { font-size: 13px; line-height: 1.65; margin: 0 0 20px; }
+  .public-site .public-provider-grid .public-button { padding: 12px 17px; font-size: 12px; }
+
+  .public-site .public-faq-section { padding: 43px 0 46px; }
+  .public-site .public-faq-grid { gap: 19px; }
+  .public-site .public-faq-grid h2 { font-size: 27px; margin: 10px 0; }
+  .public-site .public-faq-list { gap: 10px; }
+  .public-site .public-faq-list details { padding: 0 16px; border-radius: 9px; }
+  .public-site .public-faq-list summary { font-size: 13px; padding: 15px 0; }
+  .public-site .public-faq-list details p { font-size: 12.5px; line-height: 1.65; margin-bottom: 15px; }
+
+  .public-site .public-final-cta { padding: 35px 0; }
+  .public-site .public-final-inner { gap: 19px; padding: 24px; }
+  .public-site .public-final-inner h2 { font-size: 25px; margin: 9px 0; }
+  .public-site .public-final-inner p { font-size: 13px; line-height: 1.55; }
+  .public-site .public-final-inner .public-button { min-height: 47px; font-size: 13px; }
+
+  .public-site .public-footer { padding-top: 35px; }
+  .public-site .public-footer-main { gap: 28px 19px; padding-bottom: 29px; }
+  .public-site .public-footer-main strong { font-size: 12px; margin-bottom: 4px; }
+  .public-site .public-footer-main>div:not(:first-child) { gap: 11px; }
+  .public-site .public-footer-about p { font-size: 12px; line-height: 1.65; margin-top: 14px; }
+  .public-site .public-footer-main a:not(.public-brand) { font-size: 12px; }
+  .public-site .public-footer-bottom { font-size: 10px; line-height: 1.55; }
+
+  .public-site .public-info-main { padding-top: 35px; padding-bottom: 54px; }
+  .public-site .public-page-heading { margin-bottom: 27px; }
+  .public-site .public-page-heading h1 { font-size: clamp(31px, 8vw, 40px); line-height: 1.15; }
+  .public-site .public-page-heading>p { font-size: 13.5px; line-height: 1.65; }
+  .public-site .public-info-feature { gap: 22px; margin-bottom: 29px; }
+  .public-site .public-info-feature h2 { font-size: 24px; }
+  .public-site .public-info-feature p { font-size: 13px; line-height: 1.72; margin-bottom: 14px; }
+  .public-site .public-info-highlight { padding: 20px; border-radius: 11px; }
+  .public-site .public-values { grid-template-columns: 1fr; gap: 12px; }
+  .public-site .public-values>div { padding: 17px; border-radius: 10px; }
+  .public-site .public-values h3 { display: block; margin: 11px 0 7px; font-size: 15px; }
+  .public-site .public-values p { font-size: 12.5px; line-height: 1.65; }
+  .public-site .public-info-card-grid { grid-template-columns: 1fr; gap: 12px; }
+  .public-site .public-information-card { padding: 17px; }
+  .public-site .public-information-number { font-size: 22px; }
+  .public-site .public-information-card h3 { font-size: 15px; margin: 10px 0 7px; }
+  .public-site .public-information-card p { font-size: 12.5px; line-height: 1.65; }
+  .public-site .public-info-action { padding: 18px; margin-top: 22px; }
+  .public-site .public-info-action h3 { font-size: 14px; }
+  .public-site .public-info-action p { font-size: 12.5px; }
+
+  .public-site .public-provider-apply-layout { gap: 23px; }
+  .public-site .public-provider-apply-layout h2 { font-size: 24px; }
+  .public-site .public-application-steps { gap: 14px; margin: 18px 0; }
+  .public-site .public-application-steps strong { font-size: 13px; }
+  .public-site .public-application-steps p { font-size: 12px; line-height: 1.6; margin: 5px 0; }
+  .public-site .public-apply-card { padding: 20px; gap: 13px; }
+  .public-site .public-apply-card h3 { font-size: 22px; }
+  .public-site .public-apply-card p { font-size: 13px; line-height: 1.6; }
+
+  .public-site .public-contact-layout { gap: 23px; }
+  .public-site .public-contact-layout h2 { font-size: 24px; }
+  .public-site .public-contact-layout>div>p { font-size: 13px; line-height: 1.65; }
+  .public-site .public-contact-aside { margin-top: 20px; gap: 15px; }
+  .public-site .public-contact-aside strong { font-size: 13px; }
+  .public-site .public-contact-aside small { font-size: 12px; line-height: 1.6; }
+  .public-site .public-contact-form { padding: 19px; gap: 15px; }
+  .public-site .public-contact-form label { font-size: 13px; gap: 8px; }
+  .public-site .public-contact-form input:not([type=checkbox]),.public-site .public-contact-form select { min-height: 45px; }
+  .public-site .public-contact-form textarea { min-height: 130px; }
+
+  .public-site .public-policy-layout { gap: 18px; }
+  .public-site .public-policy-layout aside { gap: 10px 14px; padding: 15px; }
+  .public-site .public-policy-layout aside a { font-size: 11px; }
+  .public-site .public-policy-layout article>p,.public-site .public-policy-layout article section p {
+    font-size: 13px; line-height: 1.75; margin-bottom: 14px;
+  }
+  .public-site .public-policy-layout article section { padding: 16px 0 12px; }
+  .public-site .public-policy-layout article section h2 { font-size: 18px; margin-bottom: 10px; }
+}
+@media (max-width: 350px) {
+  .public-site .public-container { width: calc(100% - 28px); }
+  .public-site .public-hero h1 { font-size: 32px; }
+  .public-site .public-feature-card { padding: 14px; column-gap: 11px; }
+}
