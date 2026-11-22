@@ -2,7 +2,7 @@ const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const crypto = require("node:crypto");
-const nodemailer = require("nodemailer");
+const { sendPasswordResetEmail } = require("../services/emailSender");
 
 const buildAuthToken = (user) =>
   jwt.sign(
@@ -228,10 +228,16 @@ const login = async (req, res) => {
 // ─── FORGOT PASSWORD ───
 const forgotPassword = async (req, res) => {
   try {
-    const { email } = req.body;
-
-    if (!email) {
-      return res.status(400).json({ message: "Please provide your email" });
+    const { email } = req.body || {};
+    if (typeof email !== "string" || !/^\\S+@\\S+\\.\\S+$/.test(email.trim()) || email.length > 200) {
+      return res.status(400).json({ message: "Please provide a valid email address." });
+    }
+    // Check mail configuration for all addresses before querying user records.
+    // This avoids revealing account existence through different errors.
+    if (!process.env.RESEND_API_KEY || !process.env.RESEND_FROM_EMAIL) {
+      return res.status(503).json({
+        message: "Password reset emails are temporarily unavailable. Please try again later.",
+      });
     }
 
     const cleanEmail = email.trim().toLowerCase();
@@ -259,22 +265,19 @@ const forgotPassword = async (req, res) => {
     const frontendUrl = (process.env.RESET_FRONTEND_URL || "https://verifiedng.site").replace(/[/]$/, "");
     const resetLink = frontendUrl + "/?reset_token=" + encodeURIComponent(resetToken) + "&email=" + encodeURIComponent(cleanEmail);
 
-    await transporter.sendMail({
-      from: `"VerifiedNG" <${process.env.EMAIL_USER}>`,
-      to: cleanEmail,
-      subject: "Reset Your VerifiedNG Password",
-      html: `
-        <div style="font-family:Arial,sans-serif;max-width:500px;margin:0 auto;padding:20px;">
-          <h2 style="color:#1a1a2e;">Reset Your VerifiedNG Password</h2>
-          <p>You requested a password reset. Click the button below — expires in 1 hour.</p>
-          <a href="${resetLink}" style="display:inline-block;background:#1a1a2e;color:white;
-            padding:14px 28px;border-radius:8px;text-decoration:none;margin:20px 0;font-weight:600;">
-            Reset My Password
-          </a>
-          <p style="color:#888;font-size:0.85rem;">If you did not request this, ignore this email.</p>
-        </div>
-      `,
-    });
+    try {
+      await sendPasswordResetEmail({ recipient: cleanEmail, resetLink });
+    } catch (mailError) {
+      // An undelivered reset link must not remain active in the database.
+      await User.updateOne(
+        { _id: user._id, resetToken: resetTokenHash },
+        { $set: { resetToken: null, resetTokenExpiry: null } },
+      );
+      console.error("Password reset email delivery failed:", mailError.code || mailError.name || "MAIL_ERROR");
+      return res.status(503).json({
+        message: "Password reset emails are temporarily unavailable. Please try again later.",
+      });
+    }
 
     res.status(200).json({
       message: "If that email exists we have sent a reset link.",
@@ -284,14 +287,6 @@ const forgotPassword = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
 
 // ─── RESET PASSWORD ───
 const resetPassword = async (req, res) => {

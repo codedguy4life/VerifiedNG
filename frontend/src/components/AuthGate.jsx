@@ -36,7 +36,7 @@ export default function AuthGate({ onAuthenticated, onResetFinished }) {
         if(!result.token||!result.user)throw new Error("Account created. Please sign in.");
         setFields(f=>({...f,password:"",confirm:""}));onAuthenticated(result);
       } else if(mode==="forgot") {
-        const result=await api("/api/auth/forgot-password",{method:"POST",body:JSON.stringify({email:value("email").trim().toLowerCase()})});
+        const result=await api("/api/auth/forgot-password",{method:"POST",signal:AbortSignal.timeout(75000),body:JSON.stringify({email:value("email").trim().toLowerCase()})});
         setNotice(result.message||"If that email is registered, a reset link will be sent.");
       } else if(mode==="reset") {
         if(!resetToken||!resetEmail)throw new Error("Incomplete reset link. Request a new one.");
@@ -45,7 +45,7 @@ export default function AuthGate({ onAuthenticated, onResetFinished }) {
         window.history.replaceState(null,"",window.location.pathname);onResetFinished();
         setFields(f=>({...f,password:"",confirm:"",identifier:resetEmail}));setMode("login");setNotice("Password changed. Sign in with your new password.");
       }
-    } catch(err) {setError(err.message||"Request failed. Please try again.");}
+    } catch(err) {setError(err.name==="TimeoutError" || err.name==="AbortError" ? "The email request took too long. Please try again shortly." : (err.message||"Request failed. Please try again."));}
     finally {setBusy(false);}
   }
   const login=mode==="login",signup=mode==="signup",forgot=mode==="forgot",reset=mode==="reset";
