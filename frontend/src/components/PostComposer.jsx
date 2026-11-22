@@ -19,11 +19,11 @@ const categories = [
   "Safety Alert",
 ];
 
-export default function PostComposer({ user, onPublish, onRequireLocation, busy }) {
+export default function PostComposer({ user, onPublish, busy }) {
   const [expanded, setExpanded] = useState(false);
   const [text, setText] = useState("");
   const [category, setCategory] = useState("General");
-  const [audience, setAudience] = useState("local");
+  const audience = "national"; // New posts are public across VerifiedNG by default.
   const [showSettings, setShowSettings] = useState(false);
   const [mediaNotice, setMediaNotice] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
@@ -83,11 +83,6 @@ export default function PostComposer({ user, onPublish, onRequireLocation, busy 
     event.preventDefault();
     if ((!text.trim() && !selectedFile) || busy || uploadingMedia) return;
     setMediaNotice("");
-    if (audience === "local" && !user?.state?.trim() && !user?.city?.trim()) {
-      setMediaNotice("Save your state or city before publishing a neighbourhood post. Your draft and attachment will be kept.");
-      onRequireLocation?.();
-      return;
-    }
     let media = {};
     if (selectedFile) {
       setUploadingMedia(true);
@@ -233,15 +228,9 @@ export default function PostComposer({ user, onPublish, onRequireLocation, busy 
         </div>
 
         {expanded && (
-          <div className="composer-visibility-row">
-            <label htmlFor="post-audience"><Globe2 size={15} /> Who can see this?</label>
-            <select id="post-audience" value={audience} onChange={(event) => setAudience(event.target.value)}>
-              <option value="local">My neighbourhood</option>
-              <option value="national">Across Nigeria</option>
-            </select>
-            <small>{audience === "local"
-              ? "Only members who share your saved city or state can see this post."
-              : "All VerifiedNG members across Nigeria can see this post."}</small>
+          <div className="composer-visibility-row" role="note">
+            <Globe2 size={15} aria-hidden="true" />
+            <span>Visible to everyone on VerifiedNG. Your area helps members find your post using the By area filter.</span>
           </div>
         )}
 

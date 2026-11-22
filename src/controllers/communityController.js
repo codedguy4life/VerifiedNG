@@ -76,20 +76,37 @@ const getFeed = async (req, res) => {
       selectedLocation = { $or: [{ "location.city": match }, { "location.state": match }] };
     }
 
+    // Public posts can be discovered by anyone, whether the author lives near
+    // the viewer or in another state. Older local-only posts remain restricted.
+    const visibleToViewer = {
+      $or: [{ audience: "national" }, { audience: "local", ...allowedLocal }],
+    };
+
     let visibility;
     if (scope === "nigeria") {
+      // Keep this older API scope compatible with clients using it.
       visibility = { isHidden: false, audience: "national" };
     } else if (scope === "nearby") {
+      // "By area" filters the *location*, not the post's privacy setting.
+      // It includes public posts from the selected area and local-only posts
+      // when the signed-in account already has access to those posts.
+      const ownArea = viewer.city && viewer.state
+        ? { "location.city": new RegExp("^" + escapeRegex(viewer.city) + "$", "i"),
+            "location.state": new RegExp("^" + escapeRegex(viewer.state) + "$", "i") }
+        : viewer.city || viewer.state
+          ? { $or: viewerLocal }
+          : null;
       visibility = {
         isHidden: false,
-        audience: "local",
-        $and: selectedLocation ? [allowedLocal, selectedLocation] : [allowedLocal],
+        $and: [
+          visibleToViewer,
+          selectedLocation || ownArea || { _id: null },
+        ],
       };
     } else {
-      visibility = {
-        isHidden: false,
-        $or: [{ audience: "national" }, { audience: "local", ...allowedLocal }],
-      };
+      // Default Home feed: all public posts in date order, plus older
+      // neighbourhood-only posts this specific account may view.
+      visibility = { isHidden: false, ...visibleToViewer };
     }
     const [posts, total] = await Promise.all([
       CommunityPost.find(visibility)

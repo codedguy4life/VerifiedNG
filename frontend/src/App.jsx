@@ -48,9 +48,8 @@ import HireRequestsPage from "./components/HireRequestsPage.jsx";
 import CommunityNotifications from "./components/CommunityNotifications.jsx";
 
 const scopes = [
-  { id: "for-you", label: "For you", icon: Compass },
-  { id: "nearby", label: "Near me", icon: MapPin },
-  { id: "nigeria", label: "Across Nigeria", icon: Globe2 },
+  { id: "for-you", label: "All posts", icon: Compass },
+  { id: "nearby", label: "By area", icon: MapPin },
 ];
 
 const tabs = [
@@ -223,12 +222,13 @@ export default function App() {
         method: "POST",
         body: JSON.stringify(payload),
       });
-      setMessage("Your post has been published.");
-      if (scope === "nigeria" && payload.audience === "local") {
-        setMessage(
-          "Post published. Switch to For you or Near me to see local posts.",
-        );
-      } else await loadFeed();
+      setMessage("Your post has been published for everyone on VerifiedNG.");
+      if (scope === "nearby") {
+        // A new public post outside the chosen area belongs in All posts.
+        setScope("for-you");
+      } else {
+        await loadFeed();
+      }
       return true;
     } catch (cause) {
       setError(cause.message || "Could not publish your post.");
@@ -931,10 +931,8 @@ export default function App() {
             )}
             <div className="feed-caption">
               {scope === "nearby"
-                ? "Neighbourhood posts matching your saved location and selected area."
-                : scope === "nigeria"
-                  ? "Posts members chose to share across Nigeria."
-                  : "Across Nigeria posts, plus neighbourhood posts matching your city or state."}
+                ? "Showing posts from " + (area || [user?.city, user?.state].filter(Boolean).join(", ") || "your selected area") + ". Change the area using the location bar above."
+                : "Latest public posts from across Nigeria. Choose By area only when you want posts from a specific place."}
             </div>
             {loading && !posts.length && (
               <div className="empty-state card">Loading your community…</div>
@@ -951,8 +949,9 @@ export default function App() {
                 </div>
                 <h3>Your community starts here.</h3>
                 <p>
-                  Ask a question, share something useful or help a neighbour
-                  find what they need.
+                  {scope === "nearby"
+                    ? "No posts found for this area. Choose another area above or switch to All posts."
+                    : "No public posts yet. Create one and everyone on VerifiedNG will be able to see it."}
                 </p>
               </div>
             )}

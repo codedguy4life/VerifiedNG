@@ -83,6 +83,55 @@ describe("Community discovery and local news", () => {
     expect(texts).not.toContain("Private bridge report");
   });
 
+  test("By area includes public posts from that area without exposing local-only posts elsewhere", async () => {
+    // This viewer is from Ikeja, Lagos. Public posts from Ibadan, Oyo should
+    // not show in the Lagos area filter, but must appear in the default feed.
+    const all = await request(app)
+      .get("/api/community/feed?scope=for-you")
+      .set("Authorization", "Bearer " + token);
+    expect(all.statusCode).toBe(200);
+    expect(all.body.posts.map((post) => post.text)).toContain("Public bridge update");
+
+    const ibadan = await request(app)
+      .get("/api/community/feed?scope=nearby&area=Ibadan,%20Oyo")
+      .set("Authorization", "Bearer " + token);
+    expect(ibadan.statusCode).toBe(200);
+    const ibadanText = ibadan.body.posts.map((post) => post.text);
+    expect(ibadanText).toContain("Public bridge update");
+    expect(ibadanText).not.toContain("Private bridge report");
+    expect(ibadanText).not.toContain("Neighbour bridge repair");
+
+    const ikeja = await request(app)
+      .get("/api/community/feed?scope=nearby&area=Ikeja,%20Lagos")
+      .set("Authorization", "Bearer " + token);
+    expect(ikeja.statusCode).toBe(200);
+    expect(ikeja.body.posts.map((post) => post.text)).toContain("Neighbour bridge repair");
+    expect(ikeja.body.posts.map((post) => post.text)).not.toContain("Public bridge update");
+  });
+
+  test("New posts default to public and are visible from another state", async () => {
+    const author = await createMember("Public post author", "", "");
+    let createdId;
+    try {
+      const result = await request(app).post("/api/auth/login")
+        .send({ identifier: author.email, password: "TestPass123!" });
+      expect(result.statusCode).toBe(200);
+      const created = await request(app).post("/api/community/posts")
+        .set("Authorization", "Bearer " + result.body.token)
+        .send({ text: "Public feed cross-state test post" });
+      expect(created.statusCode).toBe(201);
+      expect(created.body.post.audience).toBe("national");
+      createdId = created.body.post._id;
+      const feed = await request(app).get("/api/community/feed?scope=for-you")
+        .set("Authorization", "Bearer " + token);
+      expect(feed.statusCode).toBe(200);
+      expect(feed.body.posts.some((post) => String(post._id) === String(createdId))).toBe(true);
+    } finally {
+      if (createdId) await CommunityPost.deleteOne({ _id: createdId });
+      await User.deleteOne({ _id: author._id });
+    }
+  });
+
   test("a member can find safety alerts shared with their own area", async () => {
     const response = await request(app)
       .get("/api/community/search?area=Ikeja&category=Safety%20Alert")
