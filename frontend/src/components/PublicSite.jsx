@@ -6,6 +6,7 @@ import {
   Sparkles, Users, Wrench, X,
 } from "lucide-react";
 import { api } from "../lib/api.js";
+import PublicShowcase from "./PublicShowcase.jsx";
 
 const infoLinks = [
   { href: "/about", label: "About" },
@@ -14,16 +15,10 @@ const infoLinks = [
   { href: "/terms", label: "Terms" },
   { href: "/contact", label: "Contact" },
 ];
-const features = [
-  { icon: MessageCircle, title: "Community conversations", description: "Ask questions, share useful updates and take part in discussions with people across Nigeria." },
-  { icon: Search, title: "Find local services", description: "Discover service professionals by category and location. Check each profile before reaching out." },
-  { icon: ShoppingBag, title: "For Sale", description: "List an item, explore what others are selling and keep buyer–seller conversations in one place." },
-  { icon: Users, title: "Groups and connections", description: "Discover communities built around local interests, shared places and meaningful connections." },
-];
 const steps = [
-  { number: "01", title: "Join the community", description: "Create your account, add an area if you want to and set up your profile." },
-  { number: "02", title: "Explore what matters", description: "Read public posts, filter by area, find services or explore local listings." },
-  { number: "03", title: "Connect with care", description: "Start a conversation, ask questions and use our reporting tools when something feels wrong." },
+  { number: "01", title: "Join", description: "Create a free account and set up your profile." },
+  { number: "02", title: "Explore", description: "See posts, services and items for sale." },
+  { number: "03", title: "Connect", description: "Talk with people and join conversations." },
 ];
 
 function Brand({ light = false }) {
@@ -126,22 +121,22 @@ export default function PublicSite({ page = "home", loggedIn = false }) {
       <section className="public-hero">
         <div className="public-container public-hero-grid">
           <div className="public-hero-copy">
-            <span className="public-hero-kicker"><span className="public-kicker-dot" /> Made for communities across Nigeria</span>
-            <h1>Closer communities.<br/><em>Better connections.</em></h1>
-            <p>VerifiedNG brings local conversations, useful services and everyday discoveries together. Find your people, explore your area and connect with more confidence.</p>
+            <span className="public-hero-kicker"><span className="public-kicker-dot" /> Built for communities in Nigeria</span>
+            <h1>Your community.<br/><em>All in one place.</em></h1>
+            <p>See what people are sharing, find local services, buy and sell, and connect with others on VerifiedNG.</p>
             <div className="public-hero-actions">
-              <a className="public-button public-button-primary public-button-large" href={appHref}>{loggedIn ? "Go to your community" : "Join your community"} <ArrowRight size={18}/></a>
-              <a className="public-button public-button-light public-button-large" href="#how-it-works">See how it works <ArrowUpRight size={17}/></a>
+              <a className="public-button public-button-primary public-button-large" href={appHref}>{loggedIn ? "Open VerifiedNG" : "Join VerifiedNG"} <ArrowRight size={18}/></a>
+              <a className="public-button public-button-light public-button-large" href="#features">Explore features <ArrowUpRight size={17}/></a>
             </div>
-            <div className="public-hero-footnote"><ShieldCheck size={16}/> Free to join · Your location is optional · Report tools available</div>
+            <div className="public-hero-footnote"><ShieldCheck size={16}/> Free to join · Location is optional</div>
           </div>
           <div className="public-product-visual" aria-label="Illustrative preview of the VerifiedNG community experience">
             <div className="public-preview-top"><Brand/><span>Illustrative preview</span></div>
             <div className="public-preview-tabs"><span className="on"><Compass size={14}/> Home</span><span><Search size={14}/> Search</span><span><ShoppingBag size={14}/> For Sale</span></div>
             <article className="public-preview-post">
               <div className="public-preview-author"><span className="public-preview-avatar">V</span><div><strong>Your neighbourhood</strong><small>Community conversation · Across Nigeria</small></div><span className="public-preview-more">•••</span></div>
-              <h3>There's more happening around you than you think.</h3>
-              <p>Share a useful tip, ask a question, or discover something worth knowing.</p>
+              <h3>What's happening in your community?</h3>
+              <p>Share updates, ask questions and find helpful people.</p>
               <div className="public-preview-scene"><span className="public-scene-sun"/><span className="public-scene-road"/><span className="public-scene-building building-a"/><span className="public-scene-building building-b"/><span className="public-scene-building building-c"/><span className="public-scene-tree tree-a"/><span className="public-scene-tree tree-b"/><span className="public-scene-caption">Find what matters, right where you are.</span></div>
               <div className="public-preview-interactions"><span><HeartHandshake size={16}/> Connect</span><span><MessageCircle size={16}/> Discuss</span><span><ArrowUpRight size={16}/> Discover</span></div>
             </article>
@@ -151,34 +146,35 @@ export default function PublicSite({ page = "home", loggedIn = false }) {
         </div>
       </section>
 
-      <section className="public-feature-section" id="features">
-        <div className="public-container">
-          <div className="public-section-heading"><div><span className="public-eyebrow">ONE COMMUNITY. MANY CONNECTIONS.</span><h2>A little closer to everything around you.</h2></div><p>Whether you're looking for a helpful neighbour, a service professional or a place to share an update, start here.</p></div>
-          <div className="public-features-grid">{features.map(({ icon: Icon, title, description }, index) => <div className="public-feature-card" key={title}><span className={"public-feature-icon public-feature-tone-" + index}><Icon size={23}/></span><h3>{title}</h3><p>{description}</p><span className="public-feature-bottom">VerifiedNG community <ArrowUpRight size={15}/></span></div>)}</div>
-        </div>
-      </section>
+      <PublicShowcase loggedIn={loggedIn} />
       <section className="public-steps-section" id="how-it-works">
         <div className="public-container">
-          <div className="public-section-heading public-section-heading-center"><div><span className="public-eyebrow">SIMPLE TO START</span><h2>Find your place in three steps.</h2></div></div>
+          <div className="public-section-heading public-section-heading-center"><div><span className="public-eyebrow">GET STARTED</span><h2>It's easy to join.</h2></div></div>
           <div className="public-steps-grid">{steps.map((step) => <div key={step.number} className="public-step"><span>{step.number}</span><h3>{step.title}</h3><p>{step.description}</p></div>)}</div>
         </div>
       </section>
       <section className="public-trust-section">
         <div className="public-container public-trust-grid">
-          <div><span className="public-eyebrow public-eyebrow-light">SAFER CONNECTIONS</span><h2>Trust isn't a badge.<br/>It's something we build.</h2><p>VerifiedNG is developing account review, community safeguards and clear reporting tools. Always check a member's verification status, use your judgement and follow safe meeting practices.</p><a href="/safety" className="public-button public-button-outline">Explore safety guidance <ArrowRight size={17}/></a></div>
-          <div className="public-trust-list"><div><ShieldCheck size={21}/><div><strong>Account verification</strong><span>Review status is shown separately. Not every account is verified.</span></div></div><div><LockKeyhole size={21}/><div><strong>Privacy choices</strong><span>Choose what to share and use optional location features when you want them.</span></div></div><div><HeartHandshake size={21}/><div><strong>Community responsibility</strong><span>Report suspicious listings or interactions for review.</span></div></div></div>
+          <div><span className="public-eyebrow public-eyebrow-light">SAFETY ON VERIFIEDNG</span><h2>Connect with more confidence.</h2><p>Check profiles before you meet or trade. You can report posts and listings that seem unsafe. Not every member is verified.</p><a href="/safety" className="public-button public-button-outline">See safety tips <ArrowRight size={17}/></a></div>
+          <div className="public-trust-list"><div><ShieldCheck size={21}/><div><strong>Check profiles</strong><span>See what members share about themselves.</span></div></div><div><LockKeyhole size={21}/><div><strong>Choose your area</strong><span>Your location is optional.</span></div></div><div><HeartHandshake size={21}/><div><strong>Report problems</strong><span>Flag suspicious posts and listings.</span></div></div></div>
         </div>
       </section>
       <section className="public-provider-section">
-        <div className="public-container public-provider-grid"><div className="public-provider-symbol"><Wrench size={70} strokeWidth={1.3}/><span className="public-provider-orbit orbit-a"/><span className="public-provider-orbit orbit-b"/></div><div><span className="public-eyebrow">FOR PEOPLE WITH SKILLS</span><h2>Let the right people discover what you do.</h2><p>Electricians, designers, tutors, caterers and other skilled people can apply to offer services on VerifiedNG. Provider applications are reviewed before provider access is granted.</p><a href="/become-a-provider" className="public-button public-button-primary">Explore provider applications <ArrowRight size={17}/></a></div></div>
+        <div className="public-container public-provider-grid">
+          <div className="public-provider-example" aria-label="Example provider application preview">
+            <div className="public-provider-example-heading"><Wrench size={20}/><div><strong>Become a provider</strong><span>Example application preview</span></div></div>
+            <div className="public-provider-example-fields"><div><small>Service</small><strong>What do you do?</strong></div><div><small>Location</small><strong>Where do you work?</strong></div><div><small>Experience</small><strong>Tell us about your skills</strong></div></div>
+            <div className="public-provider-example-footer"><ShieldCheck size={17}/> Applications are reviewed before approval.</div>
+          </div>
+          <div><span className="public-eyebrow">FOR SERVICE PROVIDERS</span><h2>Let people find your skills.</h2><p>Are you an electrician, tutor, tailor or another skilled worker? Apply to offer your services on VerifiedNG.</p><a href="/become-a-provider" className="public-button public-button-primary">Become a provider <ArrowRight size={17}/></a></div></div>
       </section>
-      <section className="public-faq-section"><div className="public-container public-faq-grid"><div><span className="public-eyebrow">GOOD TO KNOW</span><h2>Questions before joining?</h2><p>Here are a few things worth knowing.</p></div><div className="public-faq-list">
-        <details><summary>Is VerifiedNG free to join? <ChevronDown size={17}/></summary><p>Creating a member account is free. Any future paid features should be disclosed clearly before you choose to use them.</p></details>
-        <details><summary>Will everyone see what I post? <ChevronDown size={17}/></summary><p>New community posts are visible to signed-in VerifiedNG members across Nigeria by default. Your city or state can help others filter public posts by area. Older neighbourhood-restricted posts keep their original visibility.</p></details>
-        <details><summary>Does a provider badge guarantee quality? <ChevronDown size={17}/></summary><p>No. Application review or verification is not a guarantee of identity, qualifications, performance or safety. Check profiles, communicate carefully and verify important details independently.</p></details>
-        <details><summary>How do I report a concern? <ChevronDown size={17}/></summary><p>Use the reporting options on posts or marketplace listings, or send a message through our contact page. For immediate danger, contact the appropriate local emergency service.</p></details>
+      <section className="public-faq-section"><div className="public-container public-faq-grid"><div><span className="public-eyebrow">GOOD TO KNOW</span><h2>Quick answers.</h2><p>A few things to know before you join.</p></div><div className="public-faq-list">
+        <details><summary>Is VerifiedNG free to join? <ChevronDown size={17}/></summary><p>Yes. Creating a member account is free.</p></details>
+        <details><summary>Will everyone see what I post? <ChevronDown size={17}/></summary><p>New posts can be seen by members across Nigeria. Use the area filter for local posts. Older neighbourhood-only posts stay restricted.</p></details>
+        <details><summary>Does a provider badge guarantee quality? <ChevronDown size={17}/></summary><p>No. Check the person's work and details yourself before hiring.</p></details>
+        <details><summary>How do I report a concern? <ChevronDown size={17}/></summary><p>Report the post or listing, or contact us. If you're in danger, contact local emergency services.</p></details>
       </div></div></section>
-      <section className="public-final-cta"><div className="public-container public-final-inner"><div><span className="public-eyebrow">YOUR COMMUNITY STARTS HERE</span><h2>Find your people. Make your connections count.</h2><p>Discover what's happening and help build a more connected Nigeria.</p></div><a href={appHref} className="public-button public-button-primary public-button-large">{loggedIn ? "Open VerifiedNG" : "Get started for free"} <ArrowRight size={18}/></a></div></section>
+      <section className="public-final-cta"><div className="public-container public-final-inner"><div><span className="public-eyebrow">JOIN VERIFIEDNG</span><h2>Be part of your community.</h2><p>Join today and see what's happening.</p></div><a href={appHref} className="public-button public-button-primary public-button-large">{loggedIn ? "Open VerifiedNG" : "Get started for free"} <ArrowRight size={18}/></a></div></section>
     </>}
 
     {page === "about" && <main className="public-info-main public-container"><PageHeading eyebrow="OUR STORY" title="Built for the places and people that connect us." description="VerifiedNG is a Nigerian community platform designed to make everyday discovery, conversations and local connections easier."/>
