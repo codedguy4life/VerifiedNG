@@ -73,6 +73,7 @@ const createAccount = async (req, res, role) => {
       password: hashedPassword,
       phone: cleanPhone,
       role,
+      termsAcceptedAt: req.body.termsAccepted === true ? new Date() : null,
       category: category || "",
       bio: bio || "",
       skills: skills || [],

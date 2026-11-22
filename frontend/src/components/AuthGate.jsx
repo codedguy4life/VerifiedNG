@@ -7,7 +7,8 @@ const resetToken = query.get("reset_token");
 const resetEmail = query.get("email");
 
 export default function AuthGate({ onAuthenticated, onResetFinished }) {
-  const [mode, setMode] = useState(resetToken ? "reset" : "login");
+  const [mode, setMode] = useState(() => resetToken ? "reset" : window.location.pathname === "/signup" ? "signup" : window.location.pathname === "/forgot-password" ? "forgot" : "login");
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [fields, setFields] = useState({identifier:"",loginPassword:"",fullName:"",email:resetEmail || "",phone:"",state:"",city:"",password:"",confirm:""});
   const [busy,setBusy] = useState(false);
   const [show,setShow] = useState(false);
@@ -17,7 +18,10 @@ export default function AuthGate({ onAuthenticated, onResetFinished }) {
   const change = (name) => (event) => setFields((current) => ({...current,[name]:event.target.value}));
   function switchMode(next) {
     setMode(next);setError("");setNotice("");setShow(false);
-    if(mode==="reset" && next!=="reset") {window.history.replaceState(null,"",window.location.pathname);onResetFinished();}
+    if(mode==="reset" && next!=="reset") {onResetFinished();}
+    const nextParam = new URLSearchParams(window.location.search).get("next") === "provider" ? "?next=provider" : "";
+    const route = next==="signup" ? "/signup" : next==="forgot" ? "/forgot-password" : "/login";
+    window.history.replaceState(null,"",route + nextParam);
   }
   async function submit(event) {
     event.preventDefault();if(busy)return;setBusy(true);setError("");setNotice("");
@@ -27,14 +31,16 @@ export default function AuthGate({ onAuthenticated, onResetFinished }) {
         if(!result.token||!result.user)throw new Error("Login response was incomplete.");
         setFields(f=>({...f,loginPassword:""}));onAuthenticated(result);
       } else if(mode==="signup") {
+        if(!acceptedTerms)throw new Error("Read and agree to the Terms and Privacy Policy to create an account.");
         if(value("password").length<8)throw new Error("Password must be at least 8 characters.");
         if(value("password")!==value("confirm"))throw new Error("Passwords do not match.");
         const result=await api("/api/auth/register",{method:"POST",body:JSON.stringify({
           fullName:value("fullName").trim(),email:value("email").trim().toLowerCase(),phone:value("phone").trim(),
-          city:value("city").trim(),state:value("state").trim(),password:value("password")
+          city:value("city").trim(),state:value("state").trim(),password:value("password"),
+          termsAccepted:true
         })});
         if(!result.token||!result.user)throw new Error("Account created. Please sign in.");
-        setFields(f=>({...f,password:"",confirm:""}));onAuthenticated(result);
+        setFields(f=>({...f,password:"",confirm:""}));setAcceptedTerms(false);onAuthenticated(result);
       } else if(mode==="forgot") {
         const result=await api("/api/auth/forgot-password",{method:"POST",signal:AbortSignal.timeout(75000),body:JSON.stringify({email:value("email").trim().toLowerCase()})});
         setNotice(result.message||"If that email is registered, a reset link will be sent.");
@@ -81,13 +87,15 @@ export default function AuthGate({ onAuthenticated, onResetFinished }) {
             <button type="button" onClick={()=>setShow(v=>!v)} aria-label={show?"Hide password":"Show password"}>{show?<EyeOff size={18}/>:<Eye size={18}/>}</button>
           </span></label>}
           {(signup||reset)&&field("Confirm password","confirm",{type:show?"text":"password",autoComplete:"new-password",minLength:8,placeholder:"Repeat password"})}
+          {signup&&<label className="auth-entry-consent"><input type="checkbox" required checked={acceptedTerms} onChange={(event)=>setAcceptedTerms(event.target.checked)}/><span>I agree to the <a href="/terms" target="_blank" rel="noopener noreferrer">Terms of Service</a> and have read the <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.</span></label>}
           {login&&<button className="auth-entry-forgot" type="button" onClick={()=>{setFields(f=>({...f,email:value("identifier").includes("@")?value("identifier"):""}));switchMode("forgot");}}>Forgot password?</button>}
           <button className="auth-entry-submit" type="submit" disabled={busy}>{busy?"Please wait…":login?"Sign in":signup?"Create account":forgot?"Send reset link":"Reset password"} <ArrowRight size={17}/></button>
         </form>
         {login&&<p className="auth-entry-switch">New to VerifiedNG? <button type="button" onClick={()=>switchMode("signup")}>Create an account</button></p>}
         {signup&&<p className="auth-entry-switch">Already a member? <button type="button" onClick={()=>switchMode("login")}>Sign in</button></p>}
-        {signup&&<p className="auth-entry-note"><ShieldCheck size={16}/> All new accounts start as members. Provider status requires separate approval.</p>}
-      </div><p className="auth-entry-footer">VerifiedNG · Connect with care.</p>
+        {signup&&<p className="auth-entry-note"><ShieldCheck size={16}/> All new accounts start as members. Provider applications are reviewed separately; no account becomes a verified provider automatically.</p>}
+        {new URLSearchParams(window.location.search).get("next")==="provider"&&<p className="auth-entry-provider-note">After you sign in, you'll continue to the provider application.</p>}
+      </div><p className="auth-entry-footer"><a href="/">Homepage</a> · <a href="/safety">Safety</a> · <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a> · <a href="/contact">Contact</a></p>
     </section>
   </main>;
 }

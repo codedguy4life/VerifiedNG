@@ -29,6 +29,8 @@ const userSchema = new mongoose.Schema(
       min: 0,
     },
 
+    termsAcceptedAt: { type: Date, default: null },
+
     phone: {
       type: String,
       required: true,

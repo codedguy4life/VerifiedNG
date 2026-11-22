@@ -34,6 +34,9 @@ import {
 } from "lucide-react";
 import { api, getToken } from "./lib/api.js";
 import AuthGate from "./components/AuthGate.jsx";
+import PublicSite from "./components/PublicSite.jsx";
+import ProviderApplyPage from "./components/ProviderApplyPage.jsx";
+import "./components/public-site.css";
 import PostComposer from "./components/PostComposer.jsx";
 import ProfileEditor from "./components/ProfileEditor.jsx";
 import ForSalePage from "./components/ForSalePage.jsx";
@@ -83,7 +86,7 @@ export default function App() {
   });
   const [scope, setScope] = useState("for-you");
   const [activeTab, setActiveTab] = useState("home");
-  const [currentView, setCurrentView] = useState("home");
+  const [currentView, setCurrentView] = useState(() => window.location.pathname === "/become-a-provider" || new URLSearchParams(window.location.search).get("next") === "provider" ? "provider-apply" : "home");
   const [notificationFilter, setNotificationFilter] = useState("all");
   const [recommendedItem, setRecommendedItem] = useState(null);
   const [selectedProviderId, setSelectedProviderId] = useState(null);
@@ -326,9 +329,12 @@ export default function App() {
     setArea(location);
     setScope("for-you");
     setUnreadSaleCount(0);
-    setCurrentView("home");
+    const providerNext = new URLSearchParams(window.location.search).get("next") === "provider" ||
+      window.location.pathname === "/become-a-provider";
+    setCurrentView(providerNext ? "provider-apply" : "home");
     setActiveTab("home");
     setError("");
+    window.history.replaceState(null, "", "/app");
   }
   function signOut() {
     localStorage.removeItem("token");
@@ -341,6 +347,7 @@ export default function App() {
     setPosts([]);
     setProfileEditorOpen(false);
     setPostingBlocked(false);
+    window.history.replaceState(null, "", "/");
   }
   function chooseArea() {
     const nextArea = window.prompt(
@@ -434,13 +441,11 @@ export default function App() {
       return;
     }
     if (label === "Become a provider") {
-      setCurrentView("verification");
-      setMessage("Provider registration is reviewed by the VerifiedNG team. Community verification does not automatically grant a provider account.");
+      setCurrentView("provider-apply");
       return;
     }
     if (label === "Safety and trust") {
-      window.location.href =
-        "https://codedguy4life.github.io/VerifiedNG/safety.html";
+      window.location.href = "/safety";
       return;
     }
     setCurrentView(views[label] || "home");
@@ -473,6 +478,14 @@ export default function App() {
     setMessage("Your setting has been saved on this device.");
   }
 
+  const path = window.location.pathname.replace(/\/+$/, "") || "/";
+  const publicInfo = {
+    "/about": "about", "/safety": "safety", "/privacy": "privacy",
+    "/terms": "terms", "/contact": "contact",
+  };
+  if (!resetMode && publicInfo[path]) return <PublicSite page={publicInfo[path]} loggedIn={Boolean(token)} />;
+  if (!resetMode && !token && (path === "/" || path === "/app")) return <PublicSite page="home" />;
+  if (!resetMode && !token && path === "/become-a-provider") return <PublicSite page="become-a-provider" />;
   if (!token || resetMode) {
     return <AuthGate onAuthenticated={onAuthenticated} onResetFinished={() => {
       window.history.replaceState(null, "", window.location.pathname);
@@ -680,6 +693,13 @@ export default function App() {
               setActiveTab(item.type === "sale" ? "sale" : "home");
               window.scrollTo({ top: 0, behavior: "smooth" });
             }}/>
+          )}
+          {currentView === "provider-apply" && (
+            <ProviderApplyPage
+              user={user}
+              onBack={returnHome}
+              onUpdated={syncUserProfile}
+            />
           )}
           {currentView === "groups" && (
             <GroupsPage user={user} initialGroupId={recommendedItem?.type === "groups" ? recommendedItem._id : null} onOpenVerification={() => { setCurrentView("verification"); setMessage(""); }} />
@@ -1010,7 +1030,7 @@ export default function App() {
                 Share useful information, treat neighbours with respect, and
                 report suspicious posts.
               </p>
-              <a href="https://codedguy4life.github.io/VerifiedNG/safety.html">
+              <a href="/safety">
                 Read our safety tips <ArrowRight size={14} />
               </a>
             </section>
@@ -1169,6 +1189,12 @@ export default function App() {
                 <ShieldCheck size={17} />
                 <span>Safety and trust</span>
               </button>
+              <div className="drawer-info-links">
+                <a href="/about">About</a>
+                <a href="/privacy">Privacy</a>
+                <a href="/terms">Terms</a>
+                <a href="/contact">Contact</a>
+              </div>
               <button type="button" onClick={signOut}>
                 <LogOut size={17} />
                 <span>Sign out</span>
