@@ -141,6 +141,71 @@ describe("Verified groups, verification and Ask Area", () => {
     expect(commented.statusCode).toBe(201);
   });
 
+  test("group creators can review reported posts; reporters stay private; outsiders cannot moderate", async () => {
+    const post = await GroupPost.findOne({ group: groupId, text: "Welcome to our group!" });
+    expect(post).toBeTruthy();
+    const reported = await request(app)
+      .post("/api/groups/" + groupId + "/posts/" + post._id + "/reports")
+      .set("Authorization", visitorToken)
+      .send({ reason: "spam", details: "This post needs review by the group owner." });
+    expect(reported.statusCode).toBe(201);
+
+    const outsiderQueue = await request(app).get("/api/groups/" + groupId + "/reports")
+      .set("Authorization", visitorToken);
+    expect(outsiderQueue.statusCode).toBe(403);
+    const ownerQueue = await request(app).get("/api/groups/" + groupId + "/reports")
+      .set("Authorization", memberToken);
+    expect(ownerQueue.statusCode).toBe(200);
+    const item = ownerQueue.body.reports.find((entry) => String(entry.postId) === String(post._id));
+    expect(item).toBeDefined();
+    expect(item.reasons.some((entry) => entry.reason === "spam")).toBe(true);
+    expect(JSON.stringify(item)).not.toContain(String(visitor._id));
+
+    const forbiddenRemove = await request(app).delete("/api/groups/" + groupId + "/posts/" + post._id)
+      .set("Authorization", visitorToken);
+    expect(forbiddenRemove.statusCode).toBe(403);
+    const ownerRemove = await request(app).delete("/api/groups/" + groupId + "/posts/" + post._id)
+      .set("Authorization", memberToken);
+    expect(ownerRemove.statusCode).toBe(200);
+
+    const posts = await request(app).get("/api/groups/" + groupId + "/posts")
+      .set("Authorization", visitorToken);
+    expect(posts.body.posts.some((entry) => String(entry._id) === String(post._id))).toBe(false);
+    const cleared = await request(app).get("/api/groups/" + groupId + "/reports")
+      .set("Authorization", memberToken);
+    expect(cleared.body.reports.some((entry) => String(entry.postId) === String(post._id))).toBe(false);
+  });
+
+  test("verification rejection explains the decision and does not unlock Groups", async () => {
+    const applicant = await addUser("Another verification applicant");
+    const applicantToken = await login(applicant);
+    const submitted = await request(app).post("/api/verification/requests")
+      .set("Authorization", applicantToken)
+      .send({ note: "I want to contribute to community groups in my city." });
+    expect(submitted.statusCode).toBe(201);
+    const record = await VerificationRequest.findOne({ user: applicant._id });
+
+    const missingReason = await request(app)
+      .patch("/api/verification/admin/requests/" + record._id)
+      .set("Authorization", adminToken).send({ decision: "rejected" });
+    expect(missingReason.statusCode).toBe(400);
+    const rejected = await request(app)
+      .patch("/api/verification/admin/requests/" + record._id)
+      .set("Authorization", adminToken)
+      .send({ decision: "rejected", reviewerNote: "Need more evidence of account ownership." });
+    expect(rejected.statusCode).toBe(200);
+    const checked = await request(app).get("/api/verification/status").set("Authorization", applicantToken);
+    expect(checked.body.verified).toBe(false);
+    expect(checked.body.request.status).toBe("rejected");
+    expect(checked.body.request.reviewerNote).toContain("account ownership");
+    const denied = await request(app).post("/api/groups/" + groupId + "/join")
+      .set("Authorization", applicantToken).send({});
+    expect(denied.statusCode).toBe(403);
+    const tooSoon = await request(app).post("/api/verification/requests")
+      .set("Authorization", applicantToken).send({ note: "I can supply more information." });
+    expect(tooSoon.statusCode).toBe(429);
+  });
+
   test("Ask Area returns only real matching providers and never fabricates a dinner place", async () => {
     const zero = await request(app).post("/api/discovery/ask")
       .set("Authorization", memberToken).send({ question: "zzzzzzzzz" });

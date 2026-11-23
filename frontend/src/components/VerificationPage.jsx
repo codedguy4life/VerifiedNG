@@ -45,11 +45,16 @@ export default function VerificationPage({ user, onEditProfile, onUpdated, onOpe
   }
 
   async function review(id, decision) {
+    const note = (reviewNotes[id] || "").trim();
+    if (decision === "rejected" && note.length < 10) {
+      setError("Explain why you are declining this request in at least 10 characters.");
+      return;
+    }
     if (!window.confirm((decision === "approved" ? "Approve" : "Reject") + " this request? Confirm the account has been reviewed outside this page before approving.")) return;
     setBusy(true); setError(""); setMessage("");
     try {
       const result = await api("/api/verification/admin/requests/" + encodeURIComponent(id), {
-        method: "PATCH", body: JSON.stringify({ decision, reviewerNote: (reviewNotes[id] || "").trim() }),
+        method: "PATCH", body: JSON.stringify({ decision, reviewerNote: note }),
       });
       setMessage(result.message || "Request reviewed.");
       await load();
@@ -103,7 +108,7 @@ export default function VerificationPage({ user, onEditProfile, onUpdated, onOpe
             <strong>{item.user?.fullName || "Unavailable account"}</strong>
             <small>{item.user?.email || "No email"} · {[item.user?.city, item.user?.state].filter(Boolean).join(", ")}</small>
             <p>{item.note}</p>
-            <textarea value={reviewNotes[item._id] || ""} maxLength={500} rows={2} placeholder="Internal review decision note (optional)" onChange={(event) => setReviewNotes((prev) => ({ ...prev, [item._id]: event.target.value }))}/>
+            <textarea value={reviewNotes[item._id] || ""} maxLength={500} rows={2} placeholder="Review notes; explain a rejection in at least 10 characters" onChange={(event) => setReviewNotes((prev) => ({ ...prev, [item._id]: event.target.value }))}/>
             <div><button disabled={busy || !item.user} type="button" onClick={() => review(item._id, "approved")}>Approve</button><button disabled={busy} type="button" onClick={() => review(item._id, "rejected")}>Reject</button></div>
           </article>
         ))}

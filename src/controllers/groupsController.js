@@ -174,11 +174,36 @@ async function editPost(req, res) {
 }
 async function deletePost(req, res) {
   try {
-    const post = await loadOwnedPost(req, res); if (!post) return;
-    if (String(post.author) !== String(req.user.id)) return res.status(403).json({ message: "Only the author can delete." });
+    const group = await memberGroup(req, res); if (!group) return;
+    if (!validId(req.params.postId)) return res.status(404).json({ message: "Post not found." });
+    const post = await GroupPost.findOne({ _id: req.params.postId, group: group._id, isHidden: false });
+    if (!post) return res.status(404).json({ message: "Post not found." });
+    const isAuthor = String(post.author) === String(req.user.id);
+    const isCreator = String(group.creator) === String(req.user.id);
+    if (!isAuthor && !isCreator) return res.status(403).json({ message: "Only the author or the group creator can remove this post." });
     post.isHidden = true; await post.save();
-    res.json({ message: "Post removed." });
+    res.json({ message: "Post removed from the group." });
   } catch (error) { console.error("Groups delete:", error); res.status(500).json({ message: "Could not remove post." }); }
+}
+
+async function listReports(req, res) {
+  try {
+    const group = await memberGroup(req, res); if (!group) return;
+    if (String(group.creator) !== String(req.user.id))
+      return res.status(403).json({ message: "Only the group creator can review group reports." });
+    const posts = await GroupPost.find({
+      group: group._id, isHidden: false, "reports.0": { $exists: true },
+    }).select("author text reports createdAt").populate("author", "fullName").sort({ updatedAt: -1 }).limit(50).lean();
+    res.json({ reports: posts.map((post) => ({
+      postId: post._id,
+      authorName: post.author?.fullName || "Unknown member",
+      text: post.text, createdAt: post.createdAt,
+      reportCount: post.reports?.length || 0,
+      reasons: (post.reports || []).slice(-10).map(({ reason, details, createdAt }) => ({
+        reason, details, createdAt,
+      })),
+    })) });
+  } catch (error) { console.error("Groups reports:", error); res.status(500).json({ message: "Could not load group reports." }); }
 }
 async function report(req, res) {
   try {
@@ -193,4 +218,4 @@ async function report(req, res) {
     res.status(201).json({ message: "Report received for review." });
   } catch (error) { console.error("Groups report:", error); res.status(500).json({ message: "Could not report post." }); }
 }
-module.exports = { listGroups, createGroup, getGroup, joinGroup, leaveGroup, listPosts, createPost, react, comment, editPost, deletePost, report };
+module.exports = { listGroups, createGroup, getGroup, joinGroup, leaveGroup, listPosts, createPost, react, comment, editPost, deletePost, listReports, report };

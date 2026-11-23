@@ -108,6 +108,52 @@ describe("Public onboarding and manual provider review", () => {
     expect(repeat.statusCode).toBe(404);
   });
 
+  test("a written review reason is required, and failed promotion restores pending status", async () => {
+    const applied = await request(app).post("/api/provider-applications").set(auth(outsiderToken)).send({
+      category: "Carpentry",
+      bio: "I build and restore household furniture and provide carpentry repair services across Lagos.",
+      state: "Lagos", city: "Yaba", experienceYears: 3,
+      skills: ["Furniture repairs", "Wood finishing"], confirmAccuracy: true,
+    });
+    expect(applied.statusCode).toBe(201);
+    const item = await ProviderApplication.findOne({ user: outsider._id });
+
+    const noReason = await request(app).patch("/api/provider-applications/admin/" + item._id)
+      .set(auth(reviewerToken)).send({ decision: "approved" });
+    expect(noReason.statusCode).toBe(400);
+    expect((await ProviderApplication.findById(item._id)).status).toBe("pending");
+
+    const original = User.findByIdAndUpdate;
+    const spy = jest.spyOn(User, "findByIdAndUpdate").mockRejectedValueOnce(new Error("Simulated profile database error"));
+    let failed;
+    try {
+      failed = await request(app).patch("/api/provider-applications/admin/" + item._id)
+        .set(auth(reviewerToken)).send({ decision: "approved", reviewerNote: "Checked work samples and references." });
+    } finally {
+      spy.mockRestore();
+    }
+    expect(failed.statusCode).toBe(500);
+    expect((await ProviderApplication.findById(item._id)).status).toBe("pending");
+    expect((await User.findById(outsider._id)).role).toBe("customer");
+
+    const approved = await request(app).patch("/api/provider-applications/admin/" + item._id)
+      .set(auth(reviewerToken)).send({ decision: "approved", reviewerNote: "Checked work samples and references." });
+    expect(approved.statusCode).toBe(200);
+    expect((await User.findById(outsider._id)).role).toBe("provider");
+    const status = await request(app).get("/api/provider-applications/me").set(auth(outsiderToken));
+    expect(status.body.application.status).toBe("approved");
+    expect(status.body.application.reviewerNote).toContain("Checked work samples");
+    expect(status.body.isProvider).toBe(true);
+    expect(status.body.verified).toBe(false);
+    const cannotSeeHistory = await request(app).get("/api/provider-applications/admin/recent").set(auth(memberToken));
+    expect(cannotSeeHistory.statusCode).toBe(403);
+    const history = await request(app).get("/api/provider-applications/admin/recent").set(auth(reviewerToken));
+    expect(history.statusCode).toBe(200);
+    expect(history.body.applications.some((item) =>
+      item.status === "approved" && item.applicant?.fullName === outsider.fullName
+    )).toBe(true);
+  });
+
   test("public contact messages are accepted and visible only to authorized reviewers", async () => {
     const invalid = await request(app).post("/api/public/contact")
       .send({ name: "A", email: "wrong", topic: "Other", message: "hi" });

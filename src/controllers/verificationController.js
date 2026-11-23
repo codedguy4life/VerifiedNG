@@ -69,8 +69,9 @@ async function review(req, res) {
     if (!isAdmin(reviewer)) return res.status(403).json({ message: "Admin review permission required." });
     const decision = req.body.decision;
     const reviewerNote = typeof req.body.reviewerNote === "string" ? req.body.reviewerNote.trim() : "";
-    if (!["approved", "rejected"].includes(decision) || reviewerNote.length > 500)
-      return res.status(400).json({ message: "Invalid review decision or note." });
+    if (!["approved", "rejected"].includes(decision) || reviewerNote.length > 500 ||
+        (decision === "rejected" && reviewerNote.length < 10))
+      return res.status(400).json({ message: "Choose approve/reject; explain a rejection in at least 10 characters." });
     const request = await VerificationRequest.findOneAndUpdate(
       { _id: req.params.id, status: "pending" },
       { $set: { status: decision, reviewer: reviewer._id, reviewedAt: new Date(), reviewerNote } },
@@ -78,7 +79,27 @@ async function review(req, res) {
     );
     if (!request) return res.status(404).json({ message: "Pending request not found." });
     if (decision === "approved") {
-      await User.findByIdAndUpdate(request.user, { $set: { isVerified: true } });
+      try {
+        const approved = await User.findByIdAndUpdate(request.user, { $set: { isVerified: true } });
+        if (!approved) {
+          const missing = new Error("Account no longer exists");
+          missing.code = "APPLICANT_MISSING";
+          throw missing;
+        }
+      } catch (approvalError) {
+        try {
+          await VerificationRequest.updateOne(
+            { _id: request._id, status: "approved", reviewer: reviewer._id },
+            { $set: { status: "pending", reviewer: null, reviewerNote: "", reviewedAt: null } },
+          );
+        } catch (rollbackError) {
+          console.error("Verification approval recovery needed for request:", String(request._id), rollbackError.name);
+        }
+        if (approvalError.code === "APPLICANT_MISSING") {
+          return res.status(409).json({ message: "This account is unavailable. The approval was not completed." });
+        }
+        throw approvalError;
+      }
     }
     res.json({ message: decision === "approved" ? "Account approved." : "Request declined.", status: decision });
   } catch (error) {

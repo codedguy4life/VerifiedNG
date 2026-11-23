@@ -7,6 +7,7 @@ router.use(protect);
 router.get("/me", controller.me);
 router.post("/", controller.apply);
 router.get("/admin/pending", controller.pending);
+router.get("/admin/recent", controller.recent);
 router.patch("/admin/:id", controller.review);
 
 module.exports = router;

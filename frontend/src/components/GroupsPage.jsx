@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight, CheckCircle2, LockKeyhole, MapPin, Plus, Search, Send, ShieldCheck, Users, X } from "lucide-react";
 import { api } from "../lib/api.js";
 import PostCard from "./PostCard.jsx";
+import "./group-moderation.css";
 
 const categories = ["General", "Neighbourhood", "Business", "Learning", "Family", "Sports", "Interests"];
 const location = (group) => [group.city, group.state].filter(Boolean).join(", ") || "Across Nigeria";
@@ -24,6 +25,9 @@ export default function GroupsPage({ user, onOpenVerification, initialGroupId = 
   const [postsLoading, setPostsLoading] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  const [reports, setReports] = useState([]);
+  const [reportsOpen, setReportsOpen] = useState(false);
+  const [reportsBusy, setReportsBusy] = useState(false);
 
   const loadGroups = useCallback(async () => {
     setLoading(true);
@@ -52,7 +56,7 @@ export default function GroupsPage({ user, onOpenVerification, initialGroupId = 
   }, [initialGroupId]);
 
   async function openGroup(id) {
-    setError(""); setMessage(""); setPosts([]); setSelected(null); setPage(1);
+    setError(""); setMessage(""); setPosts([]); setSelected(null); setPage(1); setReports([]); setReportsOpen(false);
     try {
       const response = await api("/api/groups/" + encodeURIComponent(id));
       setSelected(response.group);
@@ -148,8 +152,24 @@ export default function GroupsPage({ user, onOpenVerification, initialGroupId = 
     await act(encodeURIComponent(post._id), "PUT", { text: text.trim() });
   }
   async function remove(id) {
-    if (window.confirm("Remove this post?")) await act(encodeURIComponent(id), "DELETE");
+    if (!window.confirm("Remove this post from the group?")) return;
+    const changed = await act(encodeURIComponent(id), "DELETE");
+    if (changed) setReports((current) => current.filter((item) => item.postId !== id));
   }
+
+  async function toggleReports() {
+    if (!selected || reportsBusy) return;
+    if (reportsOpen) { setReportsOpen(false); return; }
+    setReportsBusy(true); setError("");
+    try {
+      const response = await api("/api/groups/" + encodeURIComponent(selected._id) + "/reports");
+      setReports(response.reports || []);
+      setReportsOpen(true);
+    } catch (cause) { setError(cause.message || "Could not load reports."); }
+    finally { setReportsBusy(false); }
+  }
+
+  const isGroupCreator = Boolean(selected && String(selected.creator?._id || selected.creator) === String(user?._id || user?.id));
 
   return (
     <div className="groups-page">
@@ -178,6 +198,27 @@ export default function GroupsPage({ user, onOpenVerification, initialGroupId = 
                 {String(selected.creator?._id || selected.creator) !== String(user?._id || user?.id) && <button type="button" onClick={leave} disabled={busy}>Leave group</button>}</>
             ) : <button className="groups-join-button" type="button" onClick={join} disabled={busy}>{verified ? "Join this group" : "Verify to join"} <ArrowRight size={15}/></button>}
           </div>
+          {isGroupCreator && verified && selected.isMember && (
+            <section className="groups-moderation" aria-label="Group moderation">
+              <div className="groups-moderation-toolbar">
+                <span><ShieldCheck size={16}/> Group creator tools</span>
+                <button type="button" onClick={toggleReports} disabled={reportsBusy}>{reportsOpen ? "Hide reports" : reportsBusy ? "Loading…" : "Review reported posts"}</button>
+              </div>
+              {reportsOpen && (
+                <div className="groups-reports-list">
+                  {!reports.length && <p>No reported posts needing review.</p>}
+                  {reports.map((item) => (
+                    <article key={item.postId} className="groups-report-card">
+                      <strong>{item.authorName} · {item.reportCount} report{item.reportCount === 1 ? "" : "s"}</strong>
+                      <p>{item.text}</p>
+                      <ul>{item.reasons.map((reason, index) => <li key={index}><b>{reason.reason}:</b> {reason.details || "No additional details"}</li>)}</ul>
+                      <button type="button" disabled={busy} onClick={() => remove(String(item.postId))}>Remove reported post</button>
+                    </article>
+                  ))}
+                </div>
+              )}
+            </section>
+          )}
           {selected.isMember && verified ? (
             <>
               <form className="groups-composer card" onSubmit={publish}>

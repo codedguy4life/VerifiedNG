@@ -46,3 +46,11 @@
 .provider-apply-review-actions button{min-height:39px;padding:9px 12px;background:var(--green);border:0;border-radius:8px;color:#fff;font-size:12px;font-weight:800}
 .provider-apply-review-actions button.decline{background:#fff0ee;color:#9b3f36;border:1px solid #f4cfcb}
 @media(max-width:520px){.provider-apply-heading{padding:15px}.provider-apply-heading h1{font-size:21px}.provider-apply-fields{grid-template-columns:1fr}.provider-apply-form-card,.provider-apply-admin{padding:15px}}
+
+/* Clear applicant guidance and reviewer decision transparency. */
+.provider-review-steps{display:grid;gap:8px;margin:10px 0;padding-left:19px;color:var(--muted);font-size:12px;line-height:1.6}
+.provider-review-steps b{color:var(--ink)}
+.provider-apply-status small{display:block;margin-top:7px;line-height:1.5}
+.provider-apply-rejected small{display:block;margin-top:8px;font-size:11px}
+:root[data-theme="dark"] .provider-apply-page .provider-review-steps{color:#b6cbbc}
+:root[data-theme="dark"] .provider-apply-page .provider-review-steps b{color:#e4f5e9}

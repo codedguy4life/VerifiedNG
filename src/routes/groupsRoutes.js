@@ -8,6 +8,7 @@ router.post("/", c.createGroup);
 router.get("/:id", c.getGroup);
 router.post("/:id/join", c.joinGroup);
 router.post("/:id/leave", c.leaveGroup);
+router.get("/:id/reports", c.listReports);
 router.get("/:id/posts", c.listPosts);
 router.post("/:id/posts", c.createPost);
 router.post("/:id/posts/:postId/reactions", c.react);
