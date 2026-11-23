@@ -7,7 +7,7 @@ import "./group-moderation.css";
 const categories = ["General", "Neighbourhood", "Business", "Learning", "Family", "Sports", "Interests"];
 const location = (group) => [group.city, group.state].filter(Boolean).join(", ") || "Across Nigeria";
 
-export default function GroupsPage({ user, onOpenVerification, initialGroupId = null }) {
+export default function GroupsPage({ user, onOpenVerification, initialGroupId = null, onSelectedGroupChange }) {
   const [verified, setVerified] = useState(Boolean(user?.isVerified));
   const [groups, setGroups] = useState([]);
   const [search, setSearch] = useState("");
@@ -52,7 +52,8 @@ export default function GroupsPage({ user, onOpenVerification, initialGroupId = 
   }, []);
 
   useEffect(() => {
-    if (initialGroupId) openGroup(initialGroupId);
+    if (!initialGroupId) { setSelected(null); return; }
+    if (String(selected?._id || "") !== String(initialGroupId)) openGroup(initialGroupId);
   }, [initialGroupId]);
 
   async function openGroup(id) {
@@ -60,6 +61,7 @@ export default function GroupsPage({ user, onOpenVerification, initialGroupId = 
     try {
       const response = await api("/api/groups/" + encodeURIComponent(id));
       setSelected(response.group);
+      onSelectedGroupChange?.(response.group._id);
       if (response.group.isMember && verified) await loadPosts(id, 1);
     } catch (cause) { setError(cause.message || "Could not load group."); }
   }
@@ -182,7 +184,7 @@ export default function GroupsPage({ user, onOpenVerification, initialGroupId = 
       {message && <p className="groups-success" role="status"><CheckCircle2 size={15}/> {message}</p>}
       {selected ? (
         <>
-          <button type="button" className="groups-back" onClick={() => { setSelected(null); setDraft(""); setMessage(""); loadGroups(); }}><ArrowLeft size={15}/> All groups</button>
+          <button type="button" className="groups-back" onClick={() => { setSelected(null); onSelectedGroupChange?.(null); setDraft(""); setMessage(""); loadGroups(); }}><ArrowLeft size={15}/> All groups</button>
           <header className="groups-detail-head">
             <span className="groups-symbol"><Users size={25}/></span>
             <div className="groups-detail-text">
