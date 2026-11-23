@@ -55,24 +55,27 @@ export default function AdminDashboard({ onBack }) {
   const load = useCallback(async () => {
     setLoading(true);
     setError("");
+    let authorized = false;
     try {
       // This protected request is the authorization gate; a client role in
       // localStorage must never determine admin access.
       const summary = await api("/api/admin/overview");
+      authorized = true;
       setAllowed(true);
+      setCounts(summary.counts || {});
       const [providerData, verificationData, supportData, historyData] = await Promise.all([
         api("/api/provider-applications/admin/pending"),
         api("/api/verification/admin/pending"),
         api("/api/public/contact/admin/inbox"),
         api("/api/provider-applications/admin/recent"),
       ]);
-      setCounts(summary.counts || {});
       setProviderQueue(providerData.applications || []);
       setVerificationQueue(verificationData.requests || []);
       setSupport(supportData.messages || []);
       setHistory(historyData.applications || []);
     } catch (cause) {
-      setAllowed(false);
+      // Secondary data failure should not be presented as revoked admin access.
+      setAllowed(authorized);
       setError(cause.message || "Could not load admin dashboard.");
     } finally {
       setLoading(false);
