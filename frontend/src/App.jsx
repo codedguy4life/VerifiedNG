@@ -593,7 +593,7 @@ export default function App() {
     "/terms": "terms", "/contact": "contact",
   };
   if (!resetMode && publicInfo[path]) return <PublicSite page={publicInfo[path]} loggedIn={Boolean(token)} theme={theme} onThemeChange={changeTheme} />;
-  if (!resetMode && !token && (path === "/" || path === "/app")) return <PublicSite page="home" theme={theme} onThemeChange={changeTheme} />;
+  if (!resetMode && !token && (path === "/" || (path === "/app" && !window.location.search))) return <PublicSite page="home" theme={theme} onThemeChange={changeTheme} />;
   if (!resetMode && !token && path === "/become-a-provider") return <PublicSite page="become-a-provider" theme={theme} onThemeChange={changeTheme} />;
   if (!token || resetMode) {
     return <AuthGate theme={theme} onThemeChange={changeTheme} onAuthenticated={onAuthenticated} onResetFinished={() => {
@@ -785,6 +785,7 @@ export default function App() {
               initialShowInbox={saleInboxRequested}
               onUnreadChange={refreshUnreadSale}
               onInboxClose={() => setSaleInboxRequested(false)}
+              onInboxChange={setSaleInboxRequested}
               initialListingId={recommendedItem?.type === "sale" ? recommendedItem._id : null}
               onSelectedListingChange={(id) => setRecommendedItem(id ? { type: "sale", _id: id } : null)}
               onEditProfile={() => {
