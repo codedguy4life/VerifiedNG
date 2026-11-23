@@ -21,7 +21,7 @@ const formatAge = (value) => {
   return days < 7 ? days + "d ago" : new Date(value).toLocaleDateString("en-NG", { day: "numeric", month: "short" });
 };
 
-export default function ForSalePage({ user, onEditProfile, onUnreadChange, onInboxClose, initialListingId = null, initialShowInbox = false }) {
+export default function ForSalePage({ user, onEditProfile, onUnreadChange, onInboxClose, onInboxChange, onSelectedListingChange, initialListingId = null, initialShowInbox = false }) {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("");
   const [subcategory, setSubcategory] = useState("");
@@ -44,7 +44,7 @@ export default function ForSalePage({ user, onEditProfile, onUnreadChange, onInb
   const [selected, setSelected] = useState(null);
   const [actionBusy, setActionBusy] = useState(false);
   const [inboxOpen, setInboxOpen] = useState(initialShowInbox);
-  useEffect(() => { if (initialShowInbox) setInboxOpen(true); }, [initialShowInbox]);
+  useEffect(() => { setInboxOpen(initialShowInbox); }, [initialShowInbox]);
   const [initialThreadId, setInitialThreadId] = useState(null);
   const [contactOpen, setContactOpen] = useState(false);
   const [contactDraft, setContactDraft] = useState("");
@@ -54,13 +54,19 @@ export default function ForSalePage({ user, onEditProfile, onUnreadChange, onInb
   const [notice, setNotice] = useState("");
 
   useEffect(() => {
-    if (!initialListingId) return;
+    if (!initialListingId) { setSelected(null); return; }
+    if (String(selected?._id || "") === String(initialListingId)) return;
     let active = true;
     api("/api/sales/" + encodeURIComponent(initialListingId))
       .then((result) => { if (active) setSelected(result.item); })
-      .catch((cause) => { if (active) setError(cause.message || "Recommended listing is not available."); });
+      .catch((cause) => { if (active) setError(cause.message || "Selected listing is not available."); });
     return () => { active = false; };
   }, [initialListingId]);
+
+  function selectListing(item) {
+    setSelected(item);
+    onSelectedListingChange?.(item?._id || null);
+  }
 
   useEffect(() => {
     let active = true;
@@ -146,8 +152,8 @@ export default function ForSalePage({ user, onEditProfile, onUnreadChange, onInb
       const result = await api("/api/sales/" + encodeURIComponent(selected._id) + "/inquiries", {
         method: "POST", body: JSON.stringify({ message: contactDraft.trim() }),
       });
-      setContactDraft(""); setContactOpen(false); setSelected(null);
-      setInitialThreadId(result.threadId); setInboxOpen(true);
+      setContactDraft(""); setContactOpen(false); selectListing(null);
+      setInitialThreadId(result.threadId); setInboxOpen(true); onInboxChange?.(true);
       setNotice("Message sent to seller. You can continue the conversation in Messages.");
     } catch (cause) { setError(cause.message || "Could not message seller."); }
     finally { setActionBusy(false); }
@@ -161,7 +167,7 @@ export default function ForSalePage({ user, onEditProfile, onUnreadChange, onInb
         method: "POST", body: JSON.stringify({ reason: reportReason, details: reportDetails.trim() }),
       });
       setNotice(result.message || "Report submitted.");
-      setSelected(null); setReportOpen(false); setReportDetails("");
+      selectListing(null); setReportOpen(false); setReportDetails("");
     } catch (cause) { setError(cause.message || "Could not report listing."); }
     finally { setActionBusy(false); }
   }
@@ -173,7 +179,7 @@ export default function ForSalePage({ user, onEditProfile, onUnreadChange, onInb
       await api("/api/sales/" + encodeURIComponent(item._id) + "/status", {
         method: "PATCH", body: JSON.stringify({ status: "sold" }),
       });
-      setSelected(null);
+      selectListing(null);
       setPage(1);
       setReload((n) => n + 1);
     } catch (cause) {
@@ -193,7 +199,7 @@ export default function ForSalePage({ user, onEditProfile, onUnreadChange, onInb
           <span className="sr-only">Search all listings</span>
           <input type="search" maxLength={80} value={query} onChange={(event) => resetPage(() => setQuery(event.target.value))} placeholder="Search all listings" />
         </label>
-        <button className="marketplace-messages" type="button" aria-label="Marketplace messages" onClick={() => { setInitialThreadId(null); setInboxOpen(true); }}><MessageCircle size={17} /> <span>Messages</span></button>
+        <button className="marketplace-messages" type="button" aria-label="Marketplace messages" onClick={() => { setInitialThreadId(null); setInboxOpen(true); onInboxChange?.(true); }}><MessageCircle size={17} /> <span>Messages</span></button>
         <button className="marketplace-sell" type="button" onClick={() => setShowCreate(true)}><Plus size={17} /> <span>Sell</span></button>
       </div>
 
@@ -260,7 +266,7 @@ export default function ForSalePage({ user, onEditProfile, onUnreadChange, onInb
       {items.length > 0 && (
         <div className="marketplace-grid">
           {items.map((item) => (
-            <button key={item._id} type="button" className="marketplace-card" onClick={() => { setSelected(item); setContactOpen(false); setReportOpen(false); setError(""); }}>
+            <button key={item._id} type="button" className="marketplace-card" onClick={() => { selectListing(item); setContactOpen(false); setReportOpen(false); setError(""); }}>
               <span className="marketplace-card-media">
                 {item.imageUrl ? <img src={item.imageUrl} loading="lazy" alt={item.title} /> : <PackageOpen size={31} />}
                 {Number(item.price) === 0 && <span className="marketplace-free-tag">FREE</span>}
@@ -286,9 +292,9 @@ export default function ForSalePage({ user, onEditProfile, onUnreadChange, onInb
       {hasMore && !loading && <button type="button" className="marketplace-loadmore" onClick={() => setPage((value) => value + 1)}>Load more <ArrowRight size={15} /></button>}
 
       {selected && createPortal(
-        <div className="marketplace-dialog" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelected(null); }}>
+        <div className="marketplace-dialog" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) selectListing(null); }}>
           <section role="dialog" aria-modal="true" aria-labelledby="marketplace-detail-title" className="marketplace-detail">
-            <button type="button" className="marketplace-close" aria-label="Close details" onClick={() => setSelected(null)}><X size={19} /></button>
+            <button type="button" className="marketplace-close" aria-label="Close details" onClick={() => selectListing(null)}><X size={19} /></button>
             <div className="marketplace-detail-photo">{selected.imageUrl ? <img src={selected.imageUrl} alt={selected.title} /> : <PackageOpen size={40} />}</div>
             <div className="marketplace-detail-body">
               <strong className="marketplace-price">{moneyLabel(selected.price)}</strong>
@@ -320,7 +326,7 @@ export default function ForSalePage({ user, onEditProfile, onUnreadChange, onInb
         </div>,
         document.body,
       )}
-      {inboxOpen && <SaleConversations user={user} initialThreadId={initialThreadId} onUnreadChange={onUnreadChange} onClose={() => { setInboxOpen(false); onInboxClose?.(); onUnreadChange?.(); }} />}
+      {inboxOpen && <SaleConversations user={user} initialThreadId={initialThreadId} onUnreadChange={onUnreadChange} onClose={() => { setInboxOpen(false); onInboxChange?.(false); onInboxClose?.(); onUnreadChange?.(); }} />}
       {showCreate && createPortal(
         <CreateSaleItem
           categories={categories}
