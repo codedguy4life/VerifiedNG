@@ -168,7 +168,7 @@ export default function App() {
   // navigation only, never an authorization check or permission grant.
   useEffect(() => {
     if (!token || resetMode) return;
-    const pathname = window.location.pathname.replace(/\\/+$/, "") || "/";
+    const pathname = window.location.pathname.replace(/\/+$/, "") || "/";
     if (["/about", "/how-it-works", "/safety", "/privacy", "/terms", "/contact"].includes(pathname)) return;
     if (currentView === "admin" && pathname === "/admin") return; // AdminDashboard manages ?section.
     const target = appUrlFor({
