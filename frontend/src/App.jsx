@@ -33,6 +33,7 @@ import {
   Menu,
 } from "lucide-react";
 import { api, getToken } from "./lib/api.js";
+import { readAppLocation, appUrlFor } from "./lib/navigation.js";
 import { applyTheme, normalizeTheme, readThemePreference, resolveTheme, saveThemePreference, systemPrefersDark, THEME_STORAGE_KEY } from "./lib/theme.js";
 import ThemePicker from "./components/ThemePicker.jsx";
 import ThemeToggleButton from "./components/ThemeToggleButton.jsx";
@@ -80,6 +81,8 @@ function FilledNavIcon({ name }) {
   </svg>;
 }
 
+const initialNavigation = readAppLocation(window.location);
+
 export default function App() {
   const [theme, setTheme] = useState(readThemePreference);
   const [resolvedTheme, setResolvedTheme] = useState(() => resolveTheme(readThemePreference(), systemPrefersDark()));
@@ -114,14 +117,15 @@ export default function App() {
       return null;
     }
   });
-  const [scope, setScope] = useState("for-you");
-  const [activeTab, setActiveTab] = useState("home");
-  const [currentView, setCurrentView] = useState(() => window.location.pathname === "/admin" ? "admin" : window.location.pathname === "/become-a-provider" || new URLSearchParams(window.location.search).get("next") === "provider" ? "provider-apply" : "home");
-  const [notificationFilter, setNotificationFilter] = useState("all");
-  const [recommendedItem, setRecommendedItem] = useState(null);
-  const [selectedProviderId, setSelectedProviderId] = useState(null);
-  const [providerReturnView, setProviderReturnView] = useState("providers");
-  const [saleInboxRequested, setSaleInboxRequested] = useState(false);
+  const [scope, setScope] = useState(initialNavigation.scope);
+  const [activeTab, setActiveTab] = useState(initialNavigation.activeTab);
+  const [currentView, setCurrentView] = useState(initialNavigation.view);
+  const [notificationFilter, setNotificationFilter] = useState(initialNavigation.notificationFilter);
+  const [searchTab, setSearchTab] = useState(initialNavigation.searchTab);
+  const [recommendedItem, setRecommendedItem] = useState(initialNavigation.recommendedItem);
+  const [selectedProviderId, setSelectedProviderId] = useState(initialNavigation.providerId);
+  const [providerReturnView, setProviderReturnView] = useState(initialNavigation.providerReturnView);
+  const [saleInboxRequested, setSaleInboxRequested] = useState(initialNavigation.inbox);
   const [unreadSaleCount, setUnreadSaleCount] = useState(0);
   const [profileDrawerOpen, setProfileDrawerOpen] = useState(false);
   const [profileEditorOpen, setProfileEditorOpen] = useState(false);
@@ -137,6 +141,51 @@ export default function App() {
   const [resetMode, setResetMode] = useState(() => new URLSearchParams(window.location.search).has("reset_token"));
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+
+  // Restore pages when people use Back/Forward instead of leaving React's
+  // temporary state stuck on a different tab.
+  useEffect(() => {
+    const restore = () => {
+      const route = readAppLocation(window.location);
+      setCurrentView(route.view);
+      setActiveTab(route.activeTab);
+      setSelectedProviderId(route.providerId);
+      setProviderReturnView(route.providerReturnView);
+      setRecommendedItem(route.recommendedItem);
+      setSaleInboxRequested(route.inbox);
+      setScope(route.scope);
+      setSearchTab(route.searchTab);
+      setNotificationFilter(route.notificationFilter);
+      setProfileDrawerOpen(false);
+      setMessage("");
+      setError("");
+    };
+    window.addEventListener("popstate", restore);
+    return () => window.removeEventListener("popstate", restore);
+  }, []);
+
+  // A refresh reads the URL, while ordinary clicks write the URL. This is
+  // navigation only, never an authorization check or permission grant.
+  useEffect(() => {
+    if (!token || resetMode) return;
+    const pathname = window.location.pathname.replace(/\/+$/, "") || "/";
+    if (["/about", "/how-it-works", "/safety", "/privacy", "/terms", "/contact"].includes(pathname)) return;
+    if (currentView === "admin" && pathname === "/admin") return; // AdminDashboard manages ?section.
+    const target = appUrlFor({
+      view: currentView,
+      providerId: selectedProviderId,
+      providerReturnView,
+      recommendedItem,
+      inbox: saleInboxRequested,
+      scope,
+      searchTab,
+      notificationFilter,
+    });
+    if (window.location.pathname + window.location.search !== target) {
+      window.history.pushState(null, "", target);
+    }
+  }, [token, resetMode, currentView, selectedProviderId, providerReturnView,
+      recommendedItem, saleInboxRequested, scope, searchTab, notificationFilter]);
 
   const refreshUnreadSale = useCallback(async () => {
     const currentToken = getToken();
@@ -370,13 +419,27 @@ export default function App() {
     setArea(location);
     setScope("for-you");
     setUnreadSaleCount(0);
-    const providerNext = new URLSearchParams(window.location.search).get("next") === "provider" ||
-      window.location.pathname === "/become-a-provider";
-    const dashboardNext = window.location.pathname === "/admin";
-    setCurrentView(dashboardNext ? "admin" : providerNext ? "provider-apply" : "home");
-    setActiveTab("home");
+    const destination = readAppLocation(window.location);
+    setCurrentView(destination.view);
+    setActiveTab(destination.activeTab);
+    setSelectedProviderId(destination.providerId);
+    setProviderReturnView(destination.providerReturnView);
+    setRecommendedItem(destination.recommendedItem);
+    setSaleInboxRequested(destination.inbox);
+    setScope(destination.scope);
+    setSearchTab(destination.searchTab);
+    setNotificationFilter(destination.notificationFilter);
     setError("");
-    window.history.replaceState(null, "", dashboardNext ? "/admin" : "/app");
+    window.history.replaceState(null, "", appUrlFor({
+      view: destination.view,
+      providerId: destination.providerId,
+      providerReturnView: destination.providerReturnView,
+      recommendedItem: destination.recommendedItem,
+      inbox: destination.inbox,
+      scope: destination.scope,
+      searchTab: destination.searchTab,
+      notificationFilter: destination.notificationFilter,
+    }));
   }
   function signOut() {
     localStorage.removeItem("token");
@@ -417,7 +480,6 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
   function chooseTab(id) {
-    if (window.location.pathname === "/admin") window.history.replaceState(null, "", "/app");
     setSaleInboxRequested(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
     setActiveTab(id);
@@ -484,7 +546,6 @@ export default function App() {
       return;
     }
     if (label === "Admin dashboard") {
-      window.history.pushState(null, "", "/admin");
       setCurrentView("admin");
       return;
     }
@@ -500,7 +561,6 @@ export default function App() {
   }
 
   function returnHome() {
-    if (window.location.pathname === "/admin") window.history.replaceState(null, "", "/app");
     setCurrentView("home");
     setActiveTab("home");
     setMessage("");
@@ -533,7 +593,7 @@ export default function App() {
     "/terms": "terms", "/contact": "contact",
   };
   if (!resetMode && publicInfo[path]) return <PublicSite page={publicInfo[path]} loggedIn={Boolean(token)} theme={theme} onThemeChange={changeTheme} />;
-  if (!resetMode && !token && (path === "/" || path === "/app")) return <PublicSite page="home" theme={theme} onThemeChange={changeTheme} />;
+  if (!resetMode && !token && (path === "/" || (path === "/app" && !window.location.search))) return <PublicSite page="home" theme={theme} onThemeChange={changeTheme} />;
   if (!resetMode && !token && path === "/become-a-provider") return <PublicSite page="become-a-provider" theme={theme} onThemeChange={changeTheme} />;
   if (!token || resetMode) {
     return <AuthGate theme={theme} onThemeChange={changeTheme} onAuthenticated={onAuthenticated} onResetFinished={() => {
@@ -691,7 +751,8 @@ export default function App() {
               mode={currentView}
               area={area}
               user={user}
-              initialTab={currentView === "providers" ? "providers" : "all"}
+              initialTab={currentView === "providers" ? "providers" : searchTab}
+              onTabChange={setSearchTab}
               onExplore={(destination, item) => {
                 if (destination === "providers") chooseTab("providers");
                 else if (destination === "sale") {
@@ -724,7 +785,9 @@ export default function App() {
               initialShowInbox={saleInboxRequested}
               onUnreadChange={refreshUnreadSale}
               onInboxClose={() => setSaleInboxRequested(false)}
+              onInboxChange={setSaleInboxRequested}
               initialListingId={recommendedItem?.type === "sale" ? recommendedItem._id : null}
+              onSelectedListingChange={(id) => setRecommendedItem(id ? { type: "sale", _id: id } : null)}
               onEditProfile={() => {
                 setPostingBlocked(false);
                 setProfileEditorOpen(true);
@@ -751,7 +814,7 @@ export default function App() {
             />
           )}
           {currentView === "groups" && (
-            <GroupsPage user={user} initialGroupId={recommendedItem?.type === "groups" ? recommendedItem._id : null} onOpenVerification={() => { setCurrentView("verification"); setMessage(""); }} />
+            <GroupsPage user={user} initialGroupId={recommendedItem?.type === "groups" ? recommendedItem._id : null} onSelectedGroupChange={(id) => setRecommendedItem(id ? { type: "groups", _id: id } : null)} onOpenVerification={() => { setCurrentView("verification"); setMessage(""); }} />
           )}
           {currentView === "verification" && (
             <VerificationPage

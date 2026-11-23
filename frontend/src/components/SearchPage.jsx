@@ -11,7 +11,7 @@ const tabs = [
 const quickSearches = ["Electrician", "Plumber", "Caterer", "Cleaner"];
 const directoryTerms = new Set(["provider", "providers", "povider", "poviders", "service", "services", "all", "everyone"]);
 
-export default function SearchPage({ area = "", user, initialTab = "all", mode = "search", onOpenProvider, onExplore }) {
+export default function SearchPage({ area = "", user, initialTab = "all", mode = "search", onOpenProvider, onExplore, onTabChange }) {
   const isSearchHub = mode === "search";
   const [query, setQuery] = useState("");
   const [tab, setTab] = useState(initialTab);
@@ -124,7 +124,7 @@ export default function SearchPage({ area = "", user, initialTab = "all", mode =
               type="button"
               className={tab === item.id ? "discovery-switch active" : "discovery-switch"}
               aria-pressed={tab === item.id}
-              onClick={() => setTab(item.id)}
+              onClick={() => { setTab(item.id); onTabChange?.(item.id); }}
             >{item.label}</button>
           ))}
         </div>
@@ -183,7 +183,7 @@ export default function SearchPage({ area = "", user, initialTab = "all", mode =
               <p>{directoryEmpty && tab !== "community"
                 ? "This connected VerifiedNG database has no provider accounts at the moment. Search can only display real registered providers."
                 : "Try another service name or remove the location filter. Results only include data currently saved in VerifiedNG."}</p>
-              {hasQuery && <button type="button" className="secondary-button" onClick={() => { setQuery(""); setOnlyArea(false); setTab("providers"); }}>Browse all providers <ArrowRight size={15} /></button>}
+              {hasQuery && <button type="button" className="secondary-button" onClick={() => { setQuery(""); setOnlyArea(false); setTab("providers"); onTabChange?.("providers"); }}>Browse all providers <ArrowRight size={15} /></button>}
               <button type="button" className="discovery-retry" onClick={() => setRefresh((v) => v + 1)}><RefreshCw size={14} /> Retry</button>
             </div>
           )}

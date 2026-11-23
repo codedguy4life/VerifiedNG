@@ -16,6 +16,11 @@ const sections = [
   { id: "history", label: "Review history", icon: Activity },
 ];
 
+function readAdminSection() {
+  const requested = new URLSearchParams(window.location.search).get("section");
+  return sections.some((item) => item.id === requested) ? requested : "overview";
+}
+
 function dateLabel(value) {
   if (!value) return "Date unavailable";
   const date = new Date(value);
@@ -32,7 +37,7 @@ function StatCard({ icon: Icon, label, value, onClick }) {
 }
 
 export default function AdminDashboard({ onBack }) {
-  const [section, setSection] = useState("overview");
+  const [section, setSection] = useState(readAdminSection);
   const [counts, setCounts] = useState(null);
   const [providerQueue, setProviderQueue] = useState([]);
   const [verificationQueue, setVerificationQueue] = useState([]);
@@ -85,6 +90,14 @@ export default function AdminDashboard({ onBack }) {
   useEffect(() => { load(); }, [load]);
 
   useEffect(() => {
+    const restore = () => {
+      if (window.location.pathname === "/admin") setSection(readAdminSection());
+    };
+    window.addEventListener("popstate", restore);
+    return () => window.removeEventListener("popstate", restore);
+  }, []);
+
+  useEffect(() => {
     if (section !== "members" || !allowed) return;
     let cancelled = false;
     setMembersLoading(true);
@@ -101,7 +114,11 @@ export default function AdminDashboard({ onBack }) {
   }, [section, allowed, memberPage, memberSearch]);
 
   function switchSection(next) {
+    if (!sections.some((item) => item.id === next)) return;
     setSection(next);
+    const target = next === "overview" ? "/admin" : "/admin?section=" + encodeURIComponent(next);
+    if (window.location.pathname + window.location.search !== target)
+      window.history.pushState(null, "", target);
     setError("");
     setNotice("");
   }
