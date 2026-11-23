@@ -104,7 +104,7 @@ describe("Public onboarding and manual provider review", () => {
     expect(updated.isVerified).toBe(false);
     expect(updated.category).toBe("Electrical");
     const repeat = await request(app).patch("/api/provider-applications/admin/" + item._id)
-      .set(auth(reviewerToken)).send({ decision: "approved" });
+      .set(auth(reviewerToken)).send({ decision: "approved", reviewerNote: "Previously reviewed and approved." });
     expect(repeat.statusCode).toBe(404);
   });
 
