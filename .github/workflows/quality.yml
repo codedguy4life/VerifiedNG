@@ -27,6 +27,9 @@ jobs:
       - name: Test official logo integration
         working-directory: frontend
         run: npm run test:branding
+      - name: Test refresh and browser navigation
+        working-directory: frontend
+        run: npm run test:navigation
       - name: Build and prerender public pages
         working-directory: frontend
         run: npm run build
