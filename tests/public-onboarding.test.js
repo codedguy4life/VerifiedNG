@@ -154,6 +154,33 @@ describe("Public onboarding and manual provider review", () => {
     )).toBe(true);
   });
 
+  test("admin dashboard is server-restricted and only exposes safe account fields", async () => {
+    const denied = await request(app).get("/api/admin/overview").set(auth(outsiderToken));
+    expect(denied.statusCode).toBe(403);
+    const deniedUsers = await request(app).get("/api/admin/members").set(auth(outsiderToken));
+    expect(deniedUsers.statusCode).toBe(403);
+    const noToken = await request(app).get("/api/admin/overview");
+    expect(noToken.statusCode).toBe(401);
+
+    const summary = await request(app).get("/api/admin/overview").set(auth(reviewerToken));
+    expect(summary.statusCode).toBe(200);
+    expect(summary.body.counts.members).toBeGreaterThanOrEqual(3);
+    expect(summary.body.counts.providers).toBeGreaterThanOrEqual(0);
+    expect(summary.body.counts.providerPending).toBeGreaterThanOrEqual(0);
+    expect(summary.body.counts.verificationPending).toBeGreaterThanOrEqual(0);
+    expect(summary.body.counts.supportOpen).toBeGreaterThanOrEqual(0);
+
+    const directory = await request(app).get("/api/admin/members?q=Public%20applicant")
+      .set(auth(reviewerToken));
+    expect(directory.statusCode).toBe(200);
+    expect(directory.body.users.some((item) => item.email === member.email)).toBe(true);
+    expect(directory.body.users.every((item) => !("password" in item) && !("resetToken" in item))).toBe(true);
+
+    const invalid = await request(app).get("/api/admin/members?q=" + "x".repeat(81))
+      .set(auth(reviewerToken));
+    expect(invalid.statusCode).toBe(400);
+  });
+
   test("public contact messages are accepted and visible only to authorized reviewers", async () => {
     const invalid = await request(app).post("/api/public/contact")
       .send({ name: "A", email: "wrong", topic: "Other", message: "hi" });
