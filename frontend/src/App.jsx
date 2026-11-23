@@ -40,6 +40,7 @@ import AuthGate from "./components/AuthGate.jsx";
 import PublicSite from "./components/PublicSite.jsx";
 import BrandLogo from "./components/BrandLogo.jsx";
 import ProviderApplyPage from "./components/ProviderApplyPage.jsx";
+import AdminDashboard from "./components/AdminDashboard.jsx";
 import "./components/public-site.css";
 import PostComposer from "./components/PostComposer.jsx";
 import ProfileEditor from "./components/ProfileEditor.jsx";
@@ -105,6 +106,7 @@ export default function App() {
     setTheme(next);
   }
   const [token, setToken] = useState(getToken());
+  const [adminAccess, setAdminAccess] = useState(false);
   const [user, setUser] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem("user") || "null");
@@ -114,7 +116,7 @@ export default function App() {
   });
   const [scope, setScope] = useState("for-you");
   const [activeTab, setActiveTab] = useState("home");
-  const [currentView, setCurrentView] = useState(() => window.location.pathname === "/become-a-provider" || new URLSearchParams(window.location.search).get("next") === "provider" ? "provider-apply" : "home");
+  const [currentView, setCurrentView] = useState(() => window.location.pathname === "/admin" ? "admin" : window.location.pathname === "/become-a-provider" || new URLSearchParams(window.location.search).get("next") === "provider" ? "provider-apply" : "home");
   const [notificationFilter, setNotificationFilter] = useState("all");
   const [recommendedItem, setRecommendedItem] = useState(null);
   const [selectedProviderId, setSelectedProviderId] = useState(null);
@@ -216,6 +218,17 @@ export default function App() {
       .catch(() => {
         // Keep the current session and let the normal API requests report auth errors.
       });
+    return () => { active = false; };
+  }, [token]);
+
+  // The menu is visible only after server confirmation. AdminDashboard checks
+  // server permission again; no local state can authorize admin API calls.
+  useEffect(() => {
+    if (!token) { setAdminAccess(false); return undefined; }
+    let active = true;
+    api("/api/admin/overview")
+      .then(() => { if (active) setAdminAccess(true); })
+      .catch(() => { if (active) setAdminAccess(false); });
     return () => { active = false; };
   }, [token]);
 
@@ -359,10 +372,11 @@ export default function App() {
     setUnreadSaleCount(0);
     const providerNext = new URLSearchParams(window.location.search).get("next") === "provider" ||
       window.location.pathname === "/become-a-provider";
-    setCurrentView(providerNext ? "provider-apply" : "home");
+    const dashboardNext = window.location.pathname === "/admin";
+    setCurrentView(dashboardNext ? "admin" : providerNext ? "provider-apply" : "home");
     setActiveTab("home");
     setError("");
-    window.history.replaceState(null, "", "/app");
+    window.history.replaceState(null, "", dashboardNext ? "/admin" : "/app");
   }
   function signOut() {
     localStorage.removeItem("token");
@@ -403,6 +417,7 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
   function chooseTab(id) {
+    if (window.location.pathname === "/admin") window.history.replaceState(null, "", "/app");
     setSaleInboxRequested(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
     setActiveTab(id);
@@ -468,6 +483,11 @@ export default function App() {
       setProfileEditorOpen(true);
       return;
     }
+    if (label === "Admin dashboard") {
+      window.history.pushState(null, "", "/admin");
+      setCurrentView("admin");
+      return;
+    }
     if (label === "Become a provider") {
       setCurrentView("provider-apply");
       return;
@@ -480,6 +500,7 @@ export default function App() {
   }
 
   function returnHome() {
+    if (window.location.pathname === "/admin") window.history.replaceState(null, "", "/app");
     setCurrentView("home");
     setActiveTab("home");
     setMessage("");
@@ -521,6 +542,7 @@ export default function App() {
       signOut();
     }}/>;
   }
+  if (currentView === "admin") return <div className="app-shell"><AdminDashboard onBack={returnHome}/></div>;
 
   return (
     <div className="app-shell">
@@ -1144,6 +1166,9 @@ export default function App() {
               <ThemeToggleButton resolvedTheme={resolvedTheme} onChange={changeTheme} />
             </div>
             <div className="drawer-primary-links">
+              {adminAccess && <button type="button" onClick={() => openProfileItem("Admin dashboard")}>
+                <ShieldCheck size={18}/><span>Admin dashboard</span><ArrowRight size={15}/>
+              </button>}
               <button
                 type="button"
                 onClick={() => openProfileItem("Become a provider")}
