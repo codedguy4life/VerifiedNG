@@ -79,19 +79,20 @@ In the existing VerifiedNG Vercel project:
 
 1. Check Git integration points to `codedguy4life/VerifiedNG`, root
    directory is `frontend`, and **Production Branch is main**.
-2. Add an environment variable:
+2. Under **Environment Variables**, enable **access to System Environment Variables** so `VERCEL_ENV` is available during builds. The preview guard needs this setting; an additional runtime guard blocks the usual `*.vercel.app` preview URLs if it is absent.
+3. Add an environment variable:
    - Name: `VITE_API_BASE_URL`
    - Environment: **Preview only**, not Production
    - Value: actual staging Render HTTPS origin, e.g.
      `https://verifiedng-staging-api.onrender.com` **only if that is your
      actual new service's URL**; no trailing slash.
-3. Redeploy the affected Preview after saving the setting.
-4. Open the preview URL created for a PR from the Vercel dashboard or PR checks.
-5. Open browser DevTools → Network. Verify `/api/...` requests go to
+4. Redeploy the affected Preview after saving the setting.
+5. Open the preview URL created for a PR from the Vercel dashboard or PR checks.
+6. Open browser DevTools → Network. Verify `/api/...` requests go to
    the STAGING Render service and never the production URL.
-6. Create a dummy account, submit a provider application, and confirm the
+7. Create a dummy account, submit a provider application, and confirm the
    new records exist **only** in the staging MongoDB database.
-7. Refresh a non-home tab and test mobile layout, browser Back/Forward,
+8. Refresh a non-home tab and test mobile layout, browser Back/Forward,
    logout, login and role restrictions.
 
 Without the Preview API variable, the frontend Vercel preview build will
