@@ -4,8 +4,14 @@ on:
   push:
     branches:
       - main
-      - feature/community-home-redesign
   pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quality-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   frontend-build:
@@ -30,6 +36,9 @@ jobs:
       - name: Test refresh and browser navigation
         working-directory: frontend
         run: npm run test:navigation
+      - name: Test safe Vercel preview settings
+        working-directory: frontend
+        run: npm run test:preview
       - name: Build and prerender public pages
         working-directory: frontend
         run: npm run build
