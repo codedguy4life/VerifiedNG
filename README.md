@@ -1,5 +1,12 @@
 # VerifiedNG
 
+## Developing safely
+
+**Use feature branches and Pull Requests; do not push directly to `main`.**
+The step-by-step guide is in [docs/DEVELOPMENT-WORKFLOW.md](docs/DEVELOPMENT-WORKFLOW.md).
+To set up isolated testing on Vercel, Render and MongoDB, see
+[docs/STAGING-SETUP.md](docs/STAGING-SETUP.md).
+
 VerifiedNG is a Nigerian local-services marketplace connecting customers with verified service providers.
 
 ## Requirements
