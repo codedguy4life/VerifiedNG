@@ -3,7 +3,11 @@
 const PROD_API_HOSTS = new Set(["verifiedng-backend.onrender.com"]);
 
 export function validatePreviewApiEnvironment(env) {
-  if (env.VERCEL_ENV !== "preview") return;
+  const mode = env.VERCEL_ENV || env.VERCEL_TARGET_ENV;
+  if (env.VERCEL === "1" && !mode) {
+    throw new Error("Vercel environment not identified. Enable access to System Environment Variables in the Vercel project's Environment Variables settings.");
+  }
+  if (mode !== "preview") return;
   const value = String(env.VITE_API_BASE_URL || "").trim();
   if (!value) {
     throw new Error(
