@@ -1,0 +1,64 @@
+/* The original user-supplied PNG is never cropped or stretched. */
+.vng-brand { display: inline-flex; align-items: center; gap: 9px; max-width: 100%; min-width: 0; vertical-align: middle; white-space: nowrap; text-decoration: none; line-height: 1; }
+.vng-brand-art { flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; width: 37px; height: 37px; min-width: 0; border-radius: 9px; overflow: hidden; }
+.vng-brand-art img { width: 100%; height: 100%; display: block; object-fit: contain; object-position: center; }
+.vng-brand-name { display: inline-flex; gap: 0; align-items: baseline; font: 800 22px/1 "Syne",sans-serif; letter-spacing: -.7px; color: var(--ink,#17221c); }
+.vng-brand-name span { color: var(--green,#087443); }
+.vng-brand-tagline { color: var(--muted,#68756e); font: 700 8px/1.2 "DM Sans",sans-serif; letter-spacing: 1.1px; margin-left: 2px; }
+.vng-brand-wide .vng-brand-art { width: clamp(122px,15vw,185px); height: 45px; border-radius: 0; overflow: visible; }
+.vng-brand-light .vng-brand-name { color: #f2fbf5; }
+.vng-brand-light .vng-brand-name span { color: #81e8ab; }
+:root[data-theme="dark"] .vng-brand-name { color: #edf6ef; }
+:root[data-theme="dark"] .vng-brand-name span { color: #81e8ab; }
+
+/* Public navigation, illustrative preview, footer. */
+.public-site .public-brand { display:inline-flex; align-items:center; font-size:inherit; gap: 8px; }
+.public-site .public-brand .vng-brand-name { font: 800 23px/1 "Syne",sans-serif; letter-spacing:-.8px; color:var(--p-dark,#17221c); }
+.public-site .public-brand .vng-brand-name span { color: var(--p-green,#087443); }
+.public-site .public-brand-light .vng-brand-name { color:#fff; }
+.public-site .public-brand-light .vng-brand-name span { color:#81e8ab; }
+.public-site .public-preview-top .vng-brand-art { height:29px; width:29px; }
+.public-site .public-preview-top .vng-brand-name { font-size:17px; }
+.public-site .public-preview-top .vng-brand-wide .vng-brand-art { width:118px; height:30px; }
+:root[data-theme="dark"] .public-site .public-brand .vng-brand-name { color: #eaf4ec; }
+:root[data-theme="dark"] .public-site .public-brand .vng-brand-name span { color: #8febaf; }
+
+/* Signed-in app header (keep the existing header height). */
+.topbar .brand { display:inline-flex; align-items:center; min-width:0; max-width:calc(100vw - 195px); }
+.topbar .brand .vng-brand-name { font-size:20px; color:var(--ink); }
+.topbar .brand .vng-brand-name span { color:var(--green); }
+.topbar .brand .vng-brand-tagline { color:var(--muted); display:inline-block; }
+.topbar .brand .vng-brand-wide .vng-brand-art { width:clamp(120px,14vw,167px); height:42px; }
+:root[data-theme="dark"] .topbar .brand .vng-brand-name { color:#eaf5ed; }
+
+/* Account pages: logo remains legible on the green illustration and light card. */
+.auth-entry .auth-entry-brand { display:inline-flex; align-items:center; width:max-content; max-width:100%; }
+.auth-entry .auth-entry-brand.auth-entry-mobile { display:none; }
+.auth-entry .auth-entry-brand .vng-brand-name { font-size:23px; color:white; }
+.auth-entry .auth-entry-brand .vng-brand-name span { color:#aef1cd; }
+.auth-entry .auth-entry-mobile .vng-brand-name { color:var(--ink); }
+.auth-entry .auth-entry-mobile .vng-brand-name span { color:var(--green); }
+.auth-entry .auth-entry-brand .vng-brand-wide .vng-brand-art { width:min(178px,48vw); height:47px; }
+:root[data-theme="dark"] .auth-entry .auth-entry-mobile .vng-brand-name { color:#edf6ef; }
+
+/* Small neutral art tiles help the original logo remain visible on both themes.
+   They do not affect the image pixels or add white controls to the page. */
+.vng-brand-symbol-layout .vng-brand-art { background:#f4f8f5; padding:2px; }
+:root[data-theme="dark"] .vng-brand-symbol-layout .vng-brand-art { background:#e8f1e9; }
+.public-footer .vng-brand-symbol-layout .vng-brand-art,
+.auth-entry-hero .vng-brand-symbol-layout .vng-brand-art { background: #edf6ee; }
+.public-showcase-frame .vng-brand-art { width:25px; height:25px; }
+.public-showcase-frame .vng-brand-name { font-size:13px; }
+.public-showcase-frame .vng-brand-wide .vng-brand-art { width:110px; height:28px; }
+@media(max-width:850px){
+ .auth-entry .auth-entry-brand.auth-entry-mobile { display:inline-flex; }
+}
+@media(max-width:600px){
+ .vng-brand { gap:7px; }
+ .vng-brand-art { width:32px; height:32px; border-radius:8px; }
+ .topbar .brand .vng-brand-name { font-size:17px; }
+ .topbar .brand .vng-brand-tagline { display:none; }
+ .topbar .brand .vng-brand-wide .vng-brand-art { width:124px; height:36px; }
+ .public-site .public-brand .vng-brand-name { font-size:20px; }
+ .public-site .vng-brand-wide .vng-brand-art { width:133px; height:36px; }
+}

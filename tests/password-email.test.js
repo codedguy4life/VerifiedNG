@@ -49,7 +49,7 @@ describe("Password recovery email delivery", () => {
     expect(options.headers.Authorization).toBe("Bearer resend-test-key");
     const emailBody = JSON.parse(options.body);
     expect(emailBody.to).toEqual([user.email]);
-    expect(emailBody.html).toContain("https://verifiedng.site/?reset_token=");
+    expect(emailBody.html).toContain("https://verifiedng.site/reset-password?reset_token=");
     const stored = await User.findById(user._id);
     expect(stored.resetToken).toMatch(/^[0-9a-f]{64}$/);
     expect(emailBody.html).not.toContain(stored.resetToken);

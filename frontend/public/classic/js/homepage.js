@@ -1,0 +1,6 @@
+// Search and navigation for the restored classic landing page.
+function goToSearch(service="",location=""){const p=new URLSearchParams({view:"search",tab:"providers"});if(service.trim())p.set("service",service.trim().slice(0,80));if(location.trim())p.set("location",location.trim().slice(0,80));window.location.assign("/app?"+p);}
+function handleNavSearch(){goToSearch(document.getElementById("navServiceInput")?.value||"");}
+function handleSearch(){goToSearch(document.getElementById("serviceInput")?.value||"",document.getElementById("locationInput")?.value||"");}
+function goToProviderSignup(){window.location.assign(localStorage.getItem("token")?"/app?view=provider-apply":"/become-a-provider");}
+document.addEventListener("DOMContentLoaded",()=>{for(const [id,fn] of [["navServiceInput",handleNavSearch],["serviceInput",handleSearch],["locationInput",handleSearch]])document.getElementById(id)?.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();fn();}});const nav=document.querySelector(".nav-actions");if(nav&&localStorage.getItem("token")){nav.replaceChildren();const a=document.createElement("a");a.className="btn-primary";a.href="/app";a.textContent="Go to Community";nav.append(a);}});

@@ -11,7 +11,7 @@ function PreviewFrame({ label, children, className = "" }) {
     <div className={"public-showcase-frame " + className} aria-label={label}>
       <div className="public-showcase-frame-head">
         <BrandLogo className="public-showcase-mini-logo" />
-        <span className="public-showcase-demo-label">Example preview</span>
+        <span className="public-showcase-demo-label">Example screen</span>
       </div>
       {children}
     </div>
@@ -69,11 +69,11 @@ function SalePreview() {
       <div className="public-showcase-sale-grid">
         <div className="public-showcase-sale-item">
           <div className="public-showcase-sale-photo"><Armchair size={44}/></div>
-          <div><strong>Furniture</strong><small>Example listing</small></div>
+          <div><strong>Furniture</strong><small>Example item</small></div>
         </div>
         <div className="public-showcase-sale-item">
           <div className="public-showcase-sale-photo alt"><LampDesk size={44}/></div>
-          <div><strong>Home items</strong><small>Example listing</small></div>
+          <div><strong>Home items</strong><small>Example item</small></div>
         </div>
       </div>
       <div className="public-showcase-sale-bottom"><MessageCircle size={16}/> Chat directly with sellers on VerifiedNG</div>
@@ -85,23 +85,23 @@ const sections = [
     id: "feed",
     eyebrow: "COMMUNITY POSTS",
     title: "See what's happening.",
-    description: "Read posts from across Nigeria. Use the area filter when you want local updates.",
+    description: "See what people are talking about across Nigeria. Want posts closer to home? Choose your area.",
     action: "Join the conversation",
     Visual: FeedPreview,
   },
   {
     id: "services",
     eyebrow: "FIND SERVICES",
-    title: "Find the right person.",
-    description: "Search by service or location. Check profiles and message providers before hiring.",
+    title: "Need help? Find someone nearby.",
+    description: "Looking for an electrician, tutor or another service? Search by skill or area, check profiles and ask questions.",
     action: "Explore services",
     Visual: ServicesPreview,
   },
   {
     id: "sale",
     eyebrow: "BUY & SELL",
-    title: "Find it. Sell it. Chat.",
-    description: "Browse listings, post your items and chat with buyers or sellers.",
+    title: "Buy, sell and chat.",
+    description: "See things for sale, post what you want to sell and chat with buyers or sellers.",
     action: "Explore For Sale",
     Visual: SalePreview,
   },
@@ -114,7 +114,7 @@ export default function PublicShowcase({ loggedIn = false }) {
         <div className="public-showcase-heading">
           <span className="public-eyebrow">WHAT YOU CAN DO</span>
           <h2>More ways to connect.</h2>
-          <p>Find people, share updates and discover what's around you.</p>
+          <p>See what's happening, find useful services and connect with people.</p>
         </div>
         <div className="public-showcase-stack">
           {sections.map(({ id, eyebrow, title, description, action, Visual }, index) => (
@@ -131,7 +131,7 @@ export default function PublicShowcase({ loggedIn = false }) {
         </div>
         <div className="public-showcase-groups">
           <div className="public-showcase-groups-icon"><Users size={24}/></div>
-          <div><strong>Find your people in Groups.</strong><p>Join conversations about your interests and your area.</p></div>
+          <div><strong>Meet people in Groups.</strong><p>Find groups for your interests or area. You'll need a verified account to join.</p></div>
           <a href={href}>Explore Groups <ArrowRight size={16}/></a>
         </div>
       </div>

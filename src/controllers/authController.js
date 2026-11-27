@@ -47,6 +47,14 @@ const createAccount = async (req, res, role) => {
       return res.status(400).json({ message: "Some account details are too long" });
     }
 
+    const hasReference = Boolean(voucherName || voucherPhone);
+    if (hasReference && (typeof voucherName !== "string" || !voucherName.trim() ||
+        typeof voucherPhone !== "string" || !voucherPhone.trim() ||
+        voucherName.length > 100 || voucherPhone.length > 30 ||
+        req.body.referenceConsent !== true)) {
+      return res.status(400).json({ message: "Please check your reference details and confirm they agreed to be contacted." });
+    }
+
     const cleanEmail = email.trim().toLowerCase();
     const cleanPhone = phone.trim();
 
@@ -81,6 +89,7 @@ const createAccount = async (req, res, role) => {
       city: city || "",
       voucherName: voucherName || "",
       voucherPhone: voucherPhone || "",
+      referenceConsentAt: hasReference ? new Date() : null,
       profilePhoto: profilePhoto || "",
       availability: availability || "offline",
       experienceYears: Number(experienceYears) || 0,
@@ -262,9 +271,9 @@ const forgotPassword = async (req, res) => {
       resetTokenExpiry,
     });
 
-    // Reset links use the React website root. The query opens the in-app form.
+    // The classic homepage is static; send password resets to the React account route.
     const frontendUrl = (process.env.RESET_FRONTEND_URL || "https://verifiedng.site").replace(/[/]$/, "");
-    const resetLink = frontendUrl + "/?reset_token=" + encodeURIComponent(resetToken) + "&email=" + encodeURIComponent(cleanEmail);
+    const resetLink = frontendUrl + "/reset-password?reset_token=" + encodeURIComponent(resetToken) + "&email=" + encodeURIComponent(cleanEmail);
 
     try {
       await sendPasswordResetEmail({ recipient: cleanEmail, resetLink });
