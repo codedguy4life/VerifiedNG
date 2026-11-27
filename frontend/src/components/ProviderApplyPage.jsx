@@ -5,7 +5,7 @@ import "./provider-apply.css";
 
 const empty = { category: "", bio: "", skills: "", experienceYears: "0", state: "", city: "" };
 
-export default function ProviderApplyPage({ user, onBack, onUpdated }) {
+export default function ProviderApplyPage({ user, onBack, onUpdated, onViewProfile }) {
   const [form, setForm] = useState(() => ({ ...empty, state: user?.state || "", city: user?.city || "" }));
   const [confirm, setConfirm] = useState(false);
   const [application, setApplication] = useState(null);
@@ -112,13 +112,14 @@ export default function ProviderApplyPage({ user, onBack, onUpdated }) {
 
   return <div className="provider-apply-page">
     <button type="button" className="provider-apply-back" onClick={onBack}><ArrowLeft size={16}/> Back to Home</button>
-    <header className="provider-apply-heading"><span className="provider-apply-icon"><Wrench size={24}/></span><div><span className="provider-apply-eyebrow">VERIFIEDNG PROFESSIONALS</span><h1>Become a provider</h1><p>Show your skills to your community. Your application is reviewed before provider status is granted.</p></div></header>
+    <header className="provider-apply-heading"><span className="provider-apply-icon"><Wrench size={24}/></span><div><span className="provider-apply-eyebrow">VERIFIEDNG PROFESSIONALS</span><h1>{isProvider ? "You’re now a Provider!" : "Become a provider"}</h1><p>{isProvider ? "Your application has been approved. People can now find your professional profile on VerifiedNG." : "Tell us about your skills. Our team reviews your application before you become a provider."}</p></div></header>
     {loading && <p className="provider-apply-notice" role="status">Checking your provider application…</p>}
     {error && <p className="provider-apply-error" role="alert">{error}</p>}
     {notice && <p className="provider-apply-success" role="status"><CheckCircle2 size={17}/>{notice}</p>}
     {!loading && isProvider && <section className="provider-apply-status"><BadgeCheck size={27}/><div><h2>Your account has provider access</h2><p>Approved — your provider role is now active. You can appear in service searches and use provider features. Provider status is separate from community verification. {isVerified ? "Your account is also a verified member." : "You can request community verification separately."}</p>
       {application?.reviewedAt && <small>Reviewed {new Date(application.reviewedAt).toLocaleDateString("en-NG")}</small>}
-      {application?.reviewerNote && <small>Team note: {application.reviewerNote}</small>}</div></section>}
+      {application?.reviewerNote && <small>Team note: {application.reviewerNote}</small>}
+      {onViewProfile && <button className="provider-apply-view-profile" type="button" onClick={onViewProfile}>View my provider profile <ArrowRight size={16}/></button>}</div></section>}
     {!loading && !isProvider && application?.status === "pending" && <section className="provider-apply-status pending"><Clock3 size={27}/><div><h2>Your application is under review</h2><p>We received your application for <strong>{application.category}</strong>. A VerifiedNG reviewer must check it and decide whether to approve or decline it. You can continue using the community while you wait.</p><small>Submitted {new Date(application.createdAt).toLocaleDateString("en-NG")}</small></div></section>}
     {!loading && !isProvider && application?.status === "approved" && <section className="provider-apply-status"><CheckCircle2 size={27}/><div><h2>Your application was approved</h2><p>Refresh your profile or sign in again to see your updated provider access.</p></div></section>}
     {!loading && !isProvider && application?.status !== "pending" && application?.status !== "approved" && <section className="provider-apply-form-card">

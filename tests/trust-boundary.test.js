@@ -82,6 +82,10 @@ describe("Trust boundary", () => {
     expect(detailResponse.body.provider.password).toBeUndefined();
     expect(detailResponse.body.provider.resetToken).toBeUndefined();
     expect(detailResponse.body.provider.resetTokenExpiry).toBeUndefined();
+    expect(detailResponse.body.provider.email).toBeUndefined();
+    expect(detailResponse.body.provider.phone).toBeUndefined();
+    expect(detailResponse.body.provider.voucherPhone).toBeUndefined();
+    expect(detailResponse.body.provider.referenceConsentAt).toBeUndefined();
 
     await User.findByIdAndDelete(provider._id);
   });
