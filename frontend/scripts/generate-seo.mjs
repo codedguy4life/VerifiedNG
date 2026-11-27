@@ -101,6 +101,29 @@ try {
     .replace(/(\s*<script src="\/classic\/js\/homepage\.js"><\/script>)/, '</main></div>$1');
   await saveRoute("/", classicHome);
 
+
+  // Restore old signup layouts without reviving the unsafe legacy provider role grant.
+  const stagingApi = process.env.VITE_API_BASE_URL || "";
+  const formApi = /^https:\/\/[^\s<>"]+$/.test(stagingApi) ? stagingApi : "";
+  for (const [file, pathname, info] of [
+    ["signup-customer.html", "/signup", {title:"Sign Up | VerifiedNG",description:"Create your free VerifiedNG account.",index:false}],
+    ["signup-provider.html", "/become-a-provider", ROUTES["/become-a-provider"]]
+  ]) {
+    let html = await readFile(path.join(distDir, "classic", file), "utf8");
+    html = html.replace("__VERIFIEDNG_API_BASE__", escapeHtml(formApi))
+      .replace(/<title>[^<]*<\/title>/i, "<title>" + escapeHtml(info.title) + "</title>")
+      .replace("</head>", '<meta name="description" content="' + escapeHtml(info.description) + '" />\n' +
+        (info.index ? headFor(pathname, info) : "") + "</head>");
+    if (info.index) {
+      html = html.replace(/<meta name="robots" content="noindex,follow" \/>/, "")
+        .replace("<body>", '<body><div id="root"><main>')
+        .replace(/(\s*<script src="\/classic\/js\/config\.js"><\/script>)/, '</main></div>$1');
+    } else {
+      html = html.replace("<body>", '<body><div id="root"></div>');
+    }
+    await saveRoute(pathname, html);
+  }
+
   const publicUrls = Object.entries(ROUTES).filter(([, info]) => info.index)
     .map(([pathname]) => "  <url><loc>" + escapeHtml(pageUrl(pathname)) + "</loc></url>")
     .join("\n");

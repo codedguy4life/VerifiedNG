@@ -6,9 +6,14 @@ export default defineConfig(() => ({
     name: "restore-classic-home-in-dev",
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
-        if (new URL(req.url || "/", "http://localhost").pathname !== "/") return next();
+        const route = {
+          "/": "/classic/",
+          "/signup": "/classic/signup-customer.html",
+          "/become-a-provider": "/classic/signup-provider.html",
+        }[new URL(req.url || "/", "http://localhost").pathname];
+        if (!route) return next();
         res.statusCode = 302;
-        res.setHeader("Location", "/classic/");
+        res.setHeader("Location", route);
         res.end();
       });
     }
