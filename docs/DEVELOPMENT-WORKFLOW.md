@@ -13,8 +13,8 @@ This is our default workflow for VerifiedNG. **Never change `main` directly.**
 | Production | `main` → Vercel + VerifiedNG-Backend Render | Live members |
 
 **Critical:** A Vercel preview URL is a different frontend, but it is not
-isolated unless it uses an isolated API. Our Preview build now requires an
-explicit `VITE_API_BASE_URL` HTTPS origin other than the known production API.
+isolated unless it uses an isolated API. Our preview runtime guard refuses all API calls from a Vercel PR preview
+unless it has an explicit `VITE_API_BASE_URL` HTTPS origin other than the known production API. Public preview pages still build.
 Still verify the staging API uses a separate database before using it.
 
 ## One-time GitHub setup: protect main
@@ -112,9 +112,8 @@ backend**, configure `VITE_API_BASE_URL` for **Preview only** under
 Vercel → Project → Settings → Environment Variables. Use the exact
 HTTPS origin of your **staging** Render backend, with no trailing slash.
 
-**Do not copy the production Render URL into Preview.** The build
-will reject that known production URL and missing Preview configuration.
-Blocked previews indicate staging is not configured yet.
+**Do not copy the production Render URL into Preview.** The runtime guard will reject that known production URL and missing Preview configuration.
+Preview builds remain available without staging, but authenticated API calls are blocked until staging is configured.
 
 For backend PR changes, deploy those changes to an isolated staging
 backend before testing them; a frontend PR pointed at an older staging

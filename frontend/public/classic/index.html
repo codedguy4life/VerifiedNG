@@ -1,0 +1,678 @@
+<!doctype html>
+<html lang="en">
+  <head><meta name="robots" content="noindex,follow" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      // Old password reset emails used /?reset_token=; keep their links usable.
+      if (new URLSearchParams(window.location.search).has("reset_token")) {
+        window.location.replace("/reset-password" + window.location.search);
+      }
+    </script>
+    <title>VerifiedNG — Trusted Local Services Across Nigeria</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/classic/styles/homepage.css" />
+    <link rel="stylesheet" href="/classic/styles/public-showcase.css" />
+    <link rel="stylesheet" href="/classic/styles/brand-logo.css" />
+    <link rel="stylesheet" href="/classic/styles/homepage-features.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+    />
+  </head>
+
+  <body>
+    <!-- ANNOUNCEMENT BAR --><div class="announcement">We're building a place for Nigerians to connect and help each other. <span>Come and join us.</span></div><!-- NAVIGATION -->
+    <nav>
+      <a href="/" class="logo"
+        >Verified<span>NG</span> <sup>BETA</sup></a
+      >
+      <ul class="nav-links">
+        <li>
+          <div class="service-search">
+            <input
+              type="text"
+              id="navServiceInput"
+              placeholder="Find Services"
+            />
+            <button class="btn-primary" onclick="handleNavSearch()">
+              Find <i class="bi bi-search"></i>
+            </button>
+          </div>
+        </li>
+                <li><button class="btn-ghost" onclick="window.location.href = '/app'">Community</button></li>
+        <li><a class="btn-ghost classic-nav-link" href="#features">See What You Can Do</a></li>
+        <li>
+          <button class="btn-ghost" onclick="goToProviderSignup()">
+            Become a Provider
+          </button>
+        </li>
+        <li>
+          <button
+            class="btn-ghost"
+            onclick="window.location.href = '#how-it-works'"
+          >
+            How It Works
+          </button>
+        </li>
+        <li>
+          <button
+            class="btn-ghost"
+            onclick="window.location.href = '/about'"
+          >
+            About
+          </button>
+        </li>
+      </ul>
+      <div class="nav-actions">
+        <button class="btn-ghost" onclick="window.location.href = '/login'">
+          Log In
+        </button>
+        <button
+          class="btn-primary"
+          onclick="window.location.href = '/signup'"
+        >
+          Sign Up Free
+        </button>
+      </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero" style="padding-top: 80px; padding-bottom: 80px">
+      <div class="hero-bg"></div>
+
+      <div class="hero-text">
+        <div class="hero-badge">
+          <div class="dot"></div>
+          Connecting communities across Nigeria
+        </div>
+
+        <h1>
+          Find <em>People</em>,<br />Services &amp; More<br /><em>Near You</em>
+        </h1>
+
+        <p>
+          Need a plumber? Looking for something to buy? Or want to know what's happening around you? VerifiedNG helps you find people, services and updates in one place.
+        </p>
+
+        <div class="hero-search">
+          <input
+            type="text"
+            id="serviceInput"
+            placeholder="What service do you need? (e.g. Plumber, Tailor)"
+          />
+          <div class="search-divider"></div>
+          <input
+            type="text"
+            id="locationInput"
+            placeholder="Your area (e.g. Ogun, Calabar, Abuja, Lagos ...)"
+          />
+          <button class="btn-primary" onclick="handleSearch()">
+            Find <i class="bi bi-search"></i>
+          </button>
+        </div>
+
+        <div class="classic-hero-shortcuts"><a href="#features"><i class="bi bi-grid-1x2"></i> See how it works</a><a href="/signup"><i class="bi bi-person-plus"></i> Join free</a></div>
+        <div class="hero-stats">
+          <div class="stat">
+            <div class="num">
+              Beta
+            </div>
+            <div class="label">Growing community</div>
+          </div>
+          <div class="stat">
+            <div class="num">
+              Free
+            </div>
+            <div class="label">Free to join</div>
+          </div>
+          <div class="stat">
+            <div class="num">Local</div>
+            <div class="label">Find services</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HIRE CARD 1 -->
+      <div class="homepage-hero-card">
+        <div class="hero-visual">
+          <div class="floating-review">
+            <div class="rev-stars">PROFILE PREVIEW</div>
+            <div class="rev-text">This is just an example. Sign in to see real provider profiles.</div>
+            <div class="rev-name">Example layout</div>
+          </div>
+
+          <div class="hero-card-main">
+            <div
+              class="provider-profile"
+              onclick="window.location.href = '/app?view=providers'"
+            >
+              <div class="avatar green"><i class="bi bi-laptop"></i></div>
+              <button class="provider-info">
+                <h4>Example Web Developer</h4>
+                <div class="role">
+                  Full Stack Website Developer · Lagos, Nigeria
+                </div>
+                <div class="verified-badge">Example profile</div>
+              </button>
+            </div>
+            <div class="provider-details">
+              <div class="detail-box">
+                <div class="d-val">24|7</div>
+                <div class="d-val">Worldwide</div>
+                <div class="d-label">Availability</div>
+              </div>
+              <div class="detail-box">
+                <div class="d-val">—</div>
+                <div class="d-label">Rating</div>
+              </div>
+              <div class="detail-box">
+                <div class="d-val">—</div>
+                <div class="d-label">Jobs Done</div>
+              </div>
+              <div class="detail-box">
+                <div class="d-val">2yr+<sup>+</sup></div>
+                <div class="d-label">Experience</div>
+              </div>
+            </div>
+            <div class="action-row">
+              <button
+                class="btn-hire"
+                onclick="
+                  window.location.href = '/app?view=providers'
+                "
+              >
+                Hire Now
+              </button>
+              <button class="btn-msg" onclick="window.location.href = '/app?view=providers'">
+                <i class="bi bi-chat-dots"></i> Message
+              </button>
+            </div>
+          </div>
+
+          <div class="floating-stat">
+            <div class="fs-num">Demo</div>
+            <div class="fs-label">Example layout</div>
+          </div>
+        </div>
+
+        <!-- HIRE CARD 2 -->
+        <div class="hero-visual">
+          <div class="floating-review">
+            <div class="rev-stars">PROFILE PREVIEW</div>
+            <div class="rev-text">This is just an example. Sign in to see real provider profiles.</div>
+            <div class="rev-name">Example layout</div>
+          </div>
+
+          <div class="hero-card-main">
+            <div
+              class="provider-profile"
+              onclick="window.location.href = '/app?view=providers'"
+            >
+              <div class="avatar green"><i class="bi bi-wrench"></i></div>
+              <button class="provider-info">
+                <h4>Example Local Mechanic</h4>
+                <div class="role">Chief Mechanic · Lagos</div>
+                <div class="verified-badge">Example profile</div>
+              </button>
+            </div>
+            <div class="provider-details">
+              <div class="detail-box">
+                <div class="d-val">24|7</div>
+                <div class="d-label">Availability</div>
+              </div>
+              <div class="detail-box">
+                <div class="d-val">—</div>
+                <div class="d-label">Rating</div>
+              </div>
+              <div class="detail-box">
+                <div class="d-val">—</div>
+                <div class="d-label">Jobs Done</div>
+              </div>
+              <div class="detail-box">
+                <div class="d-val">3yrs<sup>+</sup></div>
+                <div class="d-label">Experience</div>
+              </div>
+            </div>
+            <div class="action-row">
+              <button
+                class="btn-hire"
+                onclick="
+                  window.location.href = '/app?view=providers'
+                "
+              >
+                Hire Now
+              </button>
+              <button class="btn-msg" onclick="window.location.href = '/app?view=providers'">
+                <i class="bi bi-chat-dots"></i> Message
+              </button>
+            </div>
+          </div>
+
+          <div class="floating-stat">
+            <div class="fs-num">Demo</div>
+            <div class="fs-label">Example layout</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TRUST BAR -->
+    <div class="trust-bar">
+      <div class="trust-item">
+        <span class="ti-icon"><i class="bi bi-shield-check"></i></span>
+        <span
+          ><strong>Provider checks</strong> — we review applications before approving provider profiles</span
+        >
+      </div>
+      <div class="trust-divider"></div>
+      <div class="trust-item">
+        <span class="ti-icon"><i class="bi bi-geo-alt-fill"></i></span>
+        <span
+          ><strong>Near or far</strong> — Find people in your
+          <em>area</em> and <em>farther</em> away — we cover every corner of
+          <em>Nigeria</em></span
+        >
+      </div>
+      <div class="trust-divider"></div>
+      <div class="trust-item">
+        <span class="ti-icon"><i class="bi bi-chat-quote"></i></span>
+        <span
+          ><strong>Stay connected</strong> — read posts and talk with people in your area</span
+        >
+      </div>
+      <div class="trust-divider"></div>
+      <div class="trust-item">
+        <span class="ti-icon"><i class="bi bi-lightning-charge"></i></span>
+        <span
+          ><strong>Stay safe</strong> — check details yourself before hiring or meeting anyone</span
+        >
+      </div>
+    </div>
+
+    <section id="app-features" class="classic-features" aria-labelledby="classic-features-heading">
+      <div class="classic-section-inner">
+        <div class="classic-features-head"><div class="section-tag">WHAT YOU CAN DO HERE</div><h2 class="section-title" id="classic-features-heading">There's more to explore.<br />Find what you need, all in one place.</h2><p class="section-sub">Looking for a service, something to buy or people to talk to? Here's what you can do on VerifiedNG. Create a free account to get started.</p></div>
+        <div class="classic-feature-grid"><a class="classic-feature-card" href="/app?view=home"><span class="classic-feature-icon"><i class="bi bi-chat-square-text" aria-hidden="true"></i></span><span class="classic-feature-title">Community Feed <i class="bi bi-arrow-up-right" aria-hidden="true"></i></span><span class="classic-feature-desc">See what people are posting. Share your own updates and join conversations. You can also choose posts from your area.</span><span class="classic-feature-link">View the feed</span></a>
+<a class="classic-feature-card" href="/app?view=providers"><span class="classic-feature-icon"><i class="bi bi-tools" aria-hidden="true"></i></span><span class="classic-feature-title">Find Providers <i class="bi bi-arrow-up-right" aria-hidden="true"></i></span><span class="classic-feature-desc">Need an electrician, plumber, tutor or someone else? Find people who offer those services and check their profiles.</span><span class="classic-feature-link">Browse providers</span></a>
+<a class="classic-feature-card" href="/app?view=sale"><span class="classic-feature-icon"><i class="bi bi-bag" aria-hidden="true"></i></span><span class="classic-feature-title">For Sale <i class="bi bi-arrow-up-right" aria-hidden="true"></i></span><span class="classic-feature-desc">Have something to sell? Or looking for something to buy? Explore listings and chat with buyers or sellers.</span><span class="classic-feature-link">Explore listings</span></a>
+<a class="classic-feature-card" href="/app?view=groups"><span class="classic-feature-icon"><i class="bi bi-people" aria-hidden="true"></i></span><span class="classic-feature-title">Groups <i class="bi bi-arrow-up-right" aria-hidden="true"></i></span><span class="classic-feature-desc">Meet people who share your interests. You'll need a verified account before you can join or post in a group.</span><span class="classic-feature-link">Explore groups</span></a>
+<a class="classic-feature-card" href="/app?view=local-news"><span class="classic-feature-icon"><i class="bi bi-newspaper" aria-hidden="true"></i></span><span class="classic-feature-title">News & Alerts <i class="bi bi-arrow-up-right" aria-hidden="true"></i></span><span class="classic-feature-desc">Check news and important updates from your area or across Nigeria. You can switch locations on the map.</span><span class="classic-feature-link">Read updates</span></a>
+<a class="classic-feature-card" href="/app?view=faves"><span class="classic-feature-icon"><i class="bi bi-heart" aria-hidden="true"></i></span><span class="classic-feature-title">Local Faves <i class="bi bi-arrow-up-right" aria-hidden="true"></i></span><span class="classic-feature-desc">Not sure where to start? Ask a question and get suggestions based on what's available on VerifiedNG.</span><span class="classic-feature-link">Ask a question</span></a></div>
+        <div class="classic-verification-note"><i class="bi bi-shield-check" aria-hidden="true"></i><div><strong>What does verification mean?</strong><p>We review provider applications and member verification requests separately. A badge does not guarantee someone's safety or the quality of their work.</p></div><a href="/app?view=verification">How verification works <i class="bi bi-arrow-right"></i></a></div>
+      </div>
+    </section>
+    <!-- Replaced by the exact PublicShowcase React component during build. -->
+    <!-- PUBLIC SHOWCASE COMPONENT -->
+
+    <!-- CATEGORIES -->
+    <section class="categories">
+      <div class="categories-header">
+        <div>
+          <div class="section-tag">What We Offer</div>
+          <h2 class="section-title">Find the Service<br />You Need</h2>
+          <p class="section-sub">
+            Need help around the house, a tutor or someone to fix something? Start by choosing the service you're looking for.
+          </p>
+        </div>
+        <a href="/app?view=search&tab=providers" class="see-all">See all services →</a>
+      </div>
+
+      <div class="category-grid">
+        <div
+          class="cat-card"
+          onclick="window.location.href = '/app?view=search&tab=providers&service=Electrical'"
+        >
+          <span class="cat-icon"
+            ><i class="bi bi-lightning-charge-fill"></i
+          ></span>
+          <h4>Electrical</h4>
+          <p>Wiring, lights, generators and solar power</p>
+          <span class="cat-count" id="countElectrical">Explore services</span>
+        </div>
+        <div
+          class="cat-card"
+          onclick="window.location.href = '/app?view=search&tab=providers&service=Plumbing'"
+        >
+          <span class="cat-icon"><i class="bi bi-wrench-adjustable"></i></span>
+          <h4>Plumbing</h4>
+          <p>Leaking pipes, water problems and plumbing work</p>
+          <span class="cat-count" id="countPlumbing">Explore services</span>
+        </div>
+        <div
+          class="cat-card"
+          onclick="window.location.href = '/app?view=search&tab=providers&service=Tutoring'"
+        >
+          <span class="cat-icon"><i class="bi bi-book"></i></span>
+          <h4>Private Tutoring</h4>
+          <p>Help with schoolwork, WAEC, JAMB and exams</p>
+          <span class="cat-count" id="countTutoring">Explore services</span>
+        </div>
+        <div
+          class="cat-card"
+          onclick="window.location.href = '/app?view=search&tab=providers&service=Auto Mechanic'"
+        >
+          <span class="cat-icon"><i class="bi bi-car-front"></i></span>
+          <h4>Auto Mechanic</h4>
+          <p>Car repairs, servicing and fault checks</p>
+          <span class="cat-count" id="countMechanic">Explore services</span>
+        </div>
+        <div
+          class="cat-card"
+          onclick="window.location.href = '/app?view=search&tab=providers&service=Cleaning'"
+        >
+          <span class="cat-icon"><i class="bi bi-stars"></i></span>
+          <h4>Cleaning</h4>
+          <p>Home cleaning, deep cleaning and cleaning after building work</p>
+          <span class="cat-count" id="countCleaning">Explore services</span>
+        </div>
+        <div
+          class="cat-card"
+          onclick="window.location.href = '/app?view=search&tab=providers&service=ContentCreator'"
+        >
+          <span class="cat-icon"><i class="bi bi-camera"></i></span>
+          <h4>Photography</h4>
+          <p>Photos for events, weddings and businesses</p>
+          <span class="cat-count" id="countPhotography">Explore services</span>
+        </div>
+        <div
+          class="cat-card"
+          onclick="window.location.href = '/app?view=search&tab=providers&service=Tailoring'"
+        >
+          <span class="cat-icon"><i class="bi bi-scissors"></i></span>
+          <h4>Tailoring</h4>
+          <p>Sewing, clothing repairs and custom outfits</p>
+          <span class="cat-count" id="countTailoring">Explore services</span>
+        </div>
+        <div
+          class="cat-card"
+          onclick="window.location.href = '/app?view=search&tab=providers&service=Catering'"
+        >
+          <span class="cat-icon"><i class="bi bi-cup-hot"></i></span>
+          <h4>Catering & Cooks</h4>
+          <p>Food for events, parties and everyday meals</p>
+          <span class="cat-count" id="countCatering">Explore services</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section id="how-it-works" class="how-it-works">
+      <div class="section-tag">GETTING STARTED</div>
+      <h2 class="section-title">How VerifiedNG Works</h2>
+      <p class="section-sub">
+        It's easy to get started. Here's how it works.
+      </p>
+
+      <div class="how-grid">
+        <div class="steps">
+          <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-content">
+              <h4>Create your free account</h4>
+              <p>
+                Sign up with your details. You can add your area to find things near you, but you don't have to.
+              </p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-content">
+              <h4>Find what you need</h4>
+              <p>
+                Look through posts, services, things for sale, local news and groups. Read the details before you decide.
+              </p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-content">
+              <h4>Talk and connect</h4>
+              <p>
+                Join conversations, share updates and message people about their services or items. Always check the details before meeting.
+              </p>
+            </div>
+          </div>
+          <div class="step step-cta">
+            <div class="step-content">
+              <h4>Do you offer a service?</h4>
+              <p>
+                Tell us what you do, add your skills and send your application. Our team will review it before your provider profile is approved.
+                <button
+                  class="hire-primary"
+                  style="margin-top: 16px"
+                  onclick="goToProviderSignup()"
+                >
+                  Apply as a provider
+                </button>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="how-visual">
+          <div class="phone-mockup">
+            <div class="phone-screen">
+              <div class="phone-header">
+                <div class="ph-label">Example layout</div>
+                <div class="ph-title">Search local services</div>
+              </div>
+              <div class="phone-list">
+                <div class="phone-item">
+                  <div class="pi-avatar" style="background: #e6f9ee">
+                    <i class="bi bi-lightning-charge"></i>
+                  </div>
+                  <div class="pi-info">
+                    <div class="pi-name">Example service</div>
+                    <div class="pi-role">Discover real provider profiles</div>
+                  </div>
+                  <div class="pi-price">₦Talk-Price</div>
+                </div>
+                <div class="phone-item">
+                  <div class="pi-avatar" style="background: #fff8ec">
+                    <i class="bi bi-lightning-charge"></i>
+                  </div>
+                  <div class="pi-info">
+                    <div class="pi-name">Example service</div>
+                    <div class="pi-role">Discover real provider profiles</div>
+                  </div>
+                  <div class="pi-price">₦Talk-Price</div>
+                </div>
+                <div class="phone-item">
+                  <div class="pi-avatar" style="background: #eef3ff">
+                    <i class="bi bi-lightning-charge"></i>
+                  </div>
+                  <div class="pi-info">
+                    <div class="pi-name">Example service</div>
+                    <div class="pi-role">Discover real provider profiles</div>
+                  </div>
+                  <div class="pi-price">₦Talk-Price</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURED PROVIDERS -->
+    <section class="providers">
+      <div class="providers-header">
+        <div>
+          <div class="section-tag">FIND SOMEONE TO HELP</div>
+          <h2 class="section-title">Find Local<br />Service Providers</h2>
+          <p class="section-sub">
+            Looking for someone to help? Check out the service providers on VerifiedNG.
+          </p>
+        </div>
+        <a href="/app?view=search&tab=providers" class="see-all">Find a provider →</a>
+      </div>
+
+      <div class="provider-grid" id="homepageProviders" aria-live="polite">
+        <p class="home-provider-note">Looking for someone to help? <a href="/app?view=providers">Open the provider directory</a> to explore available services.</p>
+      </div>
+    </section>
+
+    <!-- TESTIMONIALS -->
+    <section class="testimonials">
+      <div class="testimonials-header">
+        <div>
+          <div class="section-tag">Platform Features</div>
+          <h2 class="section-title">What You Can Do<br />on VerifiedNG</h2>
+          <p class="section-sub">
+            We're bringing local services, useful updates and community conversations together.
+          </p>
+        </div>
+        <a href="/how-it-works" class="see-all" style="color: rgba(255, 255, 255, 0.5)"
+          >See how it works →</a
+        >
+      </div>
+
+      <div class="testi-grid">
+        <div class="testi-card">
+          <div class="testi-stars">VERIFIEDNG FEATURE</div>
+          <p class="testi-text">Need help with something? Find providers in your area or elsewhere and check their profiles before contacting them.</p>
+          <div class="testi-author">
+            <div class="testi-avatar"><i class="bi bi-person-circle"></i></div>
+            <div class="testi-info">
+              <div class="t-name">VerifiedNG</div>
+              <div class="t-loc">Platform feature</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testi-card featured">
+          <div class="testi-stars">VERIFIEDNG FEATURE</div>
+          <p class="testi-text">Have a skill you want to offer? Fill in your details and send an application. We'll review it before approving your provider profile.</p>
+          <div class="testi-author">
+            <div class="testi-avatar"><i class="bi bi-person-circle"></i></div>
+            <div class="testi-info">
+              <div class="t-name">VerifiedNG</div>
+              <div class="t-loc">Platform feature</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testi-card">
+          <div class="testi-stars">VERIFIEDNG FEATURE</div>
+          <p class="testi-text">See what people are talking about, find groups, check news and browse things for sale.</p>
+          <div class="testi-author">
+            <div class="testi-avatar"><i class="bi bi-person-circle"></i></div>
+            <div class="testi-info">
+              <div class="t-name">VerifiedNG</div>
+              <div class="t-loc">Platform feature</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA SECTION -->
+    <section class="cta-section">
+      <div class="cta-box">
+        <h2>Ready to Give VerifiedNG a Try?</h2>
+        <p>
+          Whether you need a service or you provide one — there's a place for
+          you here.
+        </p>
+        <div class="cta-buttons">
+          <button
+            class="btn-white"
+            onclick="window.location.href = '/app?view=search&tab=providers'"
+          >
+            Find someone to help
+          </button>
+          <button class="btn-outline-white" onclick="goToProviderSignup()">
+            Offer your skills — it's free
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="#" class="logo">Verified<span>NG</span></a>
+          <p>
+            Find people, useful services, local updates and things for sale. Made for communities across Nigeria.
+          </p>
+          <div class="footer-social">
+            <a href="#" class="social-btn1"><i class="bi bi-whatsapp"></i></a>
+            <a href="#" class="social-btn2"><i class="bi bi-twitter-x"></i></a>
+            <a href="#" class="social-btn3"><i class="bi bi-linkedin"></i></a>
+            <a href="#" class="social-btn4"><i class="bi bi-facebook"></i></a>
+            <a href="#" class="social-btn5"><i class="bi bi-tiktok"></i></a>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <h5>For Customers</h5>
+          <ul>
+            <li><a href="/app?view=search&tab=providers">Find Services</a></li>
+            <li><a href="#how-it-works">How It Works</a></li>
+            <li><a href="/app?view=search&tab=providers">Browse Categories</a></li>
+            <li><a href="/safety">Safety Tips</a></li>
+            <li><a href="/app?view=home">Community Feed</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>For Providers</h5>
+          <ul>
+            <li>
+              <a
+                href="#"
+                onclick="
+                  goToProviderSignup();
+                  return false;
+                "
+                >Create a Profile</a
+              >
+            </li>
+            <li>
+              <a
+                href="#"
+                onclick="
+                  goToProviderSignup();
+                  return false;
+                "
+                >Get Verified</a
+              >
+            </li>
+
+            <li><a href="/app?view=provider-apply">Provider Applications</a></li>
+            <li><a href="/app?view=faves">Local Faves</a></li>
+            <li><a href="/app?view=groups">Groups</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Company</h5>
+          <ul>
+            <li><a href="/about">About Us</a></li>
+            <li><a href="/contact">Contact Us</a></li>
+            <li><a href="/safety">Safety Tips</a></li>
+            <li><a href="/app?view=local-news">News &amp; Alerts</a></li>
+            <li><a href="/app?view=sale">For Sale</a></li>
+            <li><a href="/app?view=verification">Verification</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>© 2026 <span>VerifiedNG</span>. Built by Obago in Nigeria.</p>
+        <div class="footer-bottom-links">
+          <a href="/privacy">Privacy Policy</a>
+          <a href="/terms">Terms of Service</a>
+          <a href="#">Cookie Policy</a>
+        </div>
+      </div>
+    </footer>
+
+    <script src="/classic/js/homepage.js"></script>
+  </body>
+</html>

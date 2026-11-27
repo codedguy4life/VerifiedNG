@@ -10,8 +10,7 @@
     "test:theme": "node --test tests/theme.test.mjs",
     "test:branding": "node --test tests/branding.test.mjs",
     "test:seo": "node --test tests/seo.test.mjs",
-    "test:navigation": "node --test tests/navigation.test.mjs",
-    "test:preview": "node --test tests/preview-env.test.mjs"
+    "test:navigation": "node --test tests/navigation.test.mjs"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",

@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const User = require("../models/user");
 
 const publicProviderFields =
-  "_id fullName category rating reviewCount jobs experienceYears city state availability skills bio price per isVerified createdAt";
+  "_id fullName profilePhoto category rating reviewCount jobs experienceYears city state availability skills bio price per isVerified createdAt";
 
 const escapeRegex = (value) =>
   String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");

@@ -127,6 +127,7 @@ export default function App() {
   const [providerReturnView, setProviderReturnView] = useState(initialNavigation.providerReturnView);
   const [saleInboxRequested, setSaleInboxRequested] = useState(initialNavigation.inbox);
   const [unreadSaleCount, setUnreadSaleCount] = useState(0);
+  const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
   const [profileDrawerOpen, setProfileDrawerOpen] = useState(false);
   const [profileEditorOpen, setProfileEditorOpen] = useState(false);
   const [postingBlocked, setPostingBlocked] = useState(false);
@@ -209,6 +210,30 @@ export default function App() {
     };
   }, [token, refreshUnreadSale]);
 
+  const refreshUnreadNotifications = useCallback(async () => {
+    const currentToken = getToken();
+    if (!currentToken) { setUnreadNotificationCount(0); return; }
+    try {
+      const result = await api("/api/notifications/unread-count");
+      if (getToken() === currentToken) {
+        setUnreadNotificationCount(Math.max(0, Number(result.unreadCount) || 0));
+      }
+    } catch {
+      // A notification outage should not block the rest of the community.
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!token) { setUnreadNotificationCount(0); return undefined; }
+    refreshUnreadNotifications();
+    const timer = window.setInterval(refreshUnreadNotifications, 30000);
+    window.addEventListener("focus", refreshUnreadNotifications);
+    return () => {
+      window.clearInterval(timer);
+      window.removeEventListener("focus", refreshUnreadNotifications);
+    };
+  }, [token, refreshUnreadNotifications]);
+
   const loadFeed = useCallback(
     async ({ append = false, requestedPage = 1 } = {}) => {
       if (!getToken()) {
@@ -258,16 +283,30 @@ export default function App() {
   useEffect(() => {
     if (!token) return;
     let active = true;
-    api("/api/user/profile")
-      .then((result) => {
-        if (!active || !result?.user) return;
-        localStorage.setItem("user", JSON.stringify(result.user));
-        setUser(result.user);
-      })
-      .catch(() => {
-        // Keep the current session and let the normal API requests report auth errors.
-      });
-    return () => { active = false; };
+    // Refresh the current role after an administrator approves an application
+    // in a different tab. The backend remains the source of truth.
+    const refreshAccount = () => {
+      api("/api/user/profile")
+        .then((result) => {
+          if (!active || !result?.user) return;
+          localStorage.setItem("user", JSON.stringify(result.user));
+          setUser(result.user);
+        })
+        .catch(() => {
+          // Keep the session; protected API calls will handle invalid tokens.
+        });
+    };
+    const onVisible = () => {
+      if (document.visibilityState === "visible") refreshAccount();
+    };
+    refreshAccount();
+    window.addEventListener("focus", refreshAccount);
+    document.addEventListener("visibilitychange", onVisible);
+    return () => {
+      active = false;
+      window.removeEventListener("focus", refreshAccount);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
   }, [token]);
 
   // The menu is visible only after server confirmation. AdminDashboard checks
@@ -419,6 +458,7 @@ export default function App() {
     setArea(location);
     setScope("for-you");
     setUnreadSaleCount(0);
+    setUnreadNotificationCount(0);
     const destination = readAppLocation(window.location);
     setCurrentView(destination.view);
     setActiveTab(destination.activeTab);
@@ -447,6 +487,7 @@ export default function App() {
     localStorage.removeItem("verifiedng-area");
     setArea("");
     setUnreadSaleCount(0);
+    setUnreadNotificationCount(0);
     setToken(null);
     setUser(null);
     setPosts([]);
@@ -506,6 +547,7 @@ export default function App() {
     setNotificationFilter("all");
     setMessage("");
     setProfileDrawerOpen(false);
+    refreshUnreadNotifications();
   }
 
   function openLegacyPage(page) {
@@ -551,6 +593,19 @@ export default function App() {
     }
     if (label === "Become a provider") {
       setCurrentView("provider-apply");
+      return;
+    }
+    if (label === "My provider profile") {
+      const id = String(user?._id || user?.id || "");
+      if (user?.role !== "provider" || !/^[a-f0-9]{24}$/i.test(id)) {
+        setCurrentView("provider-apply");
+        return;
+      }
+      setSelectedProviderId(id);
+      setProviderReturnView("home");
+      setCurrentView("provider-profile");
+      setActiveTab("providers");
+      window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
     if (label === "Safety and trust") {
@@ -633,10 +688,11 @@ export default function App() {
           <button
             className="header-icon"
             type="button"
-            aria-label="Notifications"
+            aria-label={unreadNotificationCount > 0 ? "Notifications (" + unreadNotificationCount + " unread)" : "Notifications"}
             onClick={openNotifications}
           >
             <Bell size={20} />
+            {unreadNotificationCount > 0 && <span className="notification-number-badge" aria-hidden="true">{unreadNotificationCount > 99 ? "99+" : unreadNotificationCount}</span>}
           </button>
           <button
             className="profile-menu-button"
@@ -770,14 +826,14 @@ export default function App() {
             />
           )}
           {currentView === "provider-profile" && (
-            <ProviderProfile providerId={selectedProviderId} user={user} onBack={() => {
+            <ProviderProfile providerId={selectedProviderId} user={user} onUpdated={syncUserProfile} onNotificationChange={refreshUnreadNotifications} onBack={() => {
               const view = providerReturnView || "providers";
               setCurrentView(view);
               setActiveTab(["search", "providers", "faves", "sale"].includes(view) ? view : "home");
             }} onViewRequests={() => { setCurrentView("hire-requests"); setActiveTab("home"); }} />
           )}
           {currentView === "hire-requests" && (
-            <HireRequestsPage user={user} onOpenProvider={openProvider} />
+            <HireRequestsPage user={user} onOpenProvider={openProvider} onNotificationChange={refreshUnreadNotifications} />
           )}
           {currentView === "sale" && (
             <ForSalePage
@@ -811,6 +867,7 @@ export default function App() {
               user={user}
               onBack={returnHome}
               onUpdated={syncUserProfile}
+              onViewProfile={() => openProfileItem("My provider profile")}
             />
           )}
           {currentView === "groups" && (
@@ -1029,6 +1086,8 @@ export default function App() {
             area={area}
             filter={notificationFilter}
             onOpenLocalNews={() => setCurrentView("local-news")}
+            onOpenHireRequests={() => { setCurrentView("hire-requests"); setActiveTab("home"); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+            onNotificationChange={refreshUnreadNotifications}
           />
         </main>
       ) : (
@@ -1219,7 +1278,7 @@ export default function App() {
                 )}
               </div>
               <h2>{user?.fullName || "VerifiedNG member"}</h2>
-              <p>{initials(user?.fullName) || "V"} · VerifiedNG member</p>
+              <p>{user?.role === "provider" ? "✓ You’re an approved provider" : "VerifiedNG member"}</p>
               <span className="drawer-location">
                 <MapPin size={14} /> {area || "Add your neighbourhood"}
               </span>
@@ -1234,10 +1293,10 @@ export default function App() {
               </button>}
               <button
                 type="button"
-                onClick={() => openProfileItem("Become a provider")}
+                onClick={() => openProfileItem(user?.role === "provider" ? "My provider profile" : "Become a provider")}
               >
                 <UserCog size={18} />
-                <span>Become a provider</span>
+                <span>{user?.role === "provider" ? "My provider profile" : "Become a provider"}</span>
                 <ArrowRight size={15} />
               </button>
               <button
@@ -1280,7 +1339,7 @@ export default function App() {
               </button>
               <button type="button" onClick={openNotifications}>
                 <Bell size={18} />
-                <span>Notifications</span>
+                <span>Notifications{unreadNotificationCount > 0 ? " (" + unreadNotificationCount + ")" : ""}</span>
               </button>
             </div>
             <div className="drawer-bottom-links">

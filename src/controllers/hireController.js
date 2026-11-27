@@ -107,7 +107,8 @@ const updateHireRequestStatus = async (req, res) => {
         status: "pending",
       },
       {
-        $set: { status },
+        // Processing a request means the provider has already read it.
+        $set: { status, providerNotificationReadAt: new Date() },
       },
       {
         returnDocument: "after",

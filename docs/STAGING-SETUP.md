@@ -1,6 +1,6 @@
 # VerifiedNG — Staging setup (do this before feature previews)
 
-**Status:** Documentation and build safeguards are prepared; the dedicated
+**Status:** Documentation and runtime API safeguards are prepared; the dedicated
 staging backend, database and Vercel Preview variables must be configured
 before the workflow is fully operational. This file does not create services.
 
@@ -79,7 +79,7 @@ In the existing VerifiedNG Vercel project:
 
 1. Check Git integration points to `codedguy4life/VerifiedNG`, root
    directory is `frontend`, and **Production Branch is main**.
-2. Under **Environment Variables**, enable **access to System Environment Variables** so `VERCEL_ENV` is available during builds. The preview guard needs this setting; an additional runtime guard blocks the usual `*.vercel.app` preview URLs if it is absent.
+2. Under **Environment Variables**, enable **access to System Environment Variables** so `VERCEL_ENV` is available during builds. This helps identify Vercel's environment; the runtime API guard also blocks normal `*.vercel.app` preview URLs if staging is not configured.
 3. Add an environment variable:
    - Name: `VITE_API_BASE_URL`
    - Environment: **Preview only**, not Production
@@ -96,8 +96,8 @@ In the existing VerifiedNG Vercel project:
    logout, login and role restrictions.
 
 Without the Preview API variable, the frontend Vercel preview build will
-**intentionally fail** rather than silently using production. This is a
-safety feature; do not bypass it by adding the live Render URL.
+**still build**, but sign-in and other API actions will show an explanatory
+blocked-preview error instead of silently using production. Do not bypass this safety check by adding the live Render URL.
 
 Vercel can produce preview URLs independently of the suspended
 `verifiedng.site` registration.
@@ -120,7 +120,7 @@ Before any merge, review:
 - Preview environments and the separate staging service are not provisioned
   merely by adding these documents. They need account-level setup.
 - CI tests already use an isolated temporary MongoDB instance in GitHub Actions.
-- The Vercel preview guard checks the known production Render hostname and
+- The Vercel runtime preview guard checks the known production Render hostname and
   requires HTTPS, but cannot prove that a *different* hostname has a separate
   database. Verify Render's staging MongoDB configuration manually.
 - GitHub branch protection needs an owner action in repository Settings.

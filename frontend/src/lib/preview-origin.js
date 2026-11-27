@@ -11,7 +11,7 @@ export function assertSafeApiOriginForBrowser({ hostname, configuredApi }) {
   const value = String(configuredApi || "").trim();
   if (!value) {
     throw new Error(
-      "This preview is not connected to a staging backend. " +
+      "This preview is read-only until a staging backend is connected. " +
       "Set VITE_API_BASE_URL for Vercel Preview, not Production."
     );
   }

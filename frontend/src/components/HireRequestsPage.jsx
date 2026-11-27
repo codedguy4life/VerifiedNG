@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { ArrowRight, BriefcaseBusiness, CheckCircle2, RefreshCw, XCircle } from "lucide-react";
 import { api } from "../lib/api.js";
 
-export default function HireRequestsPage({ user, onOpenProvider }) {
+export default function HireRequestsPage({ user, onOpenProvider, onNotificationChange }) {
   const isProvider = user?.role === "provider";
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -26,6 +26,7 @@ export default function HireRequestsPage({ user, onOpenProvider }) {
         method: "PATCH", body: JSON.stringify({ status }),
       });
       await load();
+      onNotificationChange?.();
     } catch (cause) { setError(cause.message || "Could not update this request."); }
     finally { setBusyId(null); }
   }

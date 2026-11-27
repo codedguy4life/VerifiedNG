@@ -80,12 +80,14 @@ async function pending(req, res) {
     if (!canReview(reviewer)) return res.status(403).json({ message: "Admin review permission required." });
     const applications = await ProviderApplication.find({ status: "pending" })
       .sort({ updatedAt: 1 }).limit(60)
-      .populate("user", "fullName email role isVerified")
+      .populate("user", "fullName email role isVerified voucherName voucherPhone referenceConsentAt")
       .lean();
     return res.json({ applications: applications.map((item) => ({
       _id: item._id, category: item.category, bio: item.bio,
       skills: item.skills, experienceYears: item.experienceYears,
       state: item.state, city: item.city, updatedAt: item.updatedAt,
+      reference: item.user?.referenceConsentAt && item.user?.voucherName && item.user?.voucherPhone
+        ? { name: item.user.voucherName, phone: item.user.voucherPhone } : null,
       user: item.user ? { _id: item.user._id, fullName: item.user.fullName,
         email: item.user.email, role: item.user.role, isVerified: Boolean(item.user.isVerified) } : null,
     })) });

@@ -4,14 +4,11 @@ on:
   push:
     branches:
       - main
+      - feature/community-home-redesign
   pull_request:
 
 permissions:
   contents: read
-
-concurrency:
-  group: quality-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
 
 jobs:
   frontend-build:
@@ -36,12 +33,21 @@ jobs:
       - name: Test refresh and browser navigation
         working-directory: frontend
         run: npm run test:navigation
-      - name: Test safe Vercel preview settings
+      - name: Check provider approval and profile UI
         working-directory: frontend
-        run: npm run test:preview
+        run: node --test tests/provider-ui.test.mjs
+      - name: Test hire notification UI
+        working-directory: frontend
+        run: node --test tests/hire-notifications.test.mjs
+      - name: Test preview API isolation
+        working-directory: frontend
+        run: node --test tests/preview-origin.test.mjs
       - name: Build and prerender public pages
         working-directory: frontend
         run: npm run build
+      - name: Check restored classic pages and signup safety
+        working-directory: frontend
+        run: node --test tests/classic.test.mjs
       - name: Test SEO output
         working-directory: frontend
         run: npm run test:seo

@@ -58,6 +58,15 @@ const updateProfile = async (req, res) => {
       if (field === "bio" && value.length > 1000) {
         return res.status(400).json({ message: "Bio must be 1000 characters or fewer" });
       }
+      if (["category", "state", "city"].includes(field) && value.length > 80) {
+        return res.status(400).json({ message: field + " must be 80 characters or fewer" });
+      }
+      if (field === "price" && value.length > 80) {
+        return res.status(400).json({ message: "Pricing details must be 80 characters or fewer" });
+      }
+      if (field === "per" && !["/job", "/hour", "/day", "/week", "/month"].includes(value)) {
+        return res.status(400).json({ message: "Choose a valid pricing unit" });
+      }
       updateData[field] = value;
     }
 
