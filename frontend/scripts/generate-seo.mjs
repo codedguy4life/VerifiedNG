@@ -92,6 +92,11 @@ try {
   // The original public homepage is kept as static HTML with its original CSS.
   // React continues to serve /app, account routes and other public information.
   let classicHome = await readFile(path.join(distDir, "classic", "index.html"), "utf8");
+  // Reuse the actual PublicShowcase React component as prerendered static HTML.
+  const { default: PublicShowcase } = await server.ssrLoadModule("/src/components/PublicShowcase.jsx");
+  const classicShowcase = renderToString(React.createElement(PublicShowcase, { loggedIn: false }));
+  if (!classicHome.includes("<!-- PUBLIC SHOWCASE COMPONENT -->")) throw new Error("Showcase insertion point missing");
+  classicHome = classicHome.replace("<!-- PUBLIC SHOWCASE COMPONENT -->", classicShowcase);
   const homeInfo = ROUTES["/"];
   classicHome = classicHome
     .replace(/<title>[^<]*<\/title>/i, "<title>" + escapeHtml(homeInfo.title) + "</title>")

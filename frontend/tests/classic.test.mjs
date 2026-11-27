@@ -13,6 +13,16 @@ test("classic homepage and both signup pages are served as real static HTML", ()
   assert.ok(home.includes("window.location.href = '/login'"), "Login button must use the React login route");
   assert.ok(home.includes("window.location.href = '/signup'"), "Signup button must use the classic signup route");
   assert.match(home, /id="root"><main>/);
+  assert.match(home, /class="public-showcase"/);
+  assert.match(home, /public-showcase-frame/);
+  assert.match(home, /Example preview/);
+  assert.match(home, /Example listing/);
+  assert.match(home, /Community Feed/);
+  assert.match(home, /Local Faves/);
+  for (const view of ["home","providers","sale","groups","local-news","faves","verification"]) {
+    assert.ok(home.includes("/app?view=" + view), "Missing new app feature " + view);
+  }
+  assert.doesNotMatch(home, /<!-- PUBLIC SHOWCASE COMPONENT -->/);
   assert.doesNotMatch(home, /src="js\/config\.js"/);
   const customer = built("/signup/index.html");
   assert.match(customer, /Create Your Account/);

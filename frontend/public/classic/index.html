@@ -9,6 +9,9 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/classic/styles/homepage.css" />
+    <link rel="stylesheet" href="/classic/styles/public-showcase.css" />
+    <link rel="stylesheet" href="/classic/styles/brand-logo.css" />
+    <link rel="stylesheet" href="/classic/styles/homepage-features.css" />
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
@@ -35,6 +38,7 @@
           </div>
         </li>
                 <li><button class="btn-ghost" onclick="window.location.href = '/app'">Community</button></li>
+        <li><a class="btn-ghost classic-nav-link" href="#features">Explore Features</a></li>
         <li>
           <button class="btn-ghost" onclick="goToProviderSignup()">
             Become a Provider
@@ -77,19 +81,15 @@
       <div class="hero-text">
         <div class="hero-badge">
           <div class="dot"></div>
-          Now live Nationwide (Nigeria)
+          Connecting communities across Nigeria
         </div>
 
         <h1>
-          Find <em>Trusted</em> and <em>Expert</em>/<em>Experienced</em
-          ><br />Local Services<br />Near You
+          Discover <em>Your</em><br />Community &amp;<br /><em>Local Services</em>
         </h1>
 
         <p>
-          Stop relying on guesswork and people that can't meet deadline.
-          VerifiedNG connects you with locally trusted, community-vouched
-          teachers, plumbers, tailors, electricians, mechanics and more — right
-          in your neighbourhood or in every corner of the country.
+          Share updates, discover services and places, explore things for sale, find groups and ask for local recommendations. Connect with people in your area or across Nigeria.
         </p>
 
         <div class="hero-search">
@@ -109,6 +109,7 @@
           </button>
         </div>
 
+        <div class="classic-hero-shortcuts"><a href="#features"><i class="bi bi-grid-1x2"></i> Explore the app</a><a href="/signup"><i class="bi bi-person-plus"></i> Join free</a></div>
         <div class="hero-stats">
           <div class="stat">
             <div class="num">
@@ -275,19 +276,32 @@
       <div class="trust-item">
         <span class="ti-icon"><i class="bi bi-chat-quote"></i></span>
         <span
-          ><strong>Real Reviews</strong> — only from
-          <em>verified customers</em></span
+          ><strong>Local Connections</strong> — explore posts and meet people in your area</span
         >
       </div>
       <div class="trust-divider"></div>
       <div class="trust-item">
         <span class="ti-icon"><i class="bi bi-lightning-charge"></i></span>
         <span
-          ><strong>Fast Response</strong> — most providers reply
-          <em>as soon as possible</em></span
+          ><strong>Review Before Trusting</strong> — approval is not a guarantee of safety or quality</span
         >
       </div>
     </div>
+
+    <section id="app-features" class="classic-features" aria-labelledby="classic-features-heading">
+      <div class="classic-section-inner">
+        <div class="classic-features-head"><div class="section-tag">DISCOVER THE NEW VERIFIEDNG</div><h2 class="section-title" id="classic-features-heading">More than a service directory.<br />Your community, your connections.</h2><p class="section-sub">Connect with neighbours, share updates and discover services, local news and listings. Sign in to use these features.</p></div>
+        <div class="classic-feature-grid"><a class="classic-feature-card" href="/app?view=home"><span class="classic-feature-icon"><i class="bi bi-chat-square-text" aria-hidden="true"></i></span><span class="classic-feature-title">Community Feed <i class="bi bi-arrow-up-right" aria-hidden="true"></i></span><span class="classic-feature-desc">See updates and discussions across Nigeria, or filter posts by your area.</span><span class="classic-feature-link">View the feed</span></a>
+<a class="classic-feature-card" href="/app?view=providers"><span class="classic-feature-icon"><i class="bi bi-tools" aria-hidden="true"></i></span><span class="classic-feature-title">Find Providers <i class="bi bi-arrow-up-right" aria-hidden="true"></i></span><span class="classic-feature-desc">Explore skills, services and provider profiles before hiring.</span><span class="classic-feature-link">Browse providers</span></a>
+<a class="classic-feature-card" href="/app?view=sale"><span class="classic-feature-icon"><i class="bi bi-bag" aria-hidden="true"></i></span><span class="classic-feature-title">For Sale <i class="bi bi-arrow-up-right" aria-hidden="true"></i></span><span class="classic-feature-desc">Browse and post local listings, and contact sellers or buyers.</span><span class="classic-feature-link">Explore listings</span></a>
+<a class="classic-feature-card" href="/app?view=groups"><span class="classic-feature-icon"><i class="bi bi-people" aria-hidden="true"></i></span><span class="classic-feature-title">Groups <i class="bi bi-arrow-up-right" aria-hidden="true"></i></span><span class="classic-feature-desc">Find groups that match your interests. Verification is required to join.</span><span class="classic-feature-link">Explore groups</span></a>
+<a class="classic-feature-card" href="/app?view=local-news"><span class="classic-feature-icon"><i class="bi bi-newspaper" aria-hidden="true"></i></span><span class="classic-feature-title">News & Alerts <i class="bi bi-arrow-up-right" aria-hidden="true"></i></span><span class="classic-feature-desc">See local news and community alerts using the map and area filters.</span><span class="classic-feature-link">Read updates</span></a>
+<a class="classic-feature-card" href="/app?view=faves"><span class="classic-feature-icon"><i class="bi bi-heart" aria-hidden="true"></i></span><span class="classic-feature-title">Local Faves <i class="bi bi-arrow-up-right" aria-hidden="true"></i></span><span class="classic-feature-desc">Ask about places or services and get suggestions from actual community records.</span><span class="classic-feature-link">Ask a question</span></a></div>
+        <div class="classic-verification-note"><i class="bi bi-shield-check" aria-hidden="true"></i><div><strong>Trust needs more than a badge.</strong><p>Provider approval and account verification are separate reviews. Neither guarantees safety or service quality.</p></div><a href="/app?view=verification">Learn about verification <i class="bi bi-arrow-right"></i></a></div>
+      </div>
+    </section>
+    <!-- Replaced by the exact PublicShowcase React component during build. -->
+    <!-- PUBLIC SHOWCASE COMPONENT -->
 
     <!-- CATEGORIES -->
     <section class="categories">
@@ -387,8 +401,7 @@
       <div class="section-tag">Simple Process</div>
       <h2 class="section-title">How VerifiedNG Works</h2>
       <p class="section-sub">
-        Three simple steps to get any job done by someone you can actually
-        trust.
+        Join the community, discover what matters and connect with people.
       </p>
 
       <div class="how-grid">
@@ -396,33 +409,27 @@
           <div class="step">
             <div class="step-num">1</div>
             <div class="step-content">
-              <h4>Search for What You Need</h4>
+              <h4>Join Your Community</h4>
               <p>
-                Type the service you need and your location (optional). We
-                instantly show you verified providers nearby with real ratings
-                and honest profiles.
+                Create a free account to share posts and explore services. Location is optional.
               </p>
             </div>
           </div>
           <div class="step">
             <div class="step-num">2</div>
             <div class="step-content">
-              <h4>Check Their Verification & Reviews</h4>
+              <h4>Explore What Matters</h4>
               <p>
-                Every provider has been vouched for by their community —
-                neighbours, churches, mosques, former employers. You see real
-                reviews from real customers, not fake stars.
+                Search posts, services, For Sale, News &amp; Alerts and Groups. Review details before relying on a recommendation.
               </p>
             </div>
           </div>
           <div class="step">
             <div class="step-num">3</div>
             <div class="step-content">
-              <h4>Hire and Get the Job Done</h4>
+              <h4>Connect and Share</h4>
               <p>
-                Message or call directly through the app. Agree on price. Get
-                the job done. Leave a review to help your community. Simple as
-                that.
+                Share useful updates and message people about listings or services. Check arrangements before meeting.
               </p>
             </div>
           </div>
@@ -430,9 +437,7 @@
             <div class="step-content">
               <h4>Are You a Skilled Provider?</h4>
               <p>
-                Create your profile, get verified by your community and start
-                receiving jobs from people near you. It's completely free to
-                join.
+                Create your account and submit a provider application for manual review. Approval is not automatic.
                 <button
                   class="hire-primary"
                   style="margin-top: 16px"
@@ -449,8 +454,8 @@
           <div class="phone-mockup">
             <div class="phone-screen">
               <div class="phone-header">
-                <div class="ph-label">Available near you</div>
-                <div class="ph-title">Electricians · Lekki</div>
+                <div class="ph-label">Example layout</div>
+                <div class="ph-title">Search local services</div>
               </div>
               <div class="phone-list">
                 <div class="phone-item">
@@ -458,8 +463,8 @@
                     <i class="bi bi-lightning-charge"></i>
                   </div>
                   <div class="pi-info">
-                    <div class="pi-name">Olamide Obago</div>
-                    <div class="pi-role">4.9 <sup>★★★★★</sup> · 118 jobs</div>
+                    <div class="pi-name">Example service</div>
+                    <div class="pi-role">Discover real provider profiles</div>
                   </div>
                   <div class="pi-price">₦Talk-Price</div>
                 </div>
@@ -468,8 +473,8 @@
                     <i class="bi bi-lightning-charge"></i>
                   </div>
                   <div class="pi-info">
-                    <div class="pi-name">John Ugberikoko</div>
-                    <div class="pi-role">4.8 <sup>★★★★★</sup> · 92 jobs</div>
+                    <div class="pi-name">Example service</div>
+                    <div class="pi-role">Discover real provider profiles</div>
                   </div>
                   <div class="pi-price">₦Talk-Price</div>
                 </div>
@@ -478,8 +483,8 @@
                     <i class="bi bi-lightning-charge"></i>
                   </div>
                   <div class="pi-info">
-                    <div class="pi-name">Yusuf Aminu</div>
-                    <div class="pi-role">4.7 <sup>★★★★★</sup> · 73 jobs</div>
+                    <div class="pi-name">Example service</div>
+                    <div class="pi-role">Discover real provider profiles</div>
                   </div>
                   <div class="pi-price">₦Talk-Price</div>
                 </div>
@@ -590,8 +595,7 @@
         <div class="footer-brand">
           <a href="#" class="logo">Verified<span>NG</span></a>
           <p>
-            Connecting Nigerians with trusted, home-based community-verified
-            local service providers. Building trust, one job at a time.
+            Helping Nigerians share local updates, find providers, browse listings and join community conversations.
           </p>
           <div class="footer-social">
             <a href="#" class="social-btn1"><i class="bi bi-whatsapp"></i></a>
@@ -609,7 +613,7 @@
             <li><a href="#how-it-works">How It Works</a></li>
             <li><a href="/app?view=search&tab=providers">Browse Categories</a></li>
             <li><a href="/safety">Safety Tips</a></li>
-            <li><a href="#">Post a Job</a></li>
+            <li><a href="/app?view=home">Community Feed</a></li>
           </ul>
         </div>
 
@@ -637,9 +641,9 @@
               >
             </li>
 
-            <li><a href="#">Provider App</a></li>
-            <li><a href="#">Earn More</a></li>
-            <li><a href="#">Provider Stories</a></li>
+            <li><a href="/app?view=provider-apply">Provider Applications</a></li>
+            <li><a href="/app?view=faves">Local Faves</a></li>
+            <li><a href="/app?view=groups">Groups</a></li>
           </ul>
         </div>
 
@@ -649,9 +653,9 @@
             <li><a href="/about">About Us</a></li>
             <li><a href="/contact">Contact Us</a></li>
             <li><a href="/safety">Safety Tips</a></li>
-            <li><a href="#">Blog</a></li>
-            <li><a href="#">Careers</a></li>
-            <li><a href="#">Press</a></li>
+            <li><a href="/app?view=local-news">News &amp; Alerts</a></li>
+            <li><a href="/app?view=sale">For Sale</a></li>
+            <li><a href="/app?view=verification">Verification</a></li>
           </ul>
         </div>
       </div>
