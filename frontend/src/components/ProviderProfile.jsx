@@ -30,7 +30,7 @@ function fieldsFor(provider) {
   };
 }
 
-export default function ProviderProfile({ providerId, user, onBack, onViewRequests, onUpdated }) {
+export default function ProviderProfile({ providerId, user, onBack, onViewRequests, onUpdated, onNotificationChange }) {
   const [provider, setProvider] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -113,6 +113,7 @@ export default function ProviderProfile({ providerId, user, onBack, onViewReques
         }),
       });
       setSent(true); setShowForm(false); setDescription("");
+      onNotificationChange?.();
     } catch (cause) {
       setError(cause.message || "Could not send hire request.");
     } finally {
