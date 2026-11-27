@@ -15,8 +15,8 @@ test("classic homepage and both signup pages are served as real static HTML", ()
   assert.match(home, /id="root"><main>/);
   assert.match(home, /class="public-showcase"/);
   assert.match(home, /public-showcase-frame/);
-  assert.match(home, /Example preview/);
-  assert.match(home, /Example listing/);
+  assert.match(home, /Example screen/);
+  assert.match(home, /Example item/);
   assert.match(home, /Community Feed/);
   assert.match(home, /Local Faves/);
   for (const view of ["home","providers","sale","groups","local-news","faves","verification"]) {
