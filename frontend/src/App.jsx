@@ -127,6 +127,7 @@ export default function App() {
   const [providerReturnView, setProviderReturnView] = useState(initialNavigation.providerReturnView);
   const [saleInboxRequested, setSaleInboxRequested] = useState(initialNavigation.inbox);
   const [unreadSaleCount, setUnreadSaleCount] = useState(0);
+  const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
   const [profileDrawerOpen, setProfileDrawerOpen] = useState(false);
   const [profileEditorOpen, setProfileEditorOpen] = useState(false);
   const [postingBlocked, setPostingBlocked] = useState(false);
@@ -208,6 +209,30 @@ export default function App() {
       window.removeEventListener("focus", refreshUnreadSale);
     };
   }, [token, refreshUnreadSale]);
+
+  const refreshUnreadNotifications = useCallback(async () => {
+    const currentToken = getToken();
+    if (!currentToken) { setUnreadNotificationCount(0); return; }
+    try {
+      const result = await api("/api/notifications/unread-count");
+      if (getToken() === currentToken) {
+        setUnreadNotificationCount(Math.max(0, Number(result.unreadCount) || 0));
+      }
+    } catch {
+      // A notification outage should not block the rest of the community.
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!token) { setUnreadNotificationCount(0); return undefined; }
+    refreshUnreadNotifications();
+    const timer = window.setInterval(refreshUnreadNotifications, 30000);
+    window.addEventListener("focus", refreshUnreadNotifications);
+    return () => {
+      window.clearInterval(timer);
+      window.removeEventListener("focus", refreshUnreadNotifications);
+    };
+  }, [token, refreshUnreadNotifications]);
 
   const loadFeed = useCallback(
     async ({ append = false, requestedPage = 1 } = {}) => {
@@ -433,6 +458,7 @@ export default function App() {
     setArea(location);
     setScope("for-you");
     setUnreadSaleCount(0);
+    setUnreadNotificationCount(0);
     const destination = readAppLocation(window.location);
     setCurrentView(destination.view);
     setActiveTab(destination.activeTab);
@@ -461,6 +487,7 @@ export default function App() {
     localStorage.removeItem("verifiedng-area");
     setArea("");
     setUnreadSaleCount(0);
+    setUnreadNotificationCount(0);
     setToken(null);
     setUser(null);
     setPosts([]);
@@ -520,6 +547,7 @@ export default function App() {
     setNotificationFilter("all");
     setMessage("");
     setProfileDrawerOpen(false);
+    refreshUnreadNotifications();
   }
 
   function openLegacyPage(page) {
@@ -660,10 +688,11 @@ export default function App() {
           <button
             className="header-icon"
             type="button"
-            aria-label="Notifications"
+            aria-label={unreadNotificationCount > 0 ? "Notifications (" + unreadNotificationCount + " unread)" : "Notifications"}
             onClick={openNotifications}
           >
             <Bell size={20} />
+            {unreadNotificationCount > 0 && <span className="notification-number-badge" aria-hidden="true">{unreadNotificationCount > 99 ? "99+" : unreadNotificationCount}</span>}
           </button>
           <button
             className="profile-menu-button"
@@ -797,14 +826,14 @@ export default function App() {
             />
           )}
           {currentView === "provider-profile" && (
-            <ProviderProfile providerId={selectedProviderId} user={user} onUpdated={syncUserProfile} onBack={() => {
+            <ProviderProfile providerId={selectedProviderId} user={user} onUpdated={syncUserProfile} onNotificationChange={refreshUnreadNotifications} onBack={() => {
               const view = providerReturnView || "providers";
               setCurrentView(view);
               setActiveTab(["search", "providers", "faves", "sale"].includes(view) ? view : "home");
             }} onViewRequests={() => { setCurrentView("hire-requests"); setActiveTab("home"); }} />
           )}
           {currentView === "hire-requests" && (
-            <HireRequestsPage user={user} onOpenProvider={openProvider} />
+            <HireRequestsPage user={user} onOpenProvider={openProvider} onNotificationChange={refreshUnreadNotifications} />
           )}
           {currentView === "sale" && (
             <ForSalePage
@@ -1057,6 +1086,8 @@ export default function App() {
             area={area}
             filter={notificationFilter}
             onOpenLocalNews={() => setCurrentView("local-news")}
+            onOpenHireRequests={() => { setCurrentView("hire-requests"); setActiveTab("home"); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+            onNotificationChange={refreshUnreadNotifications}
           />
         </main>
       ) : (
@@ -1308,7 +1339,7 @@ export default function App() {
               </button>
               <button type="button" onClick={openNotifications}>
                 <Bell size={18} />
-                <span>Notifications</span>
+                <span>Notifications{unreadNotificationCount > 0 ? " (" + unreadNotificationCount + ")" : ""}</span>
               </button>
             </div>
             <div className="drawer-bottom-links">

@@ -3501,3 +3501,24 @@ a.notification-story:hover { border-color: #b7d8c5; }
 /* Standard icon sizes: consistent across common navigation items. */
 .bottom-tab>svg { display:block; width:21px; height:21px; flex-shrink:0; }
 .drawer-bottom-links button>svg,.drawer-link-list button>svg { width:18px; height:18px; flex-shrink:0; }
+
+/* Authenticated hire request notification count and activity feed */
+.header-actions > .header-icon { position:relative; }
+.notification-number-badge {
+  position:absolute; top:-5px; right:-6px; display:flex; align-items:center; justify-content:center;
+  min-width:18px; height:18px; padding:0 4px; border-radius:999px; border:2px solid var(--surface,#fff);
+  background:#bf352f; color:#fff; font-size:10px; font-weight:900; line-height:1;
+  box-sizing:content-box; pointer-events:none;
+}
+.notification-personal { display:grid; gap:12px; margin-bottom:18px; }
+.notification-personal-heading { display:flex; gap:10px; align-items:center; justify-content:space-between; flex-wrap:wrap; }
+.notification-personal-heading h2 { margin:0; display:flex; align-items:center; gap:8px; font-size:15px; }
+.notification-personal-heading > div { display:flex; gap:7px; }
+.notification-personal-heading button { padding:8px 11px; border:1px solid var(--line); border-radius:9px; background:var(--surface,#fff); color:var(--green-dark,#096b43); font-size:11px; font-weight:800; }
+.notification-personal-heading button:disabled { opacity:.55; }
+.notification-activity-item { width:100%; text-align:left; font:inherit; cursor:pointer; }
+.notification-activity-item:disabled { cursor:wait; }
+.notification-activity-item.notification-unread { background:var(--green-pale,#eef9f1); border-color:#c2e2cc; }
+.notification-activity-item > div { display:grid; gap:4px; min-width:0; flex:1; }
+.notification-activity-item > svg { flex-shrink:0; }
+.notification-activity-dot { width:8px; height:8px; background:var(--green,#15824c); border-radius:50%; flex-shrink:0; align-self:center; }
