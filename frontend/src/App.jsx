@@ -258,16 +258,30 @@ export default function App() {
   useEffect(() => {
     if (!token) return;
     let active = true;
-    api("/api/user/profile")
-      .then((result) => {
-        if (!active || !result?.user) return;
-        localStorage.setItem("user", JSON.stringify(result.user));
-        setUser(result.user);
-      })
-      .catch(() => {
-        // Keep the current session and let the normal API requests report auth errors.
-      });
-    return () => { active = false; };
+    // Refresh the current role after an administrator approves an application
+    // in a different tab. The backend remains the source of truth.
+    const refreshAccount = () => {
+      api("/api/user/profile")
+        .then((result) => {
+          if (!active || !result?.user) return;
+          localStorage.setItem("user", JSON.stringify(result.user));
+          setUser(result.user);
+        })
+        .catch(() => {
+          // Keep the session; protected API calls will handle invalid tokens.
+        });
+    };
+    const onVisible = () => {
+      if (document.visibilityState === "visible") refreshAccount();
+    };
+    refreshAccount();
+    window.addEventListener("focus", refreshAccount);
+    document.addEventListener("visibilitychange", onVisible);
+    return () => {
+      active = false;
+      window.removeEventListener("focus", refreshAccount);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
   }, [token]);
 
   // The menu is visible only after server confirmation. AdminDashboard checks

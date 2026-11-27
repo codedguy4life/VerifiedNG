@@ -12,6 +12,8 @@ test("approved providers see their real role and can open their own profile", ()
   assert.match(app, /setSelectedProviderId\(id\)/);
   assert.match(apply, /You’re now a Provider!/);
   assert.match(apply, /View my provider profile/);
+  assert.match(app, /addEventListener\("focus", refreshAccount\)/);
+  assert.match(app, /addEventListener\("visibilitychange", onVisible\)/);
 });
 
 test("professional profile has real details and a secure owner-only editor", () => {

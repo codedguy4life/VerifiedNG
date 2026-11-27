@@ -30,6 +30,9 @@ jobs:
       - name: Test refresh and browser navigation
         working-directory: frontend
         run: npm run test:navigation
+      - name: Check provider approval and profile UI
+        working-directory: frontend
+        run: node --test tests/provider-ui.test.mjs
       - name: Build and prerender public pages
         working-directory: frontend
         run: npm run build
