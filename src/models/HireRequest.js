@@ -14,9 +14,16 @@ const hireRequestSchema = new mongoose.Schema(
       enum: ["pending", "accepted", "declined", "completed"],
       default: "pending",
     },
+    // Notifications are derived from the request itself, so no event is lost
+    // if a separate notification write fails after a hire decision.
+    providerNotificationReadAt: { type: Date, default: null },
+    customerResponseReadAt: { type: Date, default: null },
   },
   { timestamps: true },
 );
+
+hireRequestSchema.index({ providerId: 1, createdAt: -1 });
+hireRequestSchema.index({ customerId: 1, updatedAt: -1 });
 
 const HireRequest = mongoose.model("HireRequest", hireRequestSchema);
 module.exports = HireRequest;
