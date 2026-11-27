@@ -10,8 +10,8 @@ test("classic homepage and both signup pages are served as real static HTML", ()
   const home = built("/index.html");
   assert.match(home, /How VerifiedNG Works/);
   assert.match(home, /\/classic\/styles\/homepage\.css/);
-  assert.match(home, /href="\/login"/);
-  assert.match(home, /href="\/signup"/);
+  assert.ok(home.includes("window.location.href = '/login'"), "Login button must use the React login route");
+  assert.ok(home.includes("window.location.href = '/signup'"), "Signup button must use the classic signup route");
   assert.match(home, /id="root"><main>/);
   assert.doesNotMatch(home, /src="js\/config\.js"/);
   const customer = built("/signup/index.html");
