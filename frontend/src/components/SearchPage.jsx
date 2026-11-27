@@ -13,9 +13,11 @@ const directoryTerms = new Set(["provider", "providers", "povider", "poviders", 
 
 export default function SearchPage({ area = "", user, initialTab = "all", mode = "search", onOpenProvider, onExplore, onTabChange }) {
   const isSearchHub = mode === "search";
-  const [query, setQuery] = useState("");
+  const initialParams = new URLSearchParams(window.location.search);
+  const incomingArea = (initialParams.get("location") || "").slice(0, 80);
+  const [query, setQuery] = useState(() => (initialParams.get("service") || "").slice(0, 80));
   const [tab, setTab] = useState(initialTab);
-  const [onlyArea, setOnlyArea] = useState(false);
+  const [onlyArea, setOnlyArea] = useState(Boolean(incomingArea));
   const [providers, setProviders] = useState([]);
   const [directoryCount, setDirectoryCount] = useState(null);
   const [posts, setPosts] = useState([]);
@@ -56,8 +58,8 @@ export default function SearchPage({ area = "", user, initialTab = "all", mode =
       if (tab !== "community" && (!isSearchHub || q.length >= 2)) {
         const params = new URLSearchParams();
         if (!browse) params.set("search", q);
-        if (onlyArea && area) {
-          const parts = area.split(",").map((part) => part.trim()).filter(Boolean);
+        if (onlyArea && (incomingArea || area)) {
+          const parts = (incomingArea || area).split(",").map((part) => part.trim()).filter(Boolean);
           if (parts.length > 1) {
             params.set("state", parts.at(-1));
             params.set("location", parts[0]);
@@ -80,7 +82,7 @@ export default function SearchPage({ area = "", user, initialTab = "all", mode =
       if (!abort.signal.aborted) setLoading(false);
     }, query.trim().length >= 2 ? 300 : 0);
     return () => { clearTimeout(timer); abort.abort(); };
-  }, [query, tab, onlyArea, area, refresh, isSearchHub]);
+  }, [query, tab, onlyArea, area, incomingArea, refresh, isSearchHub]);
 
   const hasQuery = query.trim().length >= 2;
   const count = providers.length + posts.length;

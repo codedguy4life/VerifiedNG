@@ -88,6 +88,19 @@ try {
     });
     await saveRoute(pathname, html);
   }
+
+  // The original public homepage is kept as static HTML with its original CSS.
+  // React continues to serve /app, account routes and other public information.
+  let classicHome = await readFile(path.join(distDir, "classic", "index.html"), "utf8");
+  const homeInfo = ROUTES["/"];
+  classicHome = classicHome
+    .replace(/<title>[^<]*<\/title>/i, "<title>" + escapeHtml(homeInfo.title) + "</title>")
+    .replace(/<meta name="robots" content="noindex,follow" \/>/, "")
+    .replace("</head>", '<meta name="description" content="' + escapeHtml(homeInfo.description) + '" />\n' + headFor("/", homeInfo) + "</head>")
+    .replace("<body>", '<body>\n<div id="root"><main>')
+    .replace(/(\s*<script src="\/classic\/js\/homepage\.js"><\/script>)/, '</main></div>$1');
+  await saveRoute("/", classicHome);
+
   const publicUrls = Object.entries(ROUTES).filter(([, info]) => info.index)
     .map(([pathname]) => "  <url><loc>" + escapeHtml(pageUrl(pathname)) + "</loc></url>")
     .join("\n");
