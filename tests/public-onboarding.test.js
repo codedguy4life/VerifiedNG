@@ -59,6 +59,9 @@ describe("Public onboarding and manual provider review", () => {
   });
 
   test("complete applications remain pending and cannot be duplicated", async () => {
+    await User.findByIdAndUpdate(member._id, { $set: {
+      voucherName: "Consenting Reference", voucherPhone: "08011223344", referenceConsentAt: new Date(),
+    } });
     const response = await request(app).post("/api/provider-applications").set(auth(memberToken)).send({
       category: "Electrical",
       bio: "I install and maintain household electrical systems and provide reliable residential repair services.",
@@ -95,6 +98,7 @@ describe("Public onboarding and manual provider review", () => {
     const queue = await request(app).get("/api/provider-applications/admin/pending").set(auth(reviewerToken));
     expect(queue.statusCode).toBe(200);
     const item = queue.body.applications.find((entry) => String(entry.user?._id) === String(member._id));
+    expect(item.reference).toEqual({ name: "Consenting Reference", phone: "08011223344" });
     expect(item).toBeDefined();
     const review = await request(app).patch("/api/provider-applications/admin/" + item._id)
       .set(auth(reviewerToken)).send({ decision: "approved", reviewerNote: "Experience checked." });

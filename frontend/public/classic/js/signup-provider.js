@@ -25,7 +25,7 @@ async function submitForm(){
   if(!API_URL)return showFieldError("providerPass","Account creation is unavailable on this preview until a staging API is configured.");
   const v=id=>document.getElementById(id)?.value?.trim()||"";
   const skills=[...document.querySelectorAll(".skill-option.selected")].map(e=>e.textContent.trim()).filter(Boolean);
-  const account={fullName:v("firstName")+" "+v("lastName"),phone:v("phoneInput"),email:v("emailInput"),state:v("stateInput"),city:v("cityInput"),category:v("categoryInput"),bio:v("bioInput"),skills,experienceYears:Number(v("experienceInput"))||0,voucherName:v("voucherName"),voucherPhone:v("voucherPhone"),password:document.getElementById("providerPass").value,termsAccepted:true};
+  const account={fullName:v("firstName")+" "+v("lastName"),phone:v("phoneInput"),email:v("emailInput"),state:v("stateInput"),city:v("cityInput"),category:v("categoryInput"),bio:v("bioInput"),skills,experienceYears:Number(v("experienceInput"))||0,voucherName:v("voucherName"),voucherPhone:v("voucherPhone"),password:document.getElementById("providerPass").value,termsAccepted:true,referenceConsent:document.getElementById("referenceConsent").checked};
   if(account.bio.length<50){goToStep(2);return showFieldError("bioInput","Please write at least 50 characters about your services.");}
   btn.disabled=true;btn.textContent="Submitting…";
   try{
@@ -123,6 +123,14 @@ function validateStep(step) {
     const bio = document.getElementById("bioInput").value.trim();
     if (!category) {
       showFieldError("categoryInput", "Please select your main category");
+      isValid = false;
+    }
+    if (!document.getElementById("experienceInput").value) {
+      showFieldError("experienceInput", "Please choose your experience level");
+      isValid = false;
+    }
+    if (!document.querySelector(".skill-option.selected")) {
+      showFieldError("skillsPicker", "Choose at least one skill");
       isValid = false;
     }
     if (!bio) {

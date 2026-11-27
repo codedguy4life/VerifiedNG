@@ -129,6 +129,8 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    // The applicant confirms they have permission to provide a reference.
+    referenceConsentAt: { type: Date, default: null },
 
     loginCount: {
       type: Number,

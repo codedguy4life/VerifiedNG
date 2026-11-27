@@ -29,6 +29,8 @@ test("classic homepage and both signup pages are served as real static HTML", ()
   assert.match(customer, /id="firstName"/);
   assert.match(customer, /id="lastName"/);
   assert.match(customer, /id="addressInput"/);
+  assert.match(customer, /id="confirmPassword"/);
+  assert.match(home, /\/reset-password.*window\.location\.search/);
   assert.match(customer, /<div id="root"><\/div>/);
   const provider = built("/become-a-provider/index.html");
   for (const field of ["categoryInput", "bioInput", "experienceInput", "voucherName", "voucherPhone", "referenceConsent", "providerPass2"]) {
@@ -37,6 +39,7 @@ test("classic homepage and both signup pages are served as real static HTML", ()
   assert.doesNotMatch(provider, /id="idUpload"/);
   assert.doesNotMatch(provider, /id="galleryUpload"/);
   assert.doesNotMatch(provider, /id="profilePhoto"/);
+  assert.match(provider, /Apply to Become a Provider/);
   assert.match(provider, /manual|approval is not automatic|application status/i);
 });
 
