@@ -150,7 +150,12 @@ function validateStep(step) {
     }
   }
 
-  if (step === 3 && !document.getElementById("referenceConsent").checked) {\n    showFieldError("referenceConsent", "Please confirm the reference agreed to share their phone number.");\n    isValid = false;\n  }\n\n  if (step === 4) {
+  if (step === 3 && !document.getElementById("referenceConsent").checked) {
+    showFieldError("referenceConsent", "Please confirm the reference agreed to share their phone number.");
+    isValid = false;
+  }
+
+  if (step === 4) {
     const pass = document.getElementById("providerPass").value;
     const pass2 = document.getElementById("providerPass2").value;
     const terms = document.getElementById("providerTerms").checked;

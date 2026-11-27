@@ -3,6 +3,9 @@
 const host = window.location.hostname;
 const selected = document.querySelector('meta[name="verifiedng-api-base"]')?.content || "";
 const preview = host.endsWith(".vercel.app") && host !== "verified-ng-ten.vercel.app";
-const API_URL = selected && selected !== "__VERIFIEDNG_API_BASE__" ? selected : preview ? "" : ["localhost", "127.0.0.1"].includes(host) ? "http://" + host + ":5000" : "https://verifiedng-backend.onrender.com";
+const explicit = selected && selected !== "__VERIFIEDNG_API_BASE__";
+const productionApi = "https://verifiedng-backend.onrender.com";
+const API_URL = preview && (!explicit || selected.replace(/\\/$/, "") === productionApi) ? "" :
+  explicit ? selected : ["localhost", "127.0.0.1"].includes(host) ? "http://" + host + ":5000" : productionApi;
 function goToCommunityApp() { window.location.assign("/app"); }
 function goToProviderSignup() { window.location.assign(localStorage.getItem("token") ? "/app?view=provider-apply" : "/become-a-provider"); }
