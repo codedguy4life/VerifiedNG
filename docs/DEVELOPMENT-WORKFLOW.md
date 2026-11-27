@@ -107,8 +107,9 @@ The final command deletes only the completed local branch.
 Vercel Production = **main**. Production API:
 `https://verifiedng-backend.onrender.com`.
 
-Vercel Preview = PR branches. After creating the **separate staging
-backend**, configure `VITE_API_BASE_URL` for **Preview only** under
+Vercel Preview = PR branches. The separate staging backend has been created at
+`https://verifiedng-staging-api.onrender.com`. Configure
+`VITE_API_BASE_URL` for **Preview only** under
 Vercel → Project → Settings → Environment Variables. Use the exact
 HTTPS origin of your **staging** Render backend, with no trailing slash.
 

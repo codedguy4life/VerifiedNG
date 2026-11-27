@@ -1,10 +1,22 @@
 # VerifiedNG — Staging setup (do this before feature previews)
 
-**Status:** Documentation and runtime API safeguards are prepared; the dedicated
-staging backend, database and Vercel Preview variables must be configured
-before the workflow is fully operational. This file does not create services.
+**Status (27 November 2026):** The staging MongoDB Atlas project, free cluster,
+database-specific application user, GitHub `staging` branch, and free Render
+staging backend **have been created and successfully connected**.
 
-## Stage 1 — create an isolated MongoDB database
+- Atlas project: `VerifiedNG Staging` (separate from the live `VerifiedNG` project)
+- Cluster: `VerifiedNGStaging` (free, AWS EU_WEST_1)
+- Staging database: `verifiedng_staging` (scoped `readWrite` application user)
+- GitHub backend branch: `staging`
+- Render service: https://verifiedng-staging-api.onrender.com (free, Frankfurt)
+- Render logs: `MongoDB connected` and `Your service is live`
+- **Pending:** Vercel Preview `VITE_API_BASE_URL` setting, preview login
+  verification, and GitHub `main` branch ruleset.
+
+The database credentials and JWT secret were configured directly as private
+Render environment variables. Never put them in GitHub or chat messages.
+
+## Stage 1 — isolated MongoDB database (completed)
 
 1. In MongoDB Atlas create a **separate staging cluster/project** if practical.
    At minimum, create an independent database, e.g. `verifiedng_staging`,
@@ -21,11 +33,12 @@ Production and staging must not share the database, JWT secret, provider invite
 code, admin reviewer IDs, transactional email credentials, or media-storage
 secrets. Using different database names with one superuser is not strong isolation.
 
-## Stage 2 — create a GitHub staging branch
+## Stage 2 — GitHub staging branch (completed)
 
-After the preview-safety PR is merged to `main`, create a long-lived
-`staging` branch from the updated `main`. This is used by a separate Render
-staging service. Do not change production's tracked `main` branch.
+The long-lived `staging` branch has already been created from the latest
+`main` at the time of provisioning (including PR #16). Keep `staging` in
+sync with `main` after PR #12 merges, without changing production's tracked
+`main` branch.
 
 Suggested backend feature cycle:
 
@@ -41,10 +54,13 @@ Suggested backend feature cycle:
 For frontend-only PRs, you can test against a staging API matching the
 current production backend without the extra backend promotion step.
 
-## Stage 3 — separate Render backend
+## Stage 3 — separate Render backend (completed)
 
-In the Render dashboard, create a **new web service**, not an environment
-change on `VerifiedNG-Backend`:
+The separate **free** staging web service is already created and running.
+Its build uses `npm ci` and its start command uses `npm start`. Never replace
+or edit the production `VerifiedNG-Backend` environment with staging secrets.
+
+Original staging configuration checklist:
 
 | Setting | Staging value |
 |---|---|
@@ -67,13 +83,23 @@ Keep production service configuration unchanged:
 Do not enable real email sending, real third-party payments, or production
 Cloudinary credentials on staging. Use test accounts and separate credentials.
 The Node backend already accepts explicitly configured origins listed in
-`FRONTEND_URL` (comma-separated) for CORS. A Vercel preview hostname must be
-allowed there to make authenticated API requests from the browser.
+`FRONTEND_URL` (comma-separated) for CORS. The initial preview origin
+`https://verified-ng-git-chore-safe-pr-preview-workflow-codedguy4life.vercel.app`
+was configured in staging Render. When you create a new feature preview,
+add its *exact HTTPS origin* to staging `FRONTEND_URL` if needed; do not
+open production CORS to arbitrary Vercel subdomains.
+
+**Network security note:** Atlas staging currently allows `0.0.0.0/0`
+because the free Render service uses dynamic outbound network addresses.
+This is limited to a separate staging Atlas project with an independent,
+database-scoped credential; it is not a reason to use production data there.
+Tighten the Atlas access list if/when fixed egress IPs become available.
+
 
 **Important:** the sample hostname in this guide is not a created or verified
 service. Copy the actual Render staging URL from your Render dashboard.
 
-## Stage 4 — configure Vercel Preview
+## Stage 4 — connect Vercel Preview (action needed)
 
 In the existing VerifiedNG Vercel project:
 
@@ -83,9 +109,8 @@ In the existing VerifiedNG Vercel project:
 3. Add an environment variable:
    - Name: `VITE_API_BASE_URL`
    - Environment: **Preview only**, not Production
-   - Value: actual staging Render HTTPS origin, e.g.
-     `https://verifiedng-staging-api.onrender.com` **only if that is your
-     actual new service's URL**; no trailing slash.
+   - Value: `https://verifiedng-staging-api.onrender.com`
+   - Do not add a trailing slash, and do NOT set this in Production.
 4. Redeploy the affected Preview after saving the setting.
 5. Open the preview URL created for a PR from the Vercel dashboard or PR checks.
 6. Open browser DevTools → Network. Verify `/api/...` requests go to
@@ -117,8 +142,9 @@ Before any merge, review:
 
 ## Known limitations / next steps
 
-- Preview environments and the separate staging service are not provisioned
-  merely by adding these documents. They need account-level setup.
+- The Atlas staging cluster and Render staging backend are already provisioned.
+  Vercel's Preview environment variable still needs to be configured by the
+  project owner in the Vercel dashboard before preview login can be tested.
 - CI tests already use an isolated temporary MongoDB instance in GitHub Actions.
 - The Vercel runtime preview guard checks the known production Render hostname and
   requires HTTPS, but cannot prove that a *different* hostname has a separate
