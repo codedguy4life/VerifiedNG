@@ -7,6 +7,9 @@ on:
       - feature/community-home-redesign
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   frontend-build:
     name: React production build
@@ -36,6 +39,9 @@ jobs:
       - name: Test hire notification UI
         working-directory: frontend
         run: node --test tests/hire-notifications.test.mjs
+      - name: Test preview API isolation
+        working-directory: frontend
+        run: node --test tests/preview-origin.test.mjs
       - name: Build and prerender public pages
         working-directory: frontend
         run: npm run build
