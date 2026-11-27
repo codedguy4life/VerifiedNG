@@ -39,7 +39,7 @@ test("classic scripts parse and do not attempt public provider role grants", () 
   assert.match(provider, /\/api\/provider-applications/);
   assert.doesNotMatch(provider, /\/api\/auth\/register-provider/);
   const config = source("public/classic/js/config.js");
-  assert.match(config, /preview && \(!explicit \|\| selected/);
+  assert.match(config, /blockedPreviewApi/);
   assert.match(config, /productionApi/);
 });
 
