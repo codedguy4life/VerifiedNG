@@ -48,6 +48,15 @@ describe("Profile update validation", () => {
     expect(response.body.message).toMatch(/skills must be a list/i);
   });
 
+  test("rejects oversized category and bad pricing units", async () => {
+    const category = await request(app).put("/api/user/profile")
+      .set("Authorization", "Bearer " + token).send({ category: "a".repeat(81) });
+    expect(category.statusCode).toBe(400);
+    const unit = await request(app).put("/api/user/profile")
+      .set("Authorization", "Bearer " + token).send({ per: "<script>" });
+    expect(unit.statusCode).toBe(400);
+  });
+
   test("does not allow profile updates to change the account role", async () => {
     const response = await request(app)
       .put("/api/user/profile")

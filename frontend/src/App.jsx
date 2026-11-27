@@ -553,6 +553,19 @@ export default function App() {
       setCurrentView("provider-apply");
       return;
     }
+    if (label === "My provider profile") {
+      const id = String(user?._id || user?.id || "");
+      if (user?.role !== "provider" || !/^[a-f0-9]{24}$/i.test(id)) {
+        setCurrentView("provider-apply");
+        return;
+      }
+      setSelectedProviderId(id);
+      setProviderReturnView("home");
+      setCurrentView("provider-profile");
+      setActiveTab("providers");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
     if (label === "Safety and trust") {
       window.location.href = "/safety";
       return;
@@ -770,7 +783,7 @@ export default function App() {
             />
           )}
           {currentView === "provider-profile" && (
-            <ProviderProfile providerId={selectedProviderId} user={user} onBack={() => {
+            <ProviderProfile providerId={selectedProviderId} user={user} onUpdated={syncUserProfile} onBack={() => {
               const view = providerReturnView || "providers";
               setCurrentView(view);
               setActiveTab(["search", "providers", "faves", "sale"].includes(view) ? view : "home");
@@ -811,6 +824,7 @@ export default function App() {
               user={user}
               onBack={returnHome}
               onUpdated={syncUserProfile}
+              onViewProfile={() => openProfileItem("My provider profile")}
             />
           )}
           {currentView === "groups" && (
@@ -1219,7 +1233,7 @@ export default function App() {
                 )}
               </div>
               <h2>{user?.fullName || "VerifiedNG member"}</h2>
-              <p>{initials(user?.fullName) || "V"} · VerifiedNG member</p>
+              <p>{user?.role === "provider" ? "✓ You’re an approved provider" : "VerifiedNG member"}</p>
               <span className="drawer-location">
                 <MapPin size={14} /> {area || "Add your neighbourhood"}
               </span>
@@ -1234,10 +1248,10 @@ export default function App() {
               </button>}
               <button
                 type="button"
-                onClick={() => openProfileItem("Become a provider")}
+                onClick={() => openProfileItem(user?.role === "provider" ? "My provider profile" : "Become a provider")}
               >
                 <UserCog size={18} />
-                <span>Become a provider</span>
+                <span>{user?.role === "provider" ? "My provider profile" : "Become a provider"}</span>
                 <ArrowRight size={15} />
               </button>
               <button
