@@ -9,6 +9,12 @@ const API_BASE_URL =
 export const getToken = () => localStorage.getItem("token");
 
 export async function api(endpoint, options = {}) {
+  // Block preview network calls unless the browser uses the dedicated staging API.
+  assertSafeApiOriginForBrowser({
+    hostname: typeof window === "undefined" ? "" : window.location.hostname,
+    configuredApi: import.meta.env.VITE_API_BASE_URL,
+  });
+
   const token = getToken();
 
   const headers = {

@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { assertSafeApiOriginForBrowser } from "../src/lib/preview-origin.js";
 
 const preview = "verified-ng-git-feature-demo-codedguy4life.vercel.app";
@@ -23,4 +24,12 @@ test("explicit staging API works on a preview", () => {
   assert.doesNotThrow(() => assertSafeApiOriginForBrowser({
     hostname: preview, configuredApi: "https://staging.example.test",
   }));
+});
+
+test("every API call runs the browser preview guard before fetch", () => {
+  const api = readFileSync(new URL("../src/lib/api.js", import.meta.url), "utf8");
+  const call = api.indexOf("assertSafeApiOriginForBrowser({");
+  const send = api.indexOf("await fetch(");
+  assert.ok(call > api.indexOf("export async function api("), "guard must run inside api()");
+  assert.ok(send > call, "guard must execute before any network request");
 });
