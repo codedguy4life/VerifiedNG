@@ -18,6 +18,14 @@ test("classic homepage and both signup pages are served as real static HTML", ()
   assert.match(home, /Example screen/);
   assert.match(home, /Example item/);
   assert.match(home, /Community Feed/);
+  assert.match(home, /id="homepageProviders"/);
+  assert.match(home, /provider directory/);
+  const homeScript = source("public/classic/js/homepage.js");
+  assert.match(homeScript, /\/api\/providers/);
+  assert.match(homeScript, /home-provider-card/);
+  assert.match(homeScript, /provider-profile&provider=/);
+  assert.match(homeScript, /\.textContent/);
+  assert.doesNotMatch(homeScript, /\.innerHTML\s*=/);
   assert.match(home, /Local Faves/);
   for (const view of ["home","providers","sale","groups","local-news","faves","verification"]) {
     assert.ok(home.includes("/app?view=" + view), "Missing new app feature " + view);
