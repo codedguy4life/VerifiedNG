@@ -2,9 +2,9 @@
 .vng-brand { display: inline-flex; align-items: center; gap: 9px; max-width: 100%; min-width: 0; vertical-align: middle; white-space: nowrap; text-decoration: none; line-height: 1; }
 .vng-brand-art { flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; width: 37px; height: 37px; min-width: 0; border-radius: 9px; overflow: hidden; }
 .vng-brand-art img { width: 100%; height: 100%; display: block; object-fit: contain; object-position: center; }
-.vng-brand-name { display: inline-flex; gap: 0; align-items: baseline; font: 800 22px/1 "Syne",sans-serif; letter-spacing: -.7px; color: var(--ink,#17221c); }
+.vng-brand-name { display: inline-flex; gap: 0; align-items: baseline; font: 800 22px/1 "Manrope",sans-serif; letter-spacing: -.7px; color: var(--ink,#17221c); }
 .vng-brand-name span { color: var(--green,#087443); }
-.vng-brand-tagline { color: var(--muted,#68756e); font: 700 8px/1.2 "DM Sans",sans-serif; letter-spacing: 1.1px; margin-left: 2px; }
+.vng-brand-tagline { color: var(--muted,#68756e); font: 700 8px/1.2 "Inter",sans-serif; letter-spacing: 1.1px; margin-left: 2px; }
 .vng-brand-wide .vng-brand-art { width: clamp(122px,15vw,185px); height: 45px; border-radius: 0; overflow: visible; }
 .vng-brand-light .vng-brand-name { color: #f2fbf5; }
 .vng-brand-light .vng-brand-name span { color: #81e8ab; }
@@ -13,7 +13,7 @@
 
 /* Public navigation, illustrative preview, footer. */
 .public-site .public-brand { display:inline-flex; align-items:center; font-size:inherit; gap: 8px; }
-.public-site .public-brand .vng-brand-name { font: 800 23px/1 "Syne",sans-serif; letter-spacing:-.8px; color:var(--p-dark,#17221c); }
+.public-site .public-brand .vng-brand-name { font: 800 23px/1 "Manrope",sans-serif; letter-spacing:-.8px; color:var(--p-dark,#17221c); }
 .public-site .public-brand .vng-brand-name span { color: var(--p-green,#087443); }
 .public-site .public-brand-light .vng-brand-name { color:#fff; }
 .public-site .public-brand-light .vng-brand-name span { color:#81e8ab; }
@@ -61,4 +61,26 @@
  .topbar .brand .vng-brand-wide .vng-brand-art { width:124px; height:36px; }
  .public-site .public-brand .vng-brand-name { font-size:20px; }
  .public-site .vng-brand-wide .vng-brand-art { width:133px; height:36px; }
+}
+
+/* Original index.html wordmark, reused consistently on React pages. */
+.vng-brand-classic { display:inline-flex; align-items:baseline; gap:5px; color:var(--ink,#0d0d0d); font-family:"Manrope",sans-serif; font-weight:800; text-decoration:none; white-space:nowrap; }
+.vng-brand-classic .vng-classic-word { display:inline; font:inherit; font-size:26px; letter-spacing:-1px; line-height:1.1; }
+.vng-brand-classic .vng-classic-word > span { color:var(--green,#00b85e); }
+.vng-brand-classic sup { display:inline-block; padding:2px 6px; border-radius:4px; background:var(--green,#00b85e); color:#fff; vertical-align:super; font:700 11px/1.15 "Manrope",sans-serif; letter-spacing:0; }
+.vng-brand-classic.vng-brand-light { color:#fff; }
+.vng-brand-classic.vng-brand-light .vng-classic-word > span { color:#81e8ab; }
+:root[data-theme="dark"] .vng-brand-classic { color:#edf6ef; }
+:root[data-theme="dark"] .vng-brand-classic .vng-classic-word > span { color:#81e8ab; }
+.public-site .public-brand.vng-brand-classic .vng-classic-word { font-size:26px; }
+.public-site .public-brand-light.vng-brand-classic { color:#fff; }
+.public-site .public-preview-top .vng-brand-classic .vng-classic-word { font-size:17px; }
+.public-showcase-frame .vng-brand-classic .vng-classic-word { font-size:13px; }
+.public-showcase-frame .vng-brand-classic sup { font-size:7px; padding:1px 4px; }
+.auth-entry .auth-entry-brand .vng-brand-classic { color:#fff; }
+.auth-entry .auth-entry-mobile .vng-brand-classic { color:var(--ink,#0d0d0d); }
+@media(max-width:600px) {
+  .topbar .brand .vng-brand-classic .vng-classic-word { font-size:20px; }
+  .public-site .public-brand.vng-brand-classic .vng-classic-word { font-size:21px; }
+  .vng-brand-classic sup { font-size:9px; padding:2px 5px; }
 }
