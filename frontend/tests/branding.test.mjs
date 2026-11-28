@@ -36,3 +36,16 @@ test("favicon points to official branding instead of the old shield", () => {
   const html = read("../index.html");
   assert.match(html, /rel="icon" type="image\/png" href="\/branding\/verifiedng-logo\.png"/);
 });
+
+test("classic VerifiedNG text mark has the original green NG and BETA badge", () => {
+  const brand = read("../src/components/BrandLogo.jsx");
+  const css = read("../src/components/brand-logo.css");
+  assert.match(brand, /classicText = true/);
+  assert.match(brand, /vng-classic-word/);
+  assert.match(brand, /Verified<span>NG<\/span>/);
+  assert.match(brand, /<sup>BETA<\/sup>/);
+  assert.match(css, /\.vng-brand-classic/);
+  assert.match(css, /\.vng-classic-word\s*>\s*span/);
+  assert.match(css, /Manrope/);
+  assert.match(css, /--green/);
+});

@@ -394,9 +394,8 @@ export default function App() {
       return false;
     }
   }
-  async function editPost(post) {
-    const text = window.prompt("Edit your post", post.text);
-    if (text === null || !text.trim()) return;
+  async function editPost(post, text) {
+    if (text.length > 2000 || (!text.trim() && !post.imageUrl && !post.videoUrl)) return false;
     try {
       await api(`/api/community/posts/${encodeURIComponent(post._id)}`, {
         method: "PUT",
@@ -404,8 +403,10 @@ export default function App() {
       });
       await loadFeed({ requestedPage: page });
       setMessage("Post updated.");
+      return true;
     } catch (cause) {
       setError(cause.message);
+      return false;
     }
   }
   async function sharePostPublicly(post) {
@@ -485,15 +486,8 @@ export default function App() {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     localStorage.removeItem("verifiedng-area");
-    setArea("");
-    setUnreadSaleCount(0);
-    setUnreadNotificationCount(0);
-    setToken(null);
-    setUser(null);
-    setPosts([]);
-    setProfileEditorOpen(false);
-    setPostingBlocked(false);
-    window.history.replaceState(null, "", "/");
+    // Navigate before changing React state so there is no flash of the newer marketing page.
+    window.location.replace("/");
   }
   function chooseArea() {
     const nextArea = window.prompt(
@@ -648,7 +642,8 @@ export default function App() {
     "/terms": "terms", "/contact": "contact",
   };
   if (!resetMode && publicInfo[path]) return <PublicSite page={publicInfo[path]} loggedIn={Boolean(token)} theme={theme} onThemeChange={changeTheme} />;
-  if (!resetMode && !token && (path === "/" || (path === "/app" && !window.location.search))) return <PublicSite page="home" theme={theme} onThemeChange={changeTheme} />;
+  if (!resetMode && !token && path === "/") return null; // The classic homepage is served as static HTML, never a React marketing fallback.
+  if (!resetMode && !token && path === "/app" && !window.location.search) return <AuthGate theme={theme} onThemeChange={changeTheme} onAuthenticated={onAuthenticated} />;
   if (!resetMode && !token && path === "/become-a-provider") return <PublicSite page="become-a-provider" theme={theme} onThemeChange={changeTheme} />;
   if (!token || resetMode) {
     return <AuthGate theme={theme} onThemeChange={changeTheme} onAuthenticated={onAuthenticated} onResetFinished={() => {
@@ -742,7 +737,8 @@ export default function App() {
       )}
       {currentView !== "home" && currentView !== "notifications" ? (
         <main key={currentView} className={currentView === "local-news" ? "section-page section-page-map" : "section-page"}>
-          {["search", "sale", "faves"].includes(currentView) ? (
+          {["search", "sale", "faves", "provider-apply", "provider-profile"].includes(currentView) ? (
+            ["provider-apply", "provider-profile"].includes(currentView) ? null :
             <button className="back-button subtle-back section-compact-back" type="button" onClick={returnHome}><ArrowLeft size={16} /> Back</button>
           ) : (
           <header className="section-page-header">

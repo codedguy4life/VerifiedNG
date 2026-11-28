@@ -6,8 +6,22 @@ import "./brand-logo.css";
  * A square icon gets accompanying text; a wide logo stands on its own.
  * Never stretch, crop, recolour or replace the user's artwork.
  */
-export default function BrandLogo({ className = "", light = false, tagline = false }) {
+export default function BrandLogo({ className = "", light = false, tagline = false, classicText = true }) {
   const [shape, setShape] = useState("loading");
+
+  // Match the classic HTML wordmark: Verified (dark) + NG (green) + BETA.
+  // Preserve the official PNG below for image-mark uses such as a future media-only variant.
+  if (classicText) {
+    return <span
+      className={["vng-brand", "vng-brand-classic", light ? "vng-brand-light" : "", className].filter(Boolean).join(" ")}
+      role="img"
+      aria-label="VerifiedNG Beta"
+    >
+      <span className="vng-classic-word">Verified<span>NG</span></span>
+      <sup>BETA</sup>
+    </span>;
+  }
+
   const wide = shape === "wide";
   const failed = shape === "failed";
   return (

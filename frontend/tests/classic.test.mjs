@@ -69,3 +69,28 @@ test("classic marketing page links use current app routes", () => {
   assert.doesNotMatch(home, /href="(?:login|signup-customer|signup-provider|search)\.html"/);
   assert.match(home, /\/app\?view=search/);
 });
+
+test("logout loads the classic homepage instead of swapping to React marketing", () => {
+  const app = source("src/App.jsx");
+  const signout = app.slice(app.indexOf("function signOut()"), app.indexOf("function chooseArea()"));
+  assert.ok(signout.includes('window.location.replace("/")'), "Logout should navigate directly to classic home");
+  assert.doesNotMatch(signout, /history\.replaceState/);
+});
+
+test("the classic homepage remains the default for anonymous visitors", () => {
+  const app = source("src/App.jsx");
+  assert.doesNotMatch(app, /path === "\/"\)\) return <PublicSite page="home"/);
+});
+
+test("classic screens use bundled SVG icons instead of remote font CDNs", () => {
+  const pages = ["public/classic/index.html", "public/classic/signup-customer.html", "public/classic/signup-provider.html"];
+  const icons = source("public/classic/js/bootstrap-icons-local.js");
+  for (const path of pages) {
+    const page = source(path);
+    assert.ok(page.includes('src="/classic/js/bootstrap-icons-local.js"'), "Local icon script missing");
+    assert.ok(!page.includes("cdn.jsdelivr.net/npm/bootstrap-icons"), "External icon CDN must not be needed");
+  }
+  for (const name of ["search", "shield-check", "camera", "whatsapp", "eye", "patch-check-fill"]) {
+    assert.ok(icons.includes('"' + name + '":'), "Bundled icon missing: " + name);
+  }
+});

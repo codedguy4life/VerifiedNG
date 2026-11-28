@@ -152,3 +152,14 @@ Before any merge, review:
 - GitHub branch protection needs an owner action in repository Settings.
 - Do not enable Render PR service previews copied from production environment
   variables without first overriding all database and secrets to staging.
+
+## Enable photo/video uploads on staging
+
+The React uploader asks `POST /api/uploads/sign` for signed Cloudinary authorization. This endpoint deliberately refuses uploads if the staging backend lacks the Cloudinary settings.
+
+1. Cloudinary **Free** plans support one product environment per account. For a simple isolated test setup, create a dedicated staging account/environment if your plan and terms permit; otherwise use a **separate signed staging upload preset** inside your existing Cloudinary product environment. If sharing one environment, put staging assets in a distinct folder such as `verifiedng/staging` and remember that both environments will still share account limits and credentials.
+2. Create a **signed** upload preset, e.g. `verifiedng_staging`, for the supported image/video types with safe upload limits. Do not change the live preset `verifiedng_community`.
+3. In Render → `verifiedng-staging-api` → Environment, add `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`, and `CLOUDINARY_UPLOAD_PRESET` for the chosen Cloudinary environment and new staging preset. Keep the API secret only in Render, never Vercel or source code.
+4. Save/redeploy staging Render and test one dummy JPG and a short MP4 from the PR preview. Verify that media reaches the staging Cloudinary library.
+
+Without these credentials, staging text-only posts work and media uploads remain intentionally disabled. Production Cloudinary settings are unchanged.

@@ -2,7 +2,7 @@ export const THEME_STORAGE_KEY = "verifiedng-theme";
 export const THEME_OPTIONS = ["light", "dark", "system"];
 
 export function normalizeTheme(value) {
-  return THEME_OPTIONS.includes(value) ? value : "system";
+  return THEME_OPTIONS.includes(value) ? value : "light";
 }
 
 export function readThemePreference(storage) {
@@ -10,7 +10,7 @@ export function readThemePreference(storage) {
     const target = storage === undefined && typeof window !== "undefined" ? window.localStorage : storage;
     return normalizeTheme(target?.getItem(THEME_STORAGE_KEY));
   } catch {
-    return "system";
+    return "light";
   }
 }
 

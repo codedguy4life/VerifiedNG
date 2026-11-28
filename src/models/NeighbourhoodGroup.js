@@ -8,6 +8,8 @@ const schema = new mongoose.Schema({
   state: { type: String, trim: true, maxlength: 80, default: "" },
   creator: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   members: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  // Preserve older verified-only groups; new groups explicitly set this from the creator's choice.
+  requiresVerifiedMembers: { type: Boolean, default: true },
   isActive: { type: Boolean, default: true, index: true },
 }, { timestamps: true });
 

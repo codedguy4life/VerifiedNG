@@ -68,6 +68,9 @@ export default function PostCard({
   const [reportDetails, setReportDetails] = useState("");
   const [sendingReport, setSendingReport] = useState(false);
   const [localError, setLocalError] = useState("");
+  const [editing, setEditing] = useState(false);
+  const [editText, setEditText] = useState(post.text || "");
+  const [savingEdit, setSavingEdit] = useState(false);
 
   const author = post.author || {};
   const authorId = author._id || author.id;
@@ -81,6 +84,21 @@ export default function PostCard({
   const comments = Array.isArray(post.comments) ? post.comments : [];
   const reactionCount = post.reactionCount ?? post.reactions?.length ?? 0;
   const commentCount = post.commentCount ?? comments.length;
+
+  async function saveEdit(event) {
+    event.preventDefault();
+    if (!isOwner || !onEdit || savingEdit) return;
+    const next = editText.trim();
+    if (!next && !post.imageUrl && !post.videoUrl) return;
+    setSavingEdit(true); setLocalError("");
+    try {
+      const saved = await onEdit(post, next);
+      if (saved === false) throw new Error("Could not save your changes.");
+      setEditing(false);
+    } catch (error) {
+      setLocalError(error.message || "Could not edit your post.");
+    } finally { setSavingEdit(false); }
+  }
 
   async function submitComment(event) {
     event.preventDefault();
@@ -190,7 +208,8 @@ export default function PostCard({
                     type="button"
                     onClick={() => {
                       setShowMenu(false);
-                      onEdit(post);
+                      setEditText(post.text || "");
+                      setEditing(true);
                     }}
                   >
                     <Pencil size={15} /> Edit post
@@ -237,7 +256,16 @@ export default function PostCard({
 
       {post.category && <div className="post-labels"><span className="post-category">{post.category}</span></div>}
 
-      <p className="post-text">{post.text}</p>
+      {editing ? (
+        <form className="post-inline-editor" onSubmit={saveEdit}>
+          <label htmlFor={"edit-post-" + post._id}>Edit your post</label>
+          <textarea id={"edit-post-" + post._id} autoFocus rows={4} maxLength={2000} value={editText} onChange={(event) => setEditText(event.target.value)} />
+          <div className="post-inline-editor-actions"><small>{editText.length}/2000</small>
+            <button type="button" disabled={savingEdit} onClick={() => setEditing(false)}>Cancel</button>
+            <button type="submit" disabled={savingEdit || (!editText.trim() && !post.imageUrl && !post.videoUrl)}>{savingEdit ? "Saving…" : "Save changes"}</button>
+          </div>
+        </form>
+      ) : <p className="post-text">{post.text}</p>}
 
       {(post.videoUrl || post.imageUrl || post.mediaUrl || post.media?.url) && (
         <div className="post-media">

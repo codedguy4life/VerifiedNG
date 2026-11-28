@@ -1,7 +1,7 @@
 /* Product-first sections for the public VerifiedNG site. All preview content is illustrative. */
 .public-showcase { padding: 64px 0 74px; background: #fff; color: #183426; }
 .public-showcase-heading { text-align: center; max-width: 670px; margin: 0 auto 37px; }
-.public-showcase-heading h2 { margin: 8px 0 9px; font: 800 clamp(29px,3.3vw,42px)/1.18 "Syne",sans-serif; letter-spacing: -1.25px; }
+.public-showcase-heading h2 { margin: 8px 0 9px; font: 800 clamp(29px,3.3vw,42px)/1.18 "Manrope",sans-serif; letter-spacing: -1.25px; }
 .public-showcase-heading p { margin: 0; color: #587165; font-size: 14px; line-height: 1.5; }
 .public-showcase-stack { display: grid; gap: 45px; }
 .public-showcase-row { display: grid; grid-template-columns: minmax(0,.74fr) minmax(0,1fr); gap: clamp(30px,5vw,72px); align-items: center; }
@@ -9,7 +9,7 @@
 .public-showcase-reverse .public-showcase-copy { order: 2; }
 .public-showcase-reverse .public-showcase-visual { order: 1; }
 .public-showcase-copy { max-width: 390px; }
-.public-showcase-copy h3 { font: 800 clamp(26px,3vw,39px)/1.17 "Syne",sans-serif; letter-spacing: -1.1px; margin: 12px 0 12px; }
+.public-showcase-copy h3 { font: 800 clamp(26px,3vw,39px)/1.17 "Manrope",sans-serif; letter-spacing: -1.1px; margin: 12px 0 12px; }
 .public-showcase-copy p { margin: 0 0 18px; font-size: 14px; line-height: 1.58; color: #536b5e; }
 .public-showcase-link { display: inline-flex; align-items: center; gap: 9px; color: #087443; font-size: 13px; font-weight: 850; padding: 5px 0; }
 .public-showcase-link:hover { color: #034e2b; }
@@ -20,7 +20,7 @@
 .public-showcase-row:nth-child(3) .public-showcase-visual { background: linear-gradient(145deg,#f2f2ec 0%,#f8f7f0 100%); }
 .public-showcase-frame { max-width: 505px; margin: auto; overflow: hidden; background: white; border: 1px solid #dae7dd; border-radius: 13px; box-shadow: 0 14px 38px rgba(9,46,28,.11); padding: 15px; }
 .public-showcase-frame-head { display: flex; gap: 10px; justify-content: space-between; align-items: center; padding: 1px 1px 12px; border-bottom: 1px solid #e7eee8; }
-.public-showcase-mini-logo { display: inline-flex; align-items: center; gap: 5px; color: #17573a; font: 800 14px/1 "Syne",sans-serif; letter-spacing: -.35px; white-space: nowrap; }
+.public-showcase-mini-logo { display: inline-flex; align-items: center; gap: 5px; color: #17573a; font: 800 14px/1 "Manrope",sans-serif; letter-spacing: -.35px; white-space: nowrap; }
 .public-showcase-mini-logo svg { fill: #e5f3e9; color: #087443; }
 .public-showcase-mini-logo span { color: #16985d; margin-left: -5px; }
 .public-showcase-demo-label { font-size: 9px; background: #f2f6f3; color: #6a8172; border-radius: 5px; padding: 5px 7px; white-space: nowrap; }
@@ -37,7 +37,7 @@
 .public-showcase-post>p { margin: 11px 0 12px; font-size: 12px; color: #42594a; line-height: 1.5; }
 .public-showcase-post-photo { display: flex; flex-direction: column; justify-content: center; gap: 11px; min-height: 112px; border-radius: 8px; padding: 18px 20px; background: linear-gradient(115deg,#1f674b 0%,#0b4432 100%); color: #fff; }
 .public-showcase-post-photo-top { font-size: 10px; color: #c5ebd4; font-weight: 800; letter-spacing: .7px; text-transform: uppercase; }
-.public-showcase-post-photo-copy { max-width: 320px; font: 750 22px/1.24 "Syne",sans-serif; letter-spacing: -.45px; }
+.public-showcase-post-photo-copy { max-width: 320px; font: 750 22px/1.24 "Manrope",sans-serif; letter-spacing: -.45px; }
 .public-showcase-post>footer { display: flex; justify-content: space-around; gap: 8px; padding-top: 12px; font-size: 10px; color: #607769; }
 .public-showcase-post>footer span { display: inline-flex; gap: 6px; align-items: center; }
 .public-showcase-search-field { display: flex; align-items: center; gap: 10px; margin: 13px 0; padding: 11px 13px; color: #60756a; border: 1px solid #dce7df; border-radius: 8px; background: #fafcfa; }
@@ -67,7 +67,7 @@
 .public-showcase-groups { display: flex; align-items: center; gap: 16px; margin-top: 41px; padding: 19px 23px; border: 1px solid #dce9e0; background: #f5f9f5; border-radius: 13px; }
 .public-showcase-groups-icon { flex: 0 0 48px; display: grid; place-items: center; width: 48px; height: 48px; border-radius: 11px; color: #117345; background: #e0f1e5; }
 .public-showcase-groups>div:nth-child(2) { flex: 1; min-width: 0; }
-.public-showcase-groups strong { font: 800 17px/1.26 "Syne",sans-serif; }
+.public-showcase-groups strong { font: 800 17px/1.26 "Manrope",sans-serif; }
 .public-showcase-groups p { margin: 6px 0 0; font-size: 12px; line-height: 1.5; color: #5f7466; }
 .public-showcase-groups a { display: inline-flex; align-items: center; gap: 7px; color: #087443; font-size: 12px; font-weight: 850; white-space: nowrap; }
 @media(max-width:900px) {
