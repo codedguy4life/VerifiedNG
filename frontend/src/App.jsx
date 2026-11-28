@@ -493,7 +493,9 @@ export default function App() {
     setPosts([]);
     setProfileEditorOpen(false);
     setPostingBlocked(false);
-    window.history.replaceState(null, "", "/");
+    // Really load the restored classic index.html after signing out.
+    // Changing browser history alone left React's new landing visible.
+    window.location.assign("/");
   }
   function chooseArea() {
     const nextArea = window.prompt(

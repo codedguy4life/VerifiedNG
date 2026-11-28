@@ -1,7 +1,7 @@
 :root {
-  --font-body: "DM Sans", sans-serif;
-  --font-heading: "Syne", sans-serif;
-  --font-semibold: "DM Sans", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-heading: "Manrope", sans-serif;
+  --font-semibold: "Inter", sans-serif;
   --text-xs: 0.6875rem;
   --text-sm: 0.8125rem;
   --text-base: 0.9375rem;
@@ -11,17 +11,17 @@
   --line-body: 1.65;
   font-family: var(--font-body);
   color: #17221c;
-  background: #f4f7f5;
+  background: #f5f4f0;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
-  --green: #087443;
-  --green-dark: #075b35;
-  --green-pale: #eaf6ef;
+  --green: #00b85e;
+  --green-dark: #007a3d;
+  --green-pale: #e6f9ee;
   --ink: #17221c;
   --muted: #68756e;
   --line: #e5ebe7;
-  --canvas: #f4f7f5;
+  --canvas: #f5f4f0;
   --white: #fff;
   --shadow: 0 8px 28px rgba(23, 54, 36, 0.055);
 }
@@ -81,7 +81,7 @@ button:disabled {
 }
 .brand small {
   font:
-    700 9px "DM Sans",
+    700 9px "Inter",
     sans-serif;
   letter-spacing: 1.5px;
   color: var(--muted);
@@ -3452,7 +3452,7 @@ a.notification-story:hover { border-color: #b7d8c5; }
 .auth-entry-card>p{font-size:13px;line-height:1.65;color:var(--muted);margin:0 0 22px}
 .auth-entry-form{display:grid;gap:14px}
 .auth-entry-form label{display:grid;gap:7px;font-size:12px;font-weight:800;color:#385142}
-.auth-entry-form input{display:block;width:100%;min-width:0;height:46px;padding:0 12px;border:1px solid #d3e2d7;border-radius:10px;font:500 13px "DM Sans",sans-serif;color:var(--ink);background:#fff;outline:none}
+.auth-entry-form input{display:block;width:100%;min-width:0;height:46px;padding:0 12px;border:1px solid #d3e2d7;border-radius:10px;font:500 13px "Inter",sans-serif;color:var(--ink);background:#fff;outline:none}
 .auth-entry-form input:focus{border-color:#55aa7b;box-shadow:0 0 0 3px #e6f5ec}
 .auth-entry-form input:disabled{background:#f3f6f4;color:#60776a}
 .auth-entry-two{display:grid;grid-template-columns:1fr 1fr;gap:10px}

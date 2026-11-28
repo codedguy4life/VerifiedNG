@@ -1730,3 +1730,24 @@ footer {
     padding: 18px;
   }
 }
+
+/* Compact both demo provider cards without replacing the classic homepage. */
+@media (min-width: 1025px) {
+  .hero { max-width: 1320px; margin-inline: auto; grid-template-columns: minmax(0,1.1fr) minmax(0,.9fr); gap: clamp(26px,4vw,55px); min-height: 0; padding-inline: clamp(32px,4.4vw,64px); }
+  .hero-text { min-width: 0; }
+  .homepage-hero-card { display: grid; grid-template-columns: minmax(0,1fr); width: min(100%,420px); justify-self: center; gap: 16px; min-width: 0; }
+  .homepage-hero-card .hero-visual { width: 100%; min-width: 0; margin: 0; animation: none; }
+  .homepage-hero-card .hero-card-main { padding: 18px 20px; border-radius: 16px; }
+  .homepage-hero-card .provider-profile { gap: 12px; margin-bottom: 14px; }
+  .homepage-hero-card .avatar { width: 45px; height: 45px; font-size: 20px; }
+  .homepage-hero-card .provider-info { min-width: 0; }
+  .homepage-hero-card .provider-info h4 { font-size: 15px; }
+  .homepage-hero-card .provider-info .role { font-size: 11px; }
+  .homepage-hero-card .verified-badge { display: inline-flex; width: auto; padding: 4px 9px; font-size: 10px; }
+  .homepage-hero-card .provider-details { grid-template-columns: repeat(4,minmax(0,1fr)); gap: 7px; margin-bottom: 13px; }
+  .homepage-hero-card .detail-box { min-width: 0; padding: 8px 4px; }
+  .homepage-hero-card .detail-box .d-val { font-size: 13px; overflow-wrap: anywhere; }
+  .homepage-hero-card .detail-box .d-label { font-size: 9px; }
+  .homepage-hero-card .action-row button { padding: 9px 7px; font-size: 12px; }
+  .homepage-hero-card .floating-review, .homepage-hero-card .floating-stat { display: none; }
+}

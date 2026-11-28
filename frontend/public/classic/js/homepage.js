@@ -20,10 +20,10 @@ async function loadHomepageProviders() {
     note.append(a, ".");
     container.replaceChildren(note);
   };
-  const host = window.location.hostname;
-  const base = ["localhost", "127.0.0.1"].includes(host)
-    ? "http://" + host + ":5000"
-    : "https://verifiedng-backend.onrender.com";
+  // Classic homepage must use the build-scoped staging API on previews.
+  // If not configured, show the directory link rather than reading live data.
+  if (typeof API_URL !== "string" || !API_URL) return safeLink();
+  const base = API_URL;
   try {
     const response = await fetch(base + "/api/providers", { method: "GET", headers: { Accept: "application/json" } });
     if (!response.ok) throw new Error("Provider list unavailable");

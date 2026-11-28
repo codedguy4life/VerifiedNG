@@ -10,17 +10,17 @@ test("accepts exactly Light, Dark and System options", () => {
   assert.equal(normalizeTheme("light"), "light");
   assert.equal(normalizeTheme("dark"), "dark");
   assert.equal(normalizeTheme("system"), "system");
-  assert.equal(normalizeTheme("blue"), "system");
+  assert.equal(normalizeTheme("blue"), "light");
 });
-test("defaults to device theme on fresh browser", () => {
-  assert.equal(readThemePreference({ getItem: () => null }), "system");
+test("defaults to light on a fresh browser, but respects a saved choice", () => {
+  assert.equal(readThemePreference({ getItem: () => null }), "light");
 });
 test("reads a stored preference and rejects invalid values", () => {
   assert.equal(readThemePreference({ getItem: () => "dark" }), "dark");
-  assert.equal(readThemePreference({ getItem: () => "not-a-theme" }), "system");
+  assert.equal(readThemePreference({ getItem: () => "not-a-theme" }), "light");
 });
 test("survives blocked browser storage", () => {
-  assert.equal(readThemePreference({ getItem: () => { throw Error("blocked"); } }), "system");
+  assert.equal(readThemePreference({ getItem: () => { throw Error("blocked"); } }), "light");
   assert.equal(saveThemePreference("dark", { setItem: () => { throw Error("blocked"); } }), "dark");
 });
 test("System follows OS preference while explicit choices override it", () => {

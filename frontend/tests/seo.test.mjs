@@ -73,3 +73,14 @@ test("every crawlable URL is routed to its prerendered file on Vercel", () => {
     assert.ok(cfg.rewrites.some((rewrite) => rewrite.source === pathname && rewrite.destination === pathname + "/index.html"));
   }
 });
+
+test("classic homepage uses the build-scoped API and loads config before provider discovery", () => {
+  const home = built("/");
+  assert.match(home, /name="verifiedng-api-base" content="[^"]*"/);
+  const configAt = home.indexOf('src="/classic/js/config.js"');
+  const discoveryAt = home.indexOf('src="/classic/js/homepage.js"');
+  assert.ok(configAt >= 0 && discoveryAt > configAt, "Load API isolation config first");
+  const client = read("../public/classic/js/homepage.js");
+  assert.match(client, /const base = API_URL/);
+  assert.doesNotMatch(client, /https:\/\/verifiedng-backend\.onrender\.com/);
+});

@@ -91,6 +91,8 @@ try {
 
   // The original public homepage is kept as static HTML with its original CSS.
   // React continues to serve /app, account routes and other public information.
+  const stagingApi = process.env.VITE_API_BASE_URL || "";
+  const formApi = /^https:\/\/[^\s<>"]+$/.test(stagingApi) ? stagingApi : "";
   let classicHome = await readFile(path.join(distDir, "classic", "index.html"), "utf8");
   // Reuse the actual PublicShowcase React component as prerendered static HTML.
   const { default: PublicShowcase } = await server.ssrLoadModule("/src/components/PublicShowcase.jsx");
@@ -99,6 +101,7 @@ try {
   classicHome = classicHome.replace("<!-- PUBLIC SHOWCASE COMPONENT -->", classicShowcase);
   const homeInfo = ROUTES["/"];
   classicHome = classicHome
+    .replace("</head>", '<meta name="verifiedng-api-base" content="' + escapeHtml(formApi) + '" />\n</head>')
     .replace(/<title>[^<]*<\/title>/i, "<title>" + escapeHtml(homeInfo.title) + "</title>")
     .replace(/<meta name="robots" content="noindex,follow" \/>/, "")
     .replace("</head>", '<meta name="description" content="' + escapeHtml(homeInfo.description) + '" />\n' + headFor("/", homeInfo) + "</head>")
@@ -108,8 +111,6 @@ try {
 
 
   // Restore old signup layouts without reviving the unsafe legacy provider role grant.
-  const stagingApi = process.env.VITE_API_BASE_URL || "";
-  const formApi = /^https:\/\/[^\s<>"]+$/.test(stagingApi) ? stagingApi : "";
   for (const [file, pathname, info] of [
     ["signup-customer.html", "/signup", {title:"Sign Up | VerifiedNG",description:"Create your free VerifiedNG account.",index:false}],
     ["signup-provider.html", "/become-a-provider", ROUTES["/become-a-provider"]]
