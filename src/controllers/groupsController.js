@@ -8,18 +8,28 @@ const escape = (value) => String(value).replace(/[^a-zA-Z0-9\s-]/g, "");
 const validId = (value) => mongoose.isValidObjectId(value);
 const postFields = "fullName profilePhoto isVerified role city state";
 
-async function verified(req, res) {
+async function viewerAccount(req, res) {
   const viewer = await User.findById(req.user.id).select("isVerified city state");
   if (!viewer) { res.status(401).json({ message: "Please sign in again." }); return null; }
-  if (!viewer.isVerified) { res.status(403).json({ message: "Verification is required to join, create and post in groups.", code: "VERIFICATION_REQUIRED" }); return null; }
+  return viewer;
+}
+async function verified(req, res) {
+  const viewer = await viewerAccount(req, res);
+  if (!viewer) return null;
+  if (!viewer.isVerified) { res.status(403).json({ message: "Verification is required to create a group.", code: "VERIFICATION_REQUIRED" }); return null; }
   return viewer;
 }
 async function memberGroup(req, res) {
-  const viewer = await verified(req, res);
+  const viewer = await viewerAccount(req, res);
   if (!viewer) return null;
   if (!validId(req.params.id)) { res.status(404).json({ message: "Group not found." }); return null; }
   const group = await Group.findOne({ _id: req.params.id, isActive: true, members: req.user.id });
   if (!group) { res.status(403).json({ message: "Join the group before viewing its posts." }); return null; }
+  // Older groups were created as verified-only and must remain protected.
+  if (group.requiresVerifiedMembers !== false && !viewer.isVerified) {
+    res.status(403).json({ message: "This group requires verified members.", code: "VERIFICATION_REQUIRED" });
+    return null;
+  }
   return group;
 }
 function shapePost(post, id) {
@@ -45,7 +55,7 @@ async function listGroups(req, res) {
     const viewer = await User.findById(req.user.id).select("city state").lean();
     if (!viewer) return res.status(401).json({ message: "Please sign in again." });
     const groups = await Group.find(clause).sort({ createdAt: -1 }).limit(200)
-      .select("name description category city state creator members createdAt").lean();
+      .select("name description category city state creator members requiresVerifiedMembers createdAt").lean();
     const same = (left, right) => Boolean(left && right && String(left).trim().toLowerCase() === String(right).trim().toLowerCase());
     const score = (group) => same(group.city, viewer.city) ? 2 : same(group.state, viewer.state) ? 1 : 0;
     groups.sort((a, b) => score(b) - score(a) || new Date(b.createdAt) - new Date(a.createdAt));
@@ -69,6 +79,7 @@ async function createGroup(req, res) {
     const group = await Group.create({
       name, description, category, city: viewer.city || "", state: viewer.state || "",
       creator: req.user.id, members: [req.user.id],
+      requiresVerifiedMembers: req.body.requiresVerifiedMembers === true,
     });
     res.status(201).json({ message: "Group created.", group: { _id: group._id, name: group.name } });
   } catch (error) { console.error("Groups create:", error); res.status(500).json({ message: "Could not create group." }); }
@@ -77,7 +88,7 @@ async function getGroup(req, res) {
   try {
     if (!validId(req.params.id)) return res.status(404).json({ message: "Group not found." });
     const group = await Group.findOne({ _id: req.params.id, isActive: true })
-      .select("name description category city state creator members createdAt")
+      .select("name description category city state creator members requiresVerifiedMembers createdAt")
       .populate("creator", "fullName isVerified").lean();
     if (!group) return res.status(404).json({ message: "Group not found." });
     const { members, ...safe } = group;
@@ -87,9 +98,14 @@ async function getGroup(req, res) {
 }
 async function joinGroup(req, res) {
   try {
-    const viewer = await verified(req, res);
+    const viewer = await viewerAccount(req, res);
     if (!viewer) return;
     if (!validId(req.params.id)) return res.status(404).json({ message: "Group not found." });
+    const current = await Group.findOne({ _id: req.params.id, isActive: true }).select("requiresVerifiedMembers");
+    if (!current) return res.status(404).json({ message: "Group not found." });
+    if (current.requiresVerifiedMembers !== false && !viewer.isVerified) {
+      return res.status(403).json({ message: "This group requires verified members.", code: "VERIFICATION_REQUIRED" });
+    }
     const group = await Group.findOneAndUpdate(
       { _id: req.params.id, isActive: true },
       { $addToSet: { members: req.user.id } },

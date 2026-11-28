@@ -73,6 +73,11 @@ test("classic marketing page links use current app routes", () => {
 test("logout loads the classic homepage instead of swapping to React marketing", () => {
   const app = source("src/App.jsx");
   const signout = app.slice(app.indexOf("function signOut()"), app.indexOf("function chooseArea()"));
-  assert.match(signout, /window\.location\.assign\("\/"\)/);
+  assert.match(signout, /window\\.location\\.replace\\("\\/"\\)/);
   assert.doesNotMatch(signout, /history\.replaceState/);
+});
+
+test("the classic homepage remains the default for anonymous visitors", () => {
+  const app = source("src/App.jsx");
+  assert.doesNotMatch(app, /path === "\/"\)\) return <PublicSite page="home"/);
 });

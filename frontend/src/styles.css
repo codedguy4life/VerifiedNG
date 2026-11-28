@@ -3522,3 +3522,20 @@ a.notification-story:hover { border-color: #b7d8c5; }
 .notification-activity-item > div { display:grid; gap:4px; min-width:0; flex:1; }
 .notification-activity-item > svg { flex-shrink:0; }
 .notification-activity-dot { width:8px; height:8px; background:var(--green,#15824c); border-radius:50%; flex-shrink:0; align-self:center; }
+
+/* Social-style post editor, replacing the browser prompt. */
+.post-inline-editor { display:grid; gap:9px; padding:12px 0; }
+.post-inline-editor label { font-weight:800; font-size:13px; }
+.post-inline-editor textarea { display:block; width:100%; min-height:115px; padding:12px 14px; border:1px solid var(--line,#dce6de); background:var(--white,#fff); color:var(--ink,#17221c); border-radius:12px; font:inherit; resize:vertical; }
+.post-inline-editor textarea:focus-visible { outline:2px solid var(--green,#007a3d); outline-offset:2px; }
+.post-inline-editor-actions { display:flex; flex-wrap:wrap; align-items:center; justify-content:flex-end; gap:9px; }
+.post-inline-editor-actions small { margin-right:auto; color:var(--muted,#67736a); }
+.post-inline-editor-actions button { border:1px solid var(--line,#dce6de); background:var(--white,#fff); color:var(--ink,#17221c); border-radius:9px; padding:9px 13px; cursor:pointer; font-weight:700; }
+.post-inline-editor-actions button[type="submit"] { background:var(--green-dark,#007a3d); border-color:var(--green-dark,#007a3d); color:#fff; }
+.post-inline-editor-actions button:disabled { opacity:.55; cursor:not-allowed; }
+.marketplace-card-wrap { position:relative; min-width:0; }
+.marketplace-card-wrap > .marketplace-card { width:100%; height:100%; }
+.marketplace-card-mark-sold { position:absolute; right:9px; top:9px; display:inline-flex; align-items:center; gap:5px; padding:7px 9px; background:#fff; border:1px solid #85cda2; color:#075b35; border-radius:999px; font-weight:800; font-size:11px; cursor:pointer; box-shadow:0 2px 6px #0002; }
+.marketplace-card-mark-sold:focus-visible { outline:3px solid var(--green,#00b85e); outline-offset:2px; }
+.groups-create-verification { display:flex; align-items:center; gap:10px; font-size:13px; font-weight:700; }
+.groups-create-verification input { width:17px; height:17px; accent-color:var(--green-dark,#007a3d); }

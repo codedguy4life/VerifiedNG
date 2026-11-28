@@ -84,3 +84,9 @@
   .public-site .public-brand.vng-brand-classic .vng-classic-word { font-size:21px; }
   .vng-brand-classic sup { font-size:9px; padding:2px 5px; }
 }
+
+/* The classic index.html uses near-black "Verified" and bright green "NG". */
+:root:not([data-theme="dark"]) .vng-brand-classic .vng-classic-word { color:#0d0d0d; }
+:root:not([data-theme="dark"]) .vng-brand-classic .vng-classic-word > span { color:#00b85e; }
+:root:not([data-theme="dark"]) .vng-brand-classic.vng-brand-light .vng-classic-word { color:#fff; }
+:root:not([data-theme="dark"]) .vng-brand-classic.vng-brand-light .vng-classic-word > span { color:#81e8ab; }

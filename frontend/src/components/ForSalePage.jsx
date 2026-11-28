@@ -266,7 +266,8 @@ export default function ForSalePage({ user, onEditProfile, onUnreadChange, onInb
       {items.length > 0 && (
         <div className="marketplace-grid">
           {items.map((item) => (
-            <button key={item._id} type="button" className="marketplace-card" onClick={() => { selectListing(item); setContactOpen(false); setReportOpen(false); setError(""); }}>
+            <div key={item._id} className="marketplace-card-wrap">
+              <button type="button" className="marketplace-card" onClick={() => { selectListing(item); setContactOpen(false); setReportOpen(false); setError(""); }}>
               <span className="marketplace-card-media">
                 {item.imageUrl ? <img src={item.imageUrl} loading="lazy" alt={item.title} /> : <PackageOpen size={31} />}
                 {Number(item.price) === 0 && <span className="marketplace-free-tag">FREE</span>}
@@ -278,7 +279,11 @@ export default function ForSalePage({ user, onEditProfile, onUnreadChange, onInb
                 <span className="marketplace-meta"><Clock3 size={12} /> {formatAge(item.createdAt)}</span>
                 <span className="marketplace-meta"><MapPin size={12} /> {[item.city, item.state].filter(Boolean).join(", ") || "Nigeria"}{item.distanceKm !== null && item.distanceKm !== undefined ? " · " + distanceText(item.distanceKm) : ""}</span>
               </span>
-            </button>
+              </button>
+              {String(item.seller?._id || item.seller) === String(user?._id || user?.id) && (
+                <button type="button" className="marketplace-card-mark-sold" disabled={actionBusy} onClick={() => markSold(item)}><Check size={13} /> Mark sold</button>
+              )}
+            </div>
           ))}
         </div>
       )}

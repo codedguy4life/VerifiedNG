@@ -97,7 +97,7 @@ describe("Verified groups, verification and Ask Area", () => {
 
   test("a verified user can create groups and only verified members can read posts", async () => {
     const created = await request(app).post("/api/groups").set("Authorization", memberToken)
-      .send({ name: "Ikeja residents group", description: "Neighbours sharing local tips", category: "Neighbourhood" });
+      .send({ name: "Ikeja residents group", description: "Neighbours sharing local tips", category: "Neighbourhood", requiresVerifiedMembers: true });
     expect(created.statusCode).toBe(201);
     groupId = created.body.group._id;
     const groupPage = await request(app).get("/api/groups/" + groupId).set("Authorization", visitorToken);
@@ -139,6 +139,38 @@ describe("Verified groups, verification and Ask Area", () => {
     const commented = await request(app).post("/api/groups/" + groupId + "/posts/" + published.body.post._id + "/comments")
       .set("Authorization", visitorToken).send({ text: "Thanks for having us!" });
     expect(commented.statusCode).toBe(201);
+  });
+
+  test("verified creators can open groups to unverified members, while restricted groups stay protected", async () => {
+    const newcomer = await addUser("Open Group Visitor");
+    const newcomerToken = await login(newcomer);
+    const restrictedJoin = await request(app).post("/api/groups/" + groupId + "/join")
+      .set("Authorization", newcomerToken).send({});
+    expect(restrictedJoin.statusCode).toBe(403);
+    const forbiddenCreate = await request(app).post("/api/groups").set("Authorization", newcomerToken)
+      .send({ name: "Unauthorized group", requiresVerifiedMembers: false });
+    expect(forbiddenCreate.statusCode).toBe(403);
+    const created = await request(app).post("/api/groups").set("Authorization", memberToken)
+      .send({ name: "Open Ikeja neighbours", description: "Everyone can join", requiresVerifiedMembers: false });
+    expect(created.statusCode).toBe(201);
+    const id = created.body.group._id;
+    try {
+      const detail = await request(app).get("/api/groups/" + id).set("Authorization", newcomerToken);
+      expect(detail.body.group.requiresVerifiedMembers).toBe(false);
+      const joined = await request(app).post("/api/groups/" + id + "/join")
+        .set("Authorization", newcomerToken).send({});
+      expect(joined.statusCode).toBe(200);
+      const published = await request(app).post("/api/groups/" + id + "/posts")
+        .set("Authorization", newcomerToken).send({ text: "Hello from an unverified member" });
+      expect(published.statusCode).toBe(201);
+      const view = await request(app).get("/api/groups/" + id + "/posts")
+        .set("Authorization", newcomerToken);
+      expect(view.statusCode).toBe(200);
+      expect(view.body.posts.some((p) => p.text === "Hello from an unverified member")).toBe(true);
+    } finally {
+      await GroupPost.deleteMany({ group: id });
+      await Group.deleteOne({ _id: id });
+    }
   });
 
   test("group creators can review reported posts; reporters stay private; outsiders cannot moderate", async () => {

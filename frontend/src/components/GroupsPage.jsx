@@ -19,6 +19,7 @@ export default function GroupsPage({ user, onOpenVerification, initialGroupId = 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("General");
+  const [requiresVerifiedMembers, setRequiresVerifiedMembers] = useState(false);
   const [draft, setDraft] = useState("");
   const [busy, setBusy] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -62,16 +63,16 @@ export default function GroupsPage({ user, onOpenVerification, initialGroupId = 
       const response = await api("/api/groups/" + encodeURIComponent(id));
       setSelected(response.group);
       onSelectedGroupChange?.(response.group._id);
-      if (response.group.isMember && verified) await loadPosts(id, 1);
+      if (response.group.isMember && (verified || response.group.requiresVerifiedMembers === false)) await loadPosts(id, 1);
     } catch (cause) { setError(cause.message || "Could not load group."); }
   }
 
   // The server's verification status may arrive after a deep-linked group.
   useEffect(() => {
-    if (verified && selected?.isMember && selected?._id && posts.length === 0) {
+    if ((verified || selected?.requiresVerifiedMembers === false) && selected?.isMember && selected?._id && posts.length === 0) {
       loadPosts(selected._id, 1);
     }
-  }, [verified, selected?._id, selected?.isMember]);
+  }, [verified, selected?._id, selected?.isMember, selected?.requiresVerifiedMembers]);
 
   async function loadPosts(id, targetPage = 1) {
     setPostsLoading(true);
@@ -89,9 +90,9 @@ export default function GroupsPage({ user, onOpenVerification, initialGroupId = 
     setBusy(true); setError(""); setMessage("");
     try {
       const data = await api("/api/groups", {
-        method: "POST", body: JSON.stringify({ name: name.trim(), description: description.trim(), category }),
+        method: "POST", body: JSON.stringify({ name: name.trim(), description: description.trim(), category, requiresVerifiedMembers }),
       });
-      setCreateOpen(false); setName(""); setDescription(""); setCategory("General");
+      setCreateOpen(false); setName(""); setDescription(""); setCategory("General"); setRequiresVerifiedMembers(false);
       await loadGroups();
       await openGroup(data.group._id);
       setMessage("Your group is ready.");
@@ -101,7 +102,7 @@ export default function GroupsPage({ user, onOpenVerification, initialGroupId = 
 
   async function join() {
     if (!selected) return;
-    if (!verified) { onOpenVerification(); return; }
+    if (!verified && selected.requiresVerifiedMembers !== false) { onOpenVerification(); return; }
     setBusy(true); setError("");
     try {
       await api("/api/groups/" + encodeURIComponent(selected._id) + "/join", { method: "POST", body: "{}" });
@@ -148,10 +149,8 @@ export default function GroupsPage({ user, onOpenVerification, initialGroupId = 
       return true;
     } catch (cause) { setError(cause.message || "Could not update post."); return false; }
   }
-  async function edit(post) {
-    const text = window.prompt("Edit your group post", post.text);
-    if (text === null || !text.trim()) return;
-    await act(encodeURIComponent(post._id), "PUT", { text: text.trim() });
+  async function edit(post, text) {
+    return act(encodeURIComponent(post._id), "PUT", { text: text.trim() });
   }
   async function remove(id) {
     if (!window.confirm("Remove this post from the group?")) return;
@@ -177,7 +176,7 @@ export default function GroupsPage({ user, onOpenVerification, initialGroupId = 
     <div className="groups-page">
       <div className="groups-verification-banner">
         {verified ? <ShieldCheck size={18} /> : <LockKeyhole size={18} />}
-        <span>{verified ? "You're verified. You can create and join groups." : "Verification is required to join groups, create groups and post."}</span>
+        <span>{verified ? "You're verified. You can create groups. Each group sets its joining rules." : "Verification is needed to create a group. You can join open groups without it."}</span>
         {!verified && <button type="button" onClick={onOpenVerification}>Get verified <ArrowRight size={14}/></button>}
       </div>
       {error && <p className="marketplace-error" role="alert">{error} <button type="button" onClick={() => setError("")} aria-label="Dismiss error"><X size={13}/></button></p>}
@@ -191,14 +190,14 @@ export default function GroupsPage({ user, onOpenVerification, initialGroupId = 
               <small>{selected.category}</small>
               <h2>{selected.name}</h2>
               <p>{selected.description || "A community group on VerifiedNG."}</p>
-              <span><MapPin size={13} /> {location(selected)} · {selected.memberCount} member{selected.memberCount === 1 ? "" : "s"}</span>
+              <span><MapPin size={13} /> {location(selected)} · {selected.memberCount} member{selected.memberCount === 1 ? "" : "s"} · {selected.requiresVerifiedMembers === false ? "Open to all members" : "Verified members only"}</span>
             </div>
           </header>
           <div className="groups-join-area">
-            {selected.isMember && verified ? (
+            {selected.isMember && (verified || selected.requiresVerifiedMembers === false) ? (
               <><span className="groups-joined"><CheckCircle2 size={15}/> Joined</span>
                 {String(selected.creator?._id || selected.creator) !== String(user?._id || user?.id) && <button type="button" onClick={leave} disabled={busy}>Leave group</button>}</>
-            ) : <button className="groups-join-button" type="button" onClick={join} disabled={busy}>{verified ? "Join this group" : "Verify to join"} <ArrowRight size={15}/></button>}
+            ) : <button className="groups-join-button" type="button" onClick={join} disabled={busy}>{verified || selected.requiresVerifiedMembers === false ? "Join this group" : "Verify to join"} <ArrowRight size={15}/></button>}
           </div>
           {isGroupCreator && verified && selected.isMember && (
             <section className="groups-moderation" aria-label="Group moderation">
@@ -221,7 +220,7 @@ export default function GroupsPage({ user, onOpenVerification, initialGroupId = 
               )}
             </section>
           )}
-          {selected.isMember && verified ? (
+          {selected.isMember && (verified || selected.requiresVerifiedMembers === false) ? (
             <>
               <form className="groups-composer card" onSubmit={publish}>
                 <label htmlFor="group-post">Share with {selected.name}</label>
@@ -242,7 +241,7 @@ export default function GroupsPage({ user, onOpenVerification, initialGroupId = 
                 {hasMore && <button className="marketplace-loadmore" type="button" disabled={postsLoading} onClick={() => loadPosts(selected._id, page + 1)}>Load more posts <ArrowRight size={15}/></button>}
               </div>
             </>
-          ) : <div className="groups-locked"><LockKeyhole size={25}/><strong>Members-only discussions</strong><p>{verified ? "Join the group to read and participate in its discussions." : "Get verified, then join to see group discussions."}</p></div>}
+          ) : <div className="groups-locked"><LockKeyhole size={25}/><strong>Members-only discussions</strong><p>{selected.requiresVerifiedMembers !== false && !verified ? "This group requires verification before joining." : "Join the group to read and participate in discussions."}</p></div>}
         </>
       ) : (
         <>
@@ -256,7 +255,7 @@ export default function GroupsPage({ user, onOpenVerification, initialGroupId = 
           ) : <div className="groups-directory">
             {groups.map((group) => <button key={group._id} className="groups-list-card" type="button" onClick={() => openGroup(group._id)}>
               <span className="groups-symbol"><Users size={20}/></span>
-              <span className="groups-list-details"><strong>{group.name}</strong><small>{group.nearby ? "📍 Near you · " : ""}{group.category} · {location(group)}</small><span>{group.description || "Join a neighbourhood discussion."}</span><small>{group.memberCount} members {group.isMember ? "· Joined" : ""}</small></span>
+              <span className="groups-list-details"><strong>{group.name}</strong><small>{group.nearby ? "📍 Near you · " : ""}{group.category} · {location(group)}</small><span>{group.description || "Join a neighbourhood discussion."}</span><small>{group.memberCount} members · {group.requiresVerifiedMembers === false ? "Open to all members" : "Verified members only"} {group.isMember ? "· Joined" : ""}</small></span>
               <ArrowRight size={18}/>
             </button>)}
           </div>}
@@ -270,7 +269,8 @@ export default function GroupsPage({ user, onOpenVerification, initialGroupId = 
               <label>Group name<input required minLength={3} maxLength={80} value={name} onChange={(event) => setName(event.target.value)} placeholder="e.g. Ikeja Neighbours"/></label>
               <label>Category<select value={category} onChange={(event) => setCategory(event.target.value)}>{categories.map((item) => <option key={item}>{item}</option>)}</select></label>
               <label>Description<textarea rows={3} maxLength={750} value={description} onChange={(event) => setDescription(event.target.value)} placeholder="What is the group about?"/></label>
-              <p>The group will show your saved city/state. Group discussions are accessible only to verified members who join.</p>
+              <label className="groups-create-verification"><input type="checkbox" checked={requiresVerifiedMembers} onChange={(event) => setRequiresVerifiedMembers(event.target.checked)} /> Require members to be verified before joining</label>
+               <p>Creating a group requires verification. Joining is open to all registered members unless you enable the rule above. Discussions remain members-only.</p>
               <button type="submit" className="groups-join-button" disabled={busy}>{busy ? "Creating…" : "Create group"} <Plus size={15}/></button>
             </form>
           </section>

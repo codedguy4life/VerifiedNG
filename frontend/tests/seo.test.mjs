@@ -84,3 +84,12 @@ test("classic homepage uses the build-scoped API and loads config before provide
   assert.match(client, /const base = API_URL/);
   assert.doesNotMatch(client, /https:\/\/verifiedng-backend\.onrender\.com/);
 });
+
+test("the public root always serves the classic SEO-ready index", () => {
+  const cfg = JSON.parse(read("../vercel.json"));
+  assert.ok(cfg.rewrites.some((route) => route.source === "/" && route.destination === "/classic/index.html"));
+  const root = built("/");
+  const classic = read("../dist/classic/index.html");
+  assert.equal(classic, root, "Vercel's rewritten homepage must exactly match the classic prerender");
+  assert.match(root, /<div class="homepage-hero-card">/);
+});

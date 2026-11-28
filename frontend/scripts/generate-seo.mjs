@@ -108,6 +108,8 @@ try {
     .replace("<body>", '<body>\n<div id="root"><main>')
     .replace(/(\s*<script src="\/classic\/js\/homepage\.js"><\/script>)/, '</main></div>$1');
   await saveRoute("/", classicHome);
+  // Vercel explicitly routes / to this same SEO-ready classic document.
+  await writeFile(path.join(distDir, "classic", "index.html"), classicHome, "utf8");
 
 
   // Restore old signup layouts without reviving the unsafe legacy provider role grant.
