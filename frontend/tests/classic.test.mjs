@@ -81,3 +81,16 @@ test("the classic homepage remains the default for anonymous visitors", () => {
   const app = source("src/App.jsx");
   assert.doesNotMatch(app, /path === "\/"\)\) return <PublicSite page="home"/);
 });
+
+test("classic screens use bundled SVG icons instead of remote font CDNs", () => {
+  const pages = ["../public/classic/index.html", "../public/classic/signup-customer.html", "../public/classic/signup-provider.html"];
+  const icons = source("public/classic/js/bootstrap-icons-local.js");
+  for (const path of pages) {
+    const page = source(path);
+    assert.match(page, /classic\\/js\\/bootstrap-icons-local\\.js/);
+    assert.doesNotMatch(page, /cdn\\.jsdelivr\\.net\\/npm\\/bootstrap-icons/);
+  }
+  for (const name of ["search", "shield-check", "camera", "whatsapp", "eye", "patch-check-fill"]) {
+    assert.ok(icons.includes('"' + name + '":'), "Bundled icon missing: " + name);
+  }
+});
